@@ -38,118 +38,123 @@ import org.fife.ui.rtextarea.RTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 /**
- * Utility methods used by <code>RSyntaxTextArea</code> and its associated classes.
+ * Utility methods used by <code>RSyntaxTextArea</code> and its associated
+ * classes.
  *
  * @author Robert Futrell
  * @version 0.2
  */
 public class RSyntaxUtilities implements SwingConstants {
-	
+
 	/**
 	 * Integer constant representing a Windows-variant OS.
 	 */
 	public static final int OS_WINDOWS = 1;
-	
+
 	/**
 	 * Integer constant representing Mac OS X.
 	 */
 	public static final int OS_MAC_OSX = 2;
-	
+
 	/**
 	 * Integer constant representing Linux.
 	 */
 	public static final int OS_LINUX = 4;
-	
+
 	/**
-	 * Integer constant representing an "unknown" OS. 99.99% of the time, this means some UNIX
-	 * variant (AIX, SunOS, etc.).
+	 * Integer constant representing an "unknown" OS. 99.99% of the time, this means
+	 * some UNIX variant (AIX, SunOS, etc.).
 	 */
 	public static final int OS_OTHER = 8;
-	
+
 	/**
-	 * Used for the color of hyperlinks when a LookAndFeel uses light text against a dark
-	 * background.
+	 * Used for the color of hyperlinks when a LookAndFeel uses light text against a
+	 * dark background.
 	 */
 	private static final Color LIGHT_HYPERLINK_FG = new Color(0xd8ffff);
-	
+
 	private static final int OS = getOSImpl();
-	
+
 	// private static final int DIGIT_MASK = 1;
 	private static final int LETTER_MASK = 2;
-	
+
 	// private static final int WHITESPACE_MASK = 4;
 	// private static final int UPPER_CASE_MASK = 8;
 	private static final int HEX_CHARACTER_MASK = 16;
-	
+
 	private static final int LETTER_OR_DIGIT_MASK = 32;
-	
+
 	private static final int BRACKET_MASK = 64;
-	
+
 	private static final int JAVA_OPERATOR_MASK = 128;
-	
+
 	/**
-	 * A lookup table used to quickly decide if a 16-bit Java char is a US-ASCII letter (A-Z or
-	 * a-z), a digit, a whitespace char (either space (0x0020) or tab (0x0009)), etc. This method
-	 * should be faster than <code>Character.isLetter</code>, <code>Character.isDigit</code>, and
-	 * <code>Character.isWhitespace</code> because we know we are dealing with ASCII chars and so
-	 * don't have to worry about code planes, etc.
+	 * A lookup table used to quickly decide if a 16-bit Java char is a US-ASCII
+	 * letter (A-Z or a-z), a digit, a whitespace char (either space (0x0020) or tab
+	 * (0x0009)), etc. This method should be faster than
+	 * <code>Character.isLetter</code>, <code>Character.isDigit</code>, and
+	 * <code>Character.isWhitespace</code> because we know we are dealing with ASCII
+	 * chars and so don't have to worry about code planes, etc.
 	 */
 	private static final int[] dataTable = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, // 0-15
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 16-31
-	4, 128, 0, 0, 0, 128, 128, 0, 64, 64, 128, 128, 0, 128, 0, 128, // 32-47
-	49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 128, 0, 128, 128, 128, 128, // 48-63
-	0, 58, 58, 58, 58, 58, 58, 42, 42, 42, 42, 42, 42, 42, 42, 42, // 64-79
-	42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 64, 0, 64, 128, 0, // 80-95
-	0, 50, 50, 50, 50, 50, 50, 34, 34, 34, 34, 34, 34, 34, 34, 34, // 96-111
-	34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 64, 128, 64, 128, 0, // 112-127
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 128-143
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 144-
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 160-
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 176-
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 192-
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 208-
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 224-
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 // 240-255.
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 16-31
+			4, 128, 0, 0, 0, 128, 128, 0, 64, 64, 128, 128, 0, 128, 0, 128, // 32-47
+			49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 128, 0, 128, 128, 128, 128, // 48-63
+			0, 58, 58, 58, 58, 58, 58, 42, 42, 42, 42, 42, 42, 42, 42, 42, // 64-79
+			42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 64, 0, 64, 128, 0, // 80-95
+			0, 50, 50, 50, 50, 50, 50, 34, 34, 34, 34, 34, 34, 34, 34, 34, // 96-111
+			34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 64, 128, 64, 128, 0, // 112-127
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 128-143
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 144-
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 160-
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 176-
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 192-
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 208-
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 224-
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 // 240-255.
 	};
-	
+
 	/**
 	 * Used in bracket matching methods.
 	 */
 	private static Segment charSegment = new Segment();
-	
+
 	/**
 	 * Used in token list manipulation methods.
 	 */
 	private static final TokenImpl tempToken = new TokenImpl();
-	
+
 	/**
 	 * Used internally.
 	 */
 	private static final char[] JS_KEYWORD_RETURN = { 'r', 'e', 't', 'u', 'r', 'n' };
-	
+
 	private static final char[] JS_AND = { '&', '&' };
-	
+
 	private static final char[] JS_OR = { '|', '|' };
-	
+
 	/**
 	 * Used internally.
 	 */
 	private static final String BRACKETS = "{([})]";
-	
+
 	/**
-	 * Returns a string with characters that are special to HTML (such as <code>&lt;</code>,
-	 * <code>&gt;</code> and <code>&amp;</code>) replaced by their HTML escape sequences.
+	 * Returns a string with characters that are special to HTML (such as
+	 * <code>&lt;</code>, <code>&gt;</code> and <code>&amp;</code>) replaced by
+	 * their HTML escape sequences.
 	 *
-	 * @param s The input string.
+	 * @param s                  The input string.
 	 * @param newlineReplacement What to replace newline characters with. If this is
-	 *            <code>null</code>, they are simply removed.
-	 * @param inPreBlock Whether this HTML will be in within <code>pre</code> tags. If this is
-	 *            <code>true</code>, spaces will be kept as-is; otherwise, they will be converted to
-	 *            "<code>&nbsp;</code>".
+	 *                           <code>null</code>, they are simply removed.
+	 * @param inPreBlock         Whether this HTML will be in within
+	 *                           <code>pre</code> tags. If this is
+	 *                           <code>true</code>, spaces will be kept as-is;
+	 *                           otherwise, they will be converted to
+	 *                           "<code>&nbsp;</code>".
 	 * @return The escaped version of <code>s</code>.
 	 */
 	public static final String escapeForHtml(String s, String newlineReplacement, boolean inPreBlock) {
-		
+
 		if (s == null) {
 			return null;
 		}
@@ -158,9 +163,9 @@ public class RSyntaxUtilities implements SwingConstants {
 		}
 		final String tabString = "   ";
 		boolean lastWasSpace = false;
-		
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		for (int i = 0; i < s.length(); i++) {
 			char ch = s.charAt(i);
 			switch (ch) {
@@ -198,21 +203,22 @@ public class RSyntaxUtilities implements SwingConstants {
 				break;
 			}
 		}
-		
+
 		return sb.toString();
-		
+
 	}
-	
+
 	/**
-	 * Returns the rendering hints for text that will most accurately reflect those of the native
-	 * windowing system.
+	 * Returns the rendering hints for text that will most accurately reflect those
+	 * of the native windowing system.
 	 *
-	 * @return The rendering hints, or <code>null</code> if they cannot be determined.
+	 * @return The rendering hints, or <code>null</code> if they cannot be
+	 *         determined.
 	 */
 	public static Map<Key, Object> getDesktopAntiAliasHints() {
 		return (Map<Key, Object>) Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints");
 	}
-	
+
 	/**
 	 * Returns the color to use for the line underneath a folded region line.
 	 *
@@ -227,9 +233,10 @@ public class RSyntaxUtilities implements SwingConstants {
 		}
 		return color;
 	}
-	
+
 	/**
-	 * Returns the gutter component of the scroll pane containing a text area, if any.
+	 * Returns the gutter component of the scroll pane containing a text area, if
+	 * any.
 	 *
 	 * @param textArea The text area.
 	 * @return The gutter, or <code>null</code> if the text area is not in an
@@ -248,28 +255,29 @@ public class RSyntaxUtilities implements SwingConstants {
 		}
 		return gutter;
 	}
-	
+
 	/**
-	 * Returns the color to use for hyperlink-style components. This method will return
-	 * <code>Color.blue</code> unless it appears that the current LookAndFeel uses light text on a
-	 * dark background, in which case a brighter alternative is returned.
+	 * Returns the color to use for hyperlink-style components. This method will
+	 * return <code>Color.blue</code> unless it appears that the current LookAndFeel
+	 * uses light text on a dark background, in which case a brighter alternative is
+	 * returned.
 	 *
 	 * @return The color to use for hyperlinks.
 	 * @see #isLightForeground(Color)
 	 */
 	public static final Color getHyperlinkForeground() {
-		
+
 		// This property is defined by all standard LaFs, even Nimbus (!),
 		// but you never know what crazy LaFs there are...
 		Color fg = UIManager.getColor("Label.foreground");
 		if (fg == null) {
 			fg = new JLabel().getForeground();
 		}
-		
+
 		return isLightForeground(fg) ? LIGHT_HYPERLINK_FG : Color.blue;
-		
+
 	}
-	
+
 	/**
 	 * Returns the leading whitespace of a string.
 	 *
@@ -285,14 +293,15 @@ public class RSyntaxUtilities implements SwingConstants {
 		}
 		return text.substring(0, count);
 	}
-	
+
 	/**
 	 * Returns the leading whitespace of a specific line in a document.
 	 *
-	 * @param doc The document.
+	 * @param doc  The document.
 	 * @param offs The offset whose line to get the leading whitespace for.
 	 * @return The leading whitespace.
-	 * @throws BadLocationException If <code>offs</code> is not a valid offset in the document.
+	 * @throws BadLocationException If <code>offs</code> is not a valid offset in
+	 *                              the document.
 	 * @see #getLeadingWhitespace(String)
 	 */
 	public static String getLeadingWhitespace(Document doc, int offs) throws BadLocationException {
@@ -304,7 +313,7 @@ public class RSyntaxUtilities implements SwingConstants {
 		String text = doc.getText(startOffs, endOffs - startOffs);
 		return getLeadingWhitespace(text);
 	}
-	
+
 	private static final Element getLineElem(Document d, int offs) {
 		Element map = d.getDefaultRootElement();
 		int index = map.getElementIndex(offs);
@@ -314,42 +323,47 @@ public class RSyntaxUtilities implements SwingConstants {
 		}
 		return null;
 	}
-	
+
 	/**
-	 * Returns the bounding box (in the current view) of a specified position in the model. This
-	 * method is designed for line-wrapped views to use, as it allows you to specify a
-	 * "starting position" in the line, from which the x-value is assumed to be zero. The idea is
-	 * that you specify the first character in a physical line as <code>p0</code>, as this is the
-	 * character where the x-pixel value is 0.
+	 * Returns the bounding box (in the current view) of a specified position in the
+	 * model. This method is designed for line-wrapped views to use, as it allows
+	 * you to specify a "starting position" in the line, from which the x-value is
+	 * assumed to be zero. The idea is that you specify the first character in a
+	 * physical line as <code>p0</code>, as this is the character where the x-pixel
+	 * value is 0.
 	 *
 	 * @param textArea The text area containing the text.
-	 * @param s A segment in which to load the line. This is passed in so we don't have to
-	 *            reallocate a new <code>Segment</code> for each call.
-	 * @param p0 The starting position in the physical line in the document.
-	 * @param p1 The position for which to get the bounding box in the view.
-	 * @param e How to expand tabs.
-	 * @param rect The rectangle whose x- and width-values are changed to represent the bounding box
-	 *            of <code>p1</code>. This is reused to keep from needlessly reallocating
-	 *            Rectangles.
-	 * @param x0 The x-coordinate (pixel) marking the left-hand border of the text. This is useful
-	 *            if the text area has a border, for example.
+	 * @param s        A segment in which to load the line. This is passed in so we
+	 *                 don't have to reallocate a new <code>Segment</code> for each
+	 *                 call.
+	 * @param p0       The starting position in the physical line in the document.
+	 * @param p1       The position for which to get the bounding box in the view.
+	 * @param e        How to expand tabs.
+	 * @param rect     The rectangle whose x- and width-values are changed to
+	 *                 represent the bounding box of <code>p1</code>. This is reused
+	 *                 to keep from needlessly reallocating Rectangles.
+	 * @param x0       The x-coordinate (pixel) marking the left-hand border of the
+	 *                 text. This is useful if the text area has a border, for
+	 *                 example.
 	 * @return The bounding box in the view of the character <code>p1</code>.
-	 * @throws BadLocationException If <code>p0</code> or <code>p1</code> is not a valid location in
-	 *             the specified text area's document.
-	 * @throws IllegalArgumentException If <code>p0</code> and <code>p1</code> are not on the same
-	 *             line.
+	 * @throws BadLocationException     If <code>p0</code> or <code>p1</code> is not
+	 *                                  a valid location in the specified text
+	 *                                  area's document.
+	 * @throws IllegalArgumentException If <code>p0</code> and <code>p1</code> are
+	 *                                  not on the same line.
 	 */
-	public static Rectangle getLineWidthUpTo(RSyntaxTextArea textArea, Segment s, int p0, int p1, TabExpander e, Rectangle rect, int x0) throws BadLocationException {
-		
+	public static Rectangle getLineWidthUpTo(RSyntaxTextArea textArea, Segment s, int p0, int p1, TabExpander e,
+			Rectangle rect, int x0) throws BadLocationException {
+
 		RSyntaxDocument doc = (RSyntaxDocument) textArea.getDocument();
-		
+
 		// Ensure p0 and p1 are valid document positions.
 		if (p0 < 0) {
 			throw new BadLocationException("Invalid document position", p0);
 		} else if (p1 > doc.getLength()) {
 			throw new BadLocationException("Invalid document position", p1);
 		}
-		
+
 		// Ensure p0 and p1 are in the same line, and get the start/end
 		// offsets for that line.
 		Element map = doc.getDefaultRootElement();
@@ -360,58 +374,60 @@ public class RSyntaxUtilities implements SwingConstants {
 		if (Math.abs(lineNum - map.getElementIndex(p1)) > 1) {
 			throw new IllegalArgumentException("p0 and p1 are not on the " + "same line (" + p0 + ", " + p1 + ").");
 		}
-		
+
 		// Get the token list.
 		Token t = doc.getTokenListForLine(lineNum);
-		
+
 		// Modify the token list 't' to begin at p0 (but still have correct
 		// token types, etc.), and get the x-location (in pixels) of the
 		// beginning of this new token list.
 		TokenSubList subList = TokenUtils.getSubTokenList(t, p0, e, textArea, 0, tempToken);
 		t = subList.tokenList;
-		
+
 		rect = t.listOffsetToView(textArea, e, p1, x0, rect);
 		return rect;
-		
+
 	}
-	
+
 	/**
-	 * Returns the location of the bracket paired with the one at the current caret position.
+	 * Returns the location of the bracket paired with the one at the current caret
+	 * position.
 	 *
 	 * @param textArea The text area.
-	 * @param input A point to use as the return value. If this is <code>null</code>, a new object
-	 *            is created and returned.
-	 * @return A point representing the matched bracket info. The "x" field is the offset of the
-	 *         bracket at the caret position (either just before or just after the caret), and the
-	 *         "y" field is the offset of the matched bracket. Both "x" and "y" will be
-	 *         <code>-1</code> if there isn't a matching bracket (or the caret isn't on a bracket).
+	 * @param input    A point to use as the return value. If this is
+	 *                 <code>null</code>, a new object is created and returned.
+	 * @return A point representing the matched bracket info. The "x" field is the
+	 *         offset of the bracket at the caret position (either just before or
+	 *         just after the caret), and the "y" field is the offset of the matched
+	 *         bracket. Both "x" and "y" will be <code>-1</code> if there isn't a
+	 *         matching bracket (or the caret isn't on a bracket).
 	 */
 	public static Point getMatchingBracketPosition(RSyntaxTextArea textArea, Point input) {
-		
+
 		if (input == null) {
 			input = new Point();
 		}
 		input.setLocation(-1, -1);
-		
+
 		try {
-			
+
 			// Actually position just BEFORE caret.
 			int caretPosition = textArea.getCaretPosition() - 1;
 			RSyntaxDocument doc = (RSyntaxDocument) textArea.getDocument();
 			char bracket = 0;
-			
+
 			// If the caret was at offset 0, we can't check "to its left."
 			if (caretPosition >= 0) {
 				bracket = doc.charAt(caretPosition);
 			}
-			
+
 			// Try to match a bracket "to the right" of the caret if one
 			// was not found on the left.
 			int index = BRACKETS.indexOf(bracket);
 			if (index == -1 && caretPosition < doc.getLength() - 1) {
 				bracket = doc.charAt(++caretPosition);
 			}
-			
+
 			// First, see if the char was a bracket (one of "{[()]}").
 			if (index == -1) {
 				index = BRACKETS.indexOf(bracket);
@@ -419,7 +435,7 @@ public class RSyntaxUtilities implements SwingConstants {
 					return input;
 				}
 			}
-			
+
 			// If it was, then make sure this bracket isn't sitting in
 			// the middle of a comment or string. If it isn't, then
 			// initialize some stuff so we can continue on.
@@ -444,26 +460,26 @@ public class RSyntaxUtilities implements SwingConstants {
 				goForward = false;
 				bracketMatch = BRACKETS.charAt(index - 3);
 			}
-			
+
 			if (goForward) {
-				
+
 				int lastLine = map.getElementCount();
-				
+
 				// Start just after the found bracket since we're sure
 				// we're not in a comment.
 				start = caretPosition + 1;
 				int numEmbedded = 0;
 				boolean haveTokenList = false;
-				
+
 				while (true) {
-					
+
 					doc.getText(start, end - start, charSegment);
 					int segOffset = charSegment.offset;
-					
+
 					for (int i = segOffset; i < segOffset + charSegment.count; i++) {
-						
+
 						char ch = charSegment.array[i];
-						
+
 						if (ch == bracket) {
 							if (haveTokenList == false) {
 								token = doc.getTokenListForLine(curLine);
@@ -475,7 +491,7 @@ public class RSyntaxUtilities implements SwingConstants {
 								numEmbedded++;
 							}
 						}
-						
+
 						else if (ch == bracketMatch) {
 							if (haveTokenList == false) {
 								token = doc.getTokenListForLine(curLine);
@@ -485,7 +501,8 @@ public class RSyntaxUtilities implements SwingConstants {
 							token = RSyntaxUtilities.getTokenAtOffset(token, offset);
 							if (token.getType() == Token.SEPARATOR && token.getLanguageIndex() == languageIndex) {
 								if (numEmbedded == 0) {
-									if (textArea.isCodeFoldingEnabled() && textArea.getFoldManager().isLineHidden(curLine)) {
+									if (textArea.isCodeFoldingEnabled()
+											&& textArea.getFoldManager().isLineHidden(curLine)) {
 										return input; // Match hidden in a fold
 									}
 									input.setLocation(caretPosition, offset);
@@ -494,46 +511,46 @@ public class RSyntaxUtilities implements SwingConstants {
 								numEmbedded--;
 							}
 						}
-						
+
 					} // End of for (int i=segOffset; i<segOffset+charSegment.count; i++).
-					
+
 					// Bail out if we've gone through all lines and
 					// haven't found the match.
 					if (++curLine == lastLine) {
 						return input;
 					}
-					
+
 					// Otherwise, go through the next line.
 					haveTokenList = false;
 					line = map.getElement(curLine);
 					start = line.getStartOffset();
 					end = line.getEndOffset();
-					
+
 				} // End of while (true).
-				
+
 			} // End of if (goForward).
-			
+
 			// Otherwise, we're going backward through the file
 			// (since we found '}', ')' or ']').
 			else { // goForward==false
-			
+
 				// End just before the found bracket since we're sure
 				// we're not in a comment.
 				end = caretPosition;// - 1;
 				int numEmbedded = 0;
 				boolean haveTokenList = false;
 				Token t2;
-				
+
 				while (true) {
-					
+
 					doc.getText(start, end - start, charSegment);
 					int segOffset = charSegment.offset;
 					int iStart = segOffset + charSegment.count - 1;
-					
+
 					for (int i = iStart; i >= segOffset; i--) {
-						
+
 						char ch = charSegment.array[i];
-						
+
 						if (ch == bracket) {
 							if (haveTokenList == false) {
 								token = doc.getTokenListForLine(curLine);
@@ -545,7 +562,7 @@ public class RSyntaxUtilities implements SwingConstants {
 								numEmbedded++;
 							}
 						}
-						
+
 						else if (ch == bracketMatch) {
 							if (haveTokenList == false) {
 								token = doc.getTokenListForLine(curLine);
@@ -561,43 +578,44 @@ public class RSyntaxUtilities implements SwingConstants {
 								numEmbedded--;
 							}
 						}
-						
+
 					}
-					
+
 					// Bail out if we've gone through all lines and
 					// haven't found the match.
 					if (--curLine == -1) {
 						return input;
 					}
-					
+
 					// Otherwise, get ready for going through the
 					// next line.
 					haveTokenList = false;
 					line = map.getElement(curLine);
 					start = line.getStartOffset();
 					end = line.getEndOffset();
-					
+
 				} // End of while (true).
-				
+
 			} // End of else.
-			
+
 		} catch (BadLocationException ble) {
 			// Shouldn't ever happen.
 			ble.printStackTrace();
 		}
-		
+
 		// Something went wrong...
 		return input;
-		
+
 	}
-	
+
 	/**
 	 * Returns the next non-whitespace, non-comment token in a text area.
 	 *
-	 * @param t The next token in this line's token list.
+	 * @param t        The next token in this line's token list.
 	 * @param textArea The text area.
-	 * @param line The current line index (the line index of <code>t</code>).
-	 * @return The next non-whitespace, non-comment token, or <code>null</code> if there isn't one.
+	 * @param line     The current line index (the line index of <code>t</code>).
+	 * @return The next non-whitespace, non-comment token, or <code>null</code> if
+	 *         there isn't one.
 	 * @see #getPreviousImportantToken(RSyntaxDocument, int)
 	 * @see #getPreviousImportantTokenFromOffs(RSyntaxDocument, int)
 	 */
@@ -611,37 +629,44 @@ public class RSyntaxUtilities implements SwingConstants {
 		}
 		return t;
 	}
-	
+
 	/**
-	 * Provides a way to determine the next visually represented model location at which one might
-	 * place a caret. Some views may not be visible, they might not be in the same order found in
-	 * the model, or they just might not allow access to some of the locations in the model.
+	 * Provides a way to determine the next visually represented model location at
+	 * which one might place a caret. Some views may not be visible, they might not
+	 * be in the same order found in the model, or they just might not allow access
+	 * to some of the locations in the model.
 	 * <p>
-	 * NOTE: You should only call this method if the passed-in <code>javax.swing.text.View</code> is
-	 * an instance of {@link TokenOrientedView} and <code>javax.swing.text.TabExpander</code>;
+	 * NOTE: You should only call this method if the passed-in
+	 * <code>javax.swing.text.View</code> is an instance of
+	 * {@link TokenOrientedView} and <code>javax.swing.text.TabExpander</code>;
 	 * otherwise, a <code>ClassCastException</code> could be thrown.
 	 *
-	 * @param pos the position to convert >= 0
-	 * @param a the allocated region in which to render
-	 * @param direction the direction from the current position that can be thought of as the arrow
-	 *            keys typically found on a keyboard. This will be one of the following values:
-	 *            <ul>
-	 *            <li>SwingConstants.WEST <li>SwingConstants.EAST <li> SwingConstants.NORTH <li>
-	 *            SwingConstants.SOUTH
-	 *            </ul>
-	 * @return the location within the model that best represents the next location visual position
+	 * @param pos       the position to convert >= 0
+	 * @param a         the allocated region in which to render
+	 * @param direction the direction from the current position that can be thought
+	 *                  of as the arrow keys typically found on a keyboard. This
+	 *                  will be one of the following values:
+	 *                  <ul>
+	 *                  <li>SwingConstants.WEST
+	 *                  <li>SwingConstants.EAST
+	 *                  <li>SwingConstants.NORTH
+	 *                  <li>SwingConstants.SOUTH
+	 *                  </ul>
+	 * @return the location within the model that best represents the next location
+	 *         visual position
 	 * @exception BadLocationException
-	 * @exception IllegalArgumentException if <code>direction</code> doesn't have one of the legal
-	 *                values above
+	 * @exception IllegalArgumentException if <code>direction</code> doesn't have
+	 *                                     one of the legal values above
 	 */
-	public static int getNextVisualPositionFrom(int pos, Position.Bias b, Shape a, int direction, Position.Bias[] biasRet, View view) throws BadLocationException {
-		
+	public static int getNextVisualPositionFrom(int pos, Position.Bias b, Shape a, int direction,
+			Position.Bias[] biasRet, View view) throws BadLocationException {
+
 		RSyntaxTextArea target = (RSyntaxTextArea) view.getContainer();
 		biasRet[0] = Position.Bias.Forward;
-		
+
 		// Do we want the "next position" above, below, to the left or right?
 		switch (direction) {
-		
+
 		case NORTH:
 		case SOUTH:
 			if (pos == -1) {
@@ -670,7 +695,7 @@ public class RSyntaxUtilities implements SwingConstants {
 				pos = getPositionBelow(target, pos, x, (TabExpander) view);
 			}
 			break;
-		
+
 		case WEST:
 			int endOffs = view.getEndOffset();
 			if (pos == -1) {
@@ -692,7 +717,7 @@ public class RSyntaxUtilities implements SwingConstants {
 				}
 			}
 			break;
-		
+
 		case EAST:
 			if (pos == -1) {
 				pos = view.getStartOffset();
@@ -713,36 +738,36 @@ public class RSyntaxUtilities implements SwingConstants {
 																								// last
 																								// visible
 																								// line
-							target.getLineStartOffset(current);
+									target.getLineStartOffset(current);
 						}
 					}
 				}
 			}
 			break;
-		
+
 		default:
 			throw new IllegalArgumentException("Bad direction: " + direction);
 		}
-		
+
 		return pos;
-		
+
 	}
-	
+
 	/**
-	 * Returns an integer constant representing the OS. This can be handy for special case
-	 * situations such as Mac OS-X (special application registration) or Windows (allow mixed case,
-	 * etc.).
+	 * Returns an integer constant representing the OS. This can be handy for
+	 * special case situations such as Mac OS-X (special application registration)
+	 * or Windows (allow mixed case, etc.).
 	 *
 	 * @return An integer constant representing the OS.
 	 */
 	public static final int getOS() {
 		return OS;
 	}
-	
+
 	/**
-	 * Returns an integer constant representing the OS. This can be handy for special case
-	 * situations such as Mac OS-X (special application registration) or Windows (allow mixed case,
-	 * etc.).
+	 * Returns an integer constant representing the OS. This can be handy for
+	 * special case situations such as Mac OS-X (special application registration)
+	 * or Windows (allow mixed case, etc.).
 	 *
 	 * @return An integer constant representing the OS.
 	 */
@@ -763,12 +788,12 @@ public class RSyntaxUtilities implements SwingConstants {
 		}
 		return os;
 	}
-	
+
 	/**
 	 * Returns the flags necessary to create a {@link Pattern}.
 	 *
 	 * @param matchCase Whether the pattern should be case sensitive.
-	 * @param others Any other flags. This may be <code>0</code>.
+	 * @param others    Any other flags. This may be <code>0</code>.
 	 * @return The flags.
 	 */
 	public static final int getPatternFlags(boolean matchCase, int others) {
@@ -777,21 +802,23 @@ public class RSyntaxUtilities implements SwingConstants {
 		}
 		return others;
 	}
-	
+
 	/**
-	 * Determines the position in the model that is closest to the given view location in the row
-	 * above. The component given must have a size to compute the result. If the component doesn't
-	 * have a size a value of -1 will be returned.
+	 * Determines the position in the model that is closest to the given view
+	 * location in the row above. The component given must have a size to compute
+	 * the result. If the component doesn't have a size a value of -1 will be
+	 * returned.
 	 *
-	 * @param c the editor
+	 * @param c    the editor
 	 * @param offs the offset in the document >= 0
-	 * @param x the X coordinate >= 0
-	 * @return the position >= 0 if the request can be computed, otherwise a value of -1 will be
-	 *         returned.
+	 * @param x    the X coordinate >= 0
+	 * @return the position >= 0 if the request can be computed, otherwise a value
+	 *         of -1 will be returned.
 	 * @exception BadLocationException if the offset is out of range
 	 */
-	public static final int getPositionAbove(RSyntaxTextArea c, int offs, float x, TabExpander e) throws BadLocationException {
-		
+	public static final int getPositionAbove(RSyntaxTextArea c, int offs, float x, TabExpander e)
+			throws BadLocationException {
+
 		TokenOrientedView tov = (TokenOrientedView) e;
 		Token token = tov.getTokenListForPhysicalLineAbove(offs);
 		if (token == null) {
@@ -800,27 +827,29 @@ public class RSyntaxUtilities implements SwingConstants {
 			int line = c.getLineOfOffset(offs); // Sure to be >0 ??
 			return c.getLineStartOffset(line - 1);
 		}
-		
+
 		else {
 			return token.getListOffset(c, e, c.getMargin().left, x);
 		}
-		
+
 	}
-	
+
 	/**
-	 * Determines the position in the model that is closest to the given view location in the row
-	 * below. The component given must have a size to compute the result. If the component doesn't
-	 * have a size a value of -1 will be returned.
+	 * Determines the position in the model that is closest to the given view
+	 * location in the row below. The component given must have a size to compute
+	 * the result. If the component doesn't have a size a value of -1 will be
+	 * returned.
 	 *
-	 * @param c the editor
+	 * @param c    the editor
 	 * @param offs the offset in the document >= 0
-	 * @param x the X coordinate >= 0
-	 * @return the position >= 0 if the request can be computed, otherwise a value of -1 will be
-	 *         returned.
+	 * @param x    the X coordinate >= 0
+	 * @return the position >= 0 if the request can be computed, otherwise a value
+	 *         of -1 will be returned.
 	 * @exception BadLocationException if the offset is out of range
 	 */
-	public static final int getPositionBelow(RSyntaxTextArea c, int offs, float x, TabExpander e) throws BadLocationException {
-		
+	public static final int getPositionBelow(RSyntaxTextArea c, int offs, float x, TabExpander e)
+			throws BadLocationException {
+
 		TokenOrientedView tov = (TokenOrientedView) e;
 		Token token = tov.getTokenListForPhysicalLineBelow(offs);
 		if (token == null) {
@@ -832,19 +861,21 @@ public class RSyntaxUtilities implements SwingConstants {
 			line = fm.getVisibleLineBelow(line);
 			return c.getLineStartOffset(line);
 		}
-		
+
 		else {
 			return token.getListOffset(c, e, c.getMargin().left, x);
 		}
-		
+
 	}
-	
+
 	/**
-	 * Returns the last non-whitespace, non-comment token, starting with the specified line.
+	 * Returns the last non-whitespace, non-comment token, starting with the
+	 * specified line.
 	 *
-	 * @param doc The document.
+	 * @param doc  The document.
 	 * @param line The line at which to start looking.
-	 * @return The last non-whitespace, non-comment token, or <code>null</code> if there isn't one.
+	 * @return The last non-whitespace, non-comment token, or <code>null</code> if
+	 *         there isn't one.
 	 * @see #getNextImportantToken(Token, RSyntaxTextArea, int)
 	 * @see #getPreviousImportantTokenFromOffs(RSyntaxDocument, int)
 	 */
@@ -861,22 +892,24 @@ public class RSyntaxUtilities implements SwingConstants {
 		}
 		return getPreviousImportantToken(doc, line - 1);
 	}
-	
+
 	/**
-	 * Returns the last non-whitespace, non-comment token, before the specified offset.
+	 * Returns the last non-whitespace, non-comment token, before the specified
+	 * offset.
 	 *
-	 * @param doc The document.
+	 * @param doc  The document.
 	 * @param offs The ending offset for the search.
-	 * @return The last non-whitespace, non-comment token, or <code>null</code> if there isn't one.
+	 * @return The last non-whitespace, non-comment token, or <code>null</code> if
+	 *         there isn't one.
 	 * @see #getPreviousImportantToken(RSyntaxDocument, int)
 	 * @see #getNextImportantToken(Token, RSyntaxTextArea, int)
 	 */
 	public static final Token getPreviousImportantTokenFromOffs(RSyntaxDocument doc, int offs) {
-		
+
 		Element root = doc.getDefaultRootElement();
 		int line = root.getElementIndex(offs);
 		Token t = doc.getTokenListForLine(line);
-		
+
 		// Check line containing offs
 		Token target = null;
 		while (t != null && t.isPaintable() && !t.containsPosition(offs)) {
@@ -885,21 +918,21 @@ public class RSyntaxUtilities implements SwingConstants {
 			}
 			t = t.getNextToken();
 		}
-		
+
 		// Check previous line(s)
 		if (target == null) {
 			target = RSyntaxUtilities.getPreviousImportantToken(doc, line - 1);
 		}
-		
+
 		return target;
-		
+
 	}
-	
+
 	/**
 	 * Returns the token at the specified offset.
 	 *
 	 * @param textArea The text area.
-	 * @param offset The offset of the token.
+	 * @param offset   The offset of the token.
 	 * @return The token, or <code>null</code> if the offset is not valid.
 	 * @see #getTokenAtOffset(RSyntaxDocument, int)
 	 * @see #getTokenAtOffset(Token, int)
@@ -908,11 +941,11 @@ public class RSyntaxUtilities implements SwingConstants {
 		RSyntaxDocument doc = (RSyntaxDocument) textArea.getDocument();
 		return RSyntaxUtilities.getTokenAtOffset(doc, offset);
 	}
-	
+
 	/**
 	 * Returns the token at the specified offset.
 	 *
-	 * @param doc The document.
+	 * @param doc    The document.
 	 * @param offset The offset of the token.
 	 * @return The token, or <code>null</code> if the offset is not valid.
 	 * @see #getTokenAtOffset(RSyntaxTextArea, int)
@@ -924,17 +957,17 @@ public class RSyntaxUtilities implements SwingConstants {
 		Token t = doc.getTokenListForLine(lineIndex);
 		return RSyntaxUtilities.getTokenAtOffset(t, offset);
 	}
-	
+
 	/**
-	 * Returns the token at the specified index, or <code>null</code> if the given offset isn't in
-	 * this token list's range.<br>
-	 * Note that this method does NOT check to see if <code>tokenList</code> is null; callers should
-	 * check for themselves.
+	 * Returns the token at the specified index, or <code>null</code> if the given
+	 * offset isn't in this token list's range.<br>
+	 * Note that this method does NOT check to see if <code>tokenList</code> is
+	 * null; callers should check for themselves.
 	 *
 	 * @param tokenList The list of tokens in which to search.
-	 * @param offset The offset at which to get the token.
-	 * @return The token at <code>offset</code>, or <code>null</code> if none of the tokens are at
-	 *         that offset.
+	 * @param offset    The offset at which to get the token.
+	 * @return The token at <code>offset</code>, or <code>null</code> if none of the
+	 *         tokens are at that offset.
 	 * @see #getTokenAtOffset(RSyntaxTextArea, int)
 	 * @see #getTokenAtOffset(RSyntaxDocument, int)
 	 */
@@ -946,25 +979,25 @@ public class RSyntaxUtilities implements SwingConstants {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns the end of the word at the given offset.
 	 *
 	 * @param textArea The text area.
-	 * @param offs The offset into the text area's content.
+	 * @param offs     The offset into the text area's content.
 	 * @return The end offset of the word.
 	 * @throws BadLocationException If <code>offs</code> is invalid.
 	 * @see #getWordStart(RSyntaxTextArea, int)
 	 */
 	public static int getWordEnd(RSyntaxTextArea textArea, int offs) throws BadLocationException {
-		
+
 		Document doc = textArea.getDocument();
 		int endOffs = textArea.getLineEndOffsetOfCurrentLine();
 		int lineEnd = Math.min(endOffs, doc.getLength());
 		if (offs == lineEnd) { // End of the line.
 			return offs;
 		}
-		
+
 		String s = doc.getText(offs, lineEnd - offs - 1);
 		if (s != null && s.length() > 0) { // Should always be true
 			int i = 0;
@@ -983,33 +1016,33 @@ public class RSyntaxUtilities implements SwingConstants {
 			}
 			offs += i - 1;
 		}
-		
+
 		return offs;
-		
+
 	}
-	
+
 	/**
 	 * Returns the start of the word at the given offset.
 	 *
 	 * @param textArea The text area.
-	 * @param offs The offset into the text area's content.
+	 * @param offs     The offset into the text area's content.
 	 * @return The start offset of the word.
 	 * @throws BadLocationException If <code>offs</code> is invalid.
 	 * @see #getWordEnd(RSyntaxTextArea, int)
 	 */
 	public static int getWordStart(RSyntaxTextArea textArea, int offs) throws BadLocationException {
-		
+
 		Document doc = textArea.getDocument();
 		Element line = getLineElem(doc, offs);
 		if (line == null) {
 			throw new BadLocationException("No word at " + offs, offs);
 		}
-		
+
 		int lineStart = line.getStartOffset();
 		if (offs == lineStart) { // Start of the line.
 			return offs;
 		}
-		
+
 		int endOffs = Math.min(offs + 1, doc.getLength());
 		String s = doc.getText(lineStart, endOffs - lineStart);
 		if (s != null && s.length() > 0) {
@@ -1026,66 +1059,71 @@ public class RSyntaxUtilities implements SwingConstants {
 				}
 				offs = lineStart + i;
 			}
-			
+
 		}
-		
+
 		return offs;
-		
+
 	}
-	
+
 	/**
-	 * Determines the width of the given token list taking tabs into consideration. This is
-	 * implemented in a 1.1 style coordinate system where ints are used and 72dpi is assumed.
+	 * Determines the width of the given token list taking tabs into consideration.
+	 * This is implemented in a 1.1 style coordinate system where ints are used and
+	 * 72dpi is assumed.
 	 * <p>
-	 * This method also assumes that the passed-in token list begins at x-pixel <code>0</code> in
-	 * the view (for tab purposes).
+	 * This method also assumes that the passed-in token list begins at x-pixel
+	 * <code>0</code> in the view (for tab purposes).
 	 *
 	 * @param tokenList The tokenList list representing the text.
-	 * @param textArea The text area in which this token list resides.
-	 * @param e The tab expander. This value cannot be <code>null</code>.
+	 * @param textArea  The text area in which this token list resides.
+	 * @param e         The tab expander. This value cannot be <code>null</code>.
 	 * @return The width of the token list, in pixels.
 	 */
 	public static final float getTokenListWidth(Token tokenList, RSyntaxTextArea textArea, TabExpander e) {
 		return getTokenListWidth(tokenList, textArea, e, 0);
 	}
-	
+
 	/**
-	 * Determines the width of the given token list taking tabs into consideration. This is
-	 * implemented in a 1.1 style coordinate system where ints are used and 72dpi is assumed.
+	 * Determines the width of the given token list taking tabs into consideration.
+	 * This is implemented in a 1.1 style coordinate system where ints are used and
+	 * 72dpi is assumed.
 	 * <p>
 	 *
 	 * @param tokenList The token list list representing the text.
-	 * @param textArea The text area in which this token list resides.
-	 * @param e The tab expander. This value cannot be <code>null</code>.
-	 * @param x0 The x-pixel coordinate of the start of the token list.
+	 * @param textArea  The text area in which this token list resides.
+	 * @param e         The tab expander. This value cannot be <code>null</code>.
+	 * @param x0        The x-pixel coordinate of the start of the token list.
 	 * @return The width of the token list, in pixels.
 	 * @see #getTokenListWidthUpTo
 	 */
-	public static final float getTokenListWidth(final Token tokenList, RSyntaxTextArea textArea, TabExpander e, float x0) {
+	public static final float getTokenListWidth(final Token tokenList, RSyntaxTextArea textArea, TabExpander e,
+			float x0) {
 		float width = x0;
 		for (Token t = tokenList; t != null && t.isPaintable(); t = t.getNextToken()) {
 			width += t.getWidth(textArea, e, width);
 		}
 		return width - x0;
 	}
-	
+
 	/**
-	 * Determines the width of the given token list taking tabs into consideration and only up to
-	 * the given index in the document (exclusive).
+	 * Determines the width of the given token list taking tabs into consideration
+	 * and only up to the given index in the document (exclusive).
 	 *
 	 * @param tokenList The token list representing the text.
-	 * @param textArea The text area in which this token list resides.
-	 * @param e The tab expander. This value cannot be <code>null</code>.
-	 * @param x0 The x-pixel coordinate of the start of the token list.
-	 * @param upTo The document position at which you want to stop, exclusive. If this position is
-	 *            before the starting position of the token list, a width of <code>0</code> will be
-	 *            returned; similarly, if this position comes after the entire token list, the width
-	 *            of the entire token list is returned.
-	 * @return The width of the token list, in pixels, up to, but not including, the character at
-	 *         position <code>upTo</code>.
+	 * @param textArea  The text area in which this token list resides.
+	 * @param e         The tab expander. This value cannot be <code>null</code>.
+	 * @param x0        The x-pixel coordinate of the start of the token list.
+	 * @param upTo      The document position at which you want to stop, exclusive.
+	 *                  If this position is before the starting position of the
+	 *                  token list, a width of <code>0</code> will be returned;
+	 *                  similarly, if this position comes after the entire token
+	 *                  list, the width of the entire token list is returned.
+	 * @return The width of the token list, in pixels, up to, but not including, the
+	 *         character at position <code>upTo</code>.
 	 * @see #getTokenListWidth
 	 */
-	public static final float getTokenListWidthUpTo(final Token tokenList, RSyntaxTextArea textArea, TabExpander e, float x0, int upTo) {
+	public static final float getTokenListWidthUpTo(final Token tokenList, RSyntaxTextArea textArea, TabExpander e,
+			float x0, int upTo) {
 		float width = 0;
 		for (Token t = tokenList; t != null && t.isPaintable(); t = t.getNextToken()) {
 			if (t.containsPosition(upTo)) {
@@ -1095,14 +1133,14 @@ public class RSyntaxUtilities implements SwingConstants {
 		}
 		return width;
 	}
-	
+
 	/**
-	 * Returns whether or not this character is a "bracket" to be matched by such programming
-	 * languages as C, C++, and Java.
+	 * Returns whether or not this character is a "bracket" to be matched by such
+	 * programming languages as C, C++, and Java.
 	 *
 	 * @param ch The character to check.
-	 * @return Whether or not the character is a "bracket" - one of '(', ')', '[', ']', '{', and
-	 *         '}'.
+	 * @return Whether or not the character is a "bracket" - one of '(', ')', '[',
+	 *         ']', '{', and '}'.
 	 */
 	public static final boolean isBracket(char ch) {
 		// We need the first condition as it might be that ch>255, and thus
@@ -1110,7 +1148,7 @@ public class RSyntaxUtilities implements SwingConstants {
 		// set.
 		return ch <= '}' && (dataTable[ch] & BRACKET_MASK) > 0;
 	}
-	
+
 	/**
 	 * Returns whether or not a character is a digit (0-9).
 	 *
@@ -1123,10 +1161,10 @@ public class RSyntaxUtilities implements SwingConstants {
 		// that table position has the digit mask).
 		return ch >= '0' && ch <= '9';
 	}
-	
+
 	/**
-	 * Returns whether or not this character is a hex character. This method accepts both upper- and
-	 * lower-case letters a-f.
+	 * Returns whether or not this character is a hex character. This method accepts
+	 * both upper- and lower-case letters a-f.
 	 *
 	 * @param ch The character to check.
 	 * @return Whether or not the character is a hex character 0-9, a-f, or A-F.
@@ -1137,10 +1175,10 @@ public class RSyntaxUtilities implements SwingConstants {
 		// char that is a valid hex character.
 		return (ch <= 'f') && (dataTable[ch] & HEX_CHARACTER_MASK) > 0;
 	}
-	
+
 	/**
-	 * Returns whether a character is a Java operator. Note that C and C++ operators are the same as
-	 * Java operators.
+	 * Returns whether a character is a Java operator. Note that C and C++ operators
+	 * are the same as Java operators.
 	 *
 	 * @param ch The character to check.
 	 * @return Whether or not the character is a Java operator.
@@ -1151,7 +1189,7 @@ public class RSyntaxUtilities implements SwingConstants {
 		// char that is a valid Java operator.
 		return (ch <= '~') && (dataTable[ch] & JAVA_OPERATOR_MASK) > 0;
 	}
-	
+
 	/**
 	 * Returns whether a character is a US-ASCII letter (A-Z or a-z).
 	 *
@@ -1163,7 +1201,7 @@ public class RSyntaxUtilities implements SwingConstants {
 		// not a valid index into our table).
 		return (ch <= 'z') && (dataTable[ch] & LETTER_MASK) > 0;
 	}
-	
+
 	/**
 	 * Returns whether or not a character is a US-ASCII letter or a digit.
 	 *
@@ -1175,11 +1213,11 @@ public class RSyntaxUtilities implements SwingConstants {
 		// not a valid index into our table).
 		return (ch <= 'z') && (dataTable[ch] & LETTER_OR_DIGIT_MASK) > 0;
 	}
-	
+
 	/**
-	 * Returns whether the specified color is "light" to use as a foreground. Colors that return
-	 * <code>true</code> indicate that the current Look and Feel probably uses light text colors on
-	 * a dark background.
+	 * Returns whether the specified color is "light" to use as a foreground. Colors
+	 * that return <code>true</code> indicate that the current Look and Feel
+	 * probably uses light text colors on a dark background.
 	 *
 	 * @param fg The foreground color.
 	 * @return Whether it is a "light" foreground color.
@@ -1188,12 +1226,13 @@ public class RSyntaxUtilities implements SwingConstants {
 	public static final boolean isLightForeground(Color fg) {
 		return fg.getRed() > 0xa0 && fg.getGreen() > 0xa0 && fg.getBlue() > 0xa0;
 	}
-	
+
 	/**
 	 * Returns whether the specified token is a single non-word char (e.g. not in
-	 * <code>[A-Za-z]</code>. This is a HACK to work around the fact that many standard token makers
-	 * return things like semicolons and periods as {@link Token#IDENTIFIER}s just to make the
-	 * syntax highlighting coloring look a little better.
+	 * <code>[A-Za-z]</code>. This is a HACK to work around the fact that many
+	 * standard token makers return things like semicolons and periods as
+	 * {@link Token#IDENTIFIER}s just to make the syntax highlighting coloring look
+	 * a little better.
 	 *
 	 * @param t The token to check. This cannot be <code>null</code>.
 	 * @return Whether the token is a single non-word char.
@@ -1201,10 +1240,11 @@ public class RSyntaxUtilities implements SwingConstants {
 	public static final boolean isNonWordChar(Token t) {
 		return t.length() == 1 && !RSyntaxUtilities.isLetter(t.charAt(0));
 	}
-	
+
 	/**
-	 * Returns whether or not a character is a whitespace character (either a space ' ' or tab
-	 * '\t'). This checks for the Unicode character values 0x0020 and 0x0009.
+	 * Returns whether or not a character is a whitespace character (either a space
+	 * ' ' or tab '\t'). This checks for the Unicode character values 0x0020 and
+	 * 0x0009.
 	 *
 	 * @param ch The character to check.
 	 * @return Whether or not the character is a whitespace character.
@@ -1215,9 +1255,10 @@ public class RSyntaxUtilities implements SwingConstants {
 		// that table position has the whitespace mask).
 		return ch == ' ' || ch == '\t';
 	}
-	
+
 	/**
-	 * Returns whether a regular expression token can follow the specified token in JavaScript.
+	 * Returns whether a regular expression token can follow the specified token in
+	 * JavaScript.
 	 *
 	 * @param t The token to check, which may be <code>null</code>.
 	 * @return Whether a regular expression token may follow this one in JavaScript.
@@ -1227,23 +1268,27 @@ public class RSyntaxUtilities implements SwingConstants {
 		// We basically try to mimic Eclipse's JS editor's behavior here.
 		return t == null ||
 		// t.isOperator() ||
-		(t.length() == 1 && ((ch = t.charAt(0)) == '=' || ch == '(' || ch == ',' || ch == '?' || ch == ':' || ch == '[' || ch == '!' || ch == '&')) ||
-		/* Operators "==", "===", "!=", "!==", "&&", "||" */
-		(t.getType() == Token.OPERATOR && (t.charAt(t.length() - 1) == '=' || t.is(JS_AND) || t.is(JS_OR))) || t.is(Token.RESERVED_WORD_2, JS_KEYWORD_RETURN);
+				(t.length() == 1 && ((ch = t.charAt(0)) == '=' || ch == '(' || ch == ',' || ch == '?' || ch == ':'
+						|| ch == '[' || ch == '!' || ch == '&'))
+				||
+				/* Operators "==", "===", "!=", "!==", "&&", "||" */
+				(t.getType() == Token.OPERATOR && (t.charAt(t.length() - 1) == '=' || t.is(JS_AND) || t.is(JS_OR)))
+				|| t.is(Token.RESERVED_WORD_2, JS_KEYWORD_RETURN);
 	}
-	
+
 	/**
-	 * Selects a range of text in a text component. If the new selection is outside of the previous
-	 * viewable rectangle, then the view is centered around the new selection.
+	 * Selects a range of text in a text component. If the new selection is outside
+	 * of the previous viewable rectangle, then the view is centered around the new
+	 * selection.
 	 *
 	 * @param textArea The text component whose selection is to be centered.
-	 * @param range The range to select.
+	 * @param range    The range to select.
 	 */
 	public static final void selectAndPossiblyCenter(JTextArea textArea, DocumentRange range, boolean select) {
-		
+
 		int start = range.getStartOffset();
 		int end = range.getEndOffset();
-		
+
 		boolean foldsExpanded = false;
 		if (textArea instanceof RSyntaxTextArea) {
 			RSyntaxTextArea rsta = (RSyntaxTextArea) textArea;
@@ -1253,12 +1298,12 @@ public class RSyntaxUtilities implements SwingConstants {
 				foldsExpanded |= fm.ensureOffsetNotInClosedFold(end);
 			}
 		}
-		
+
 		if (select) {
 			textArea.setSelectionStart(start);
 			textArea.setSelectionEnd(end);
 		}
-		
+
 		Rectangle r = null;
 		try {
 			r = textArea.modelToView(start);
@@ -1276,9 +1321,9 @@ public class RSyntaxUtilities implements SwingConstants {
 			}
 			return;
 		}
-		
+
 		Rectangle visible = textArea.getVisibleRect();
-		
+
 		// If the new selection is already in the view, don't scroll,
 		// as that is visually jarring.
 		if (!foldsExpanded && visible.contains(r)) {
@@ -1288,42 +1333,43 @@ public class RSyntaxUtilities implements SwingConstants {
 			}
 			return;
 		}
-		
+
 		visible.x = r.x - (visible.width - r.width) / 2;
 		visible.y = r.y - (visible.height - r.height) / 2;
-		
+
 		Rectangle bounds = textArea.getBounds();
 		Insets i = textArea.getInsets();
 		bounds.x = i.left;
 		bounds.y = i.top;
 		bounds.width -= i.left + i.right;
 		bounds.height -= i.top + i.bottom;
-		
+
 		if (visible.x < bounds.x) {
 			visible.x = bounds.x;
 		}
-		
+
 		if (visible.x + visible.width > bounds.x + bounds.width) {
 			visible.x = bounds.x + bounds.width - visible.width;
 		}
-		
+
 		if (visible.y < bounds.y) {
 			visible.y = bounds.y;
 		}
-		
+
 		if (visible.y + visible.height > bounds.y + bounds.height) {
 			visible.y = bounds.y + bounds.height - visible.height;
 		}
-		
+
 		textArea.scrollRectToVisible(visible);
-		
+
 	}
-	
+
 	/**
-	 * If the character is an upper-case US-ASCII letter, it returns the lower-case version of that
-	 * letter; otherwise, it just returns the character.
+	 * If the character is an upper-case US-ASCII letter, it returns the lower-case
+	 * version of that letter; otherwise, it just returns the character.
 	 *
-	 * @param ch The character to lower-case (if it is a US-ASCII upper-case character).
+	 * @param ch The character to lower-case (if it is a US-ASCII upper-case
+	 *           character).
 	 * @return The lower-case version of the character.
 	 */
 	public static final char toLowerCase(char ch) {
@@ -1338,19 +1384,20 @@ public class RSyntaxUtilities implements SwingConstants {
 		}
 		return ch;
 	}
-	
+
 	/**
 	 * Creates a regular expression pattern that matches a "wildcard" pattern.
 	 *
-	 * @param wildcard The wildcard pattern.
-	 * @param matchCase Whether the pattern should be case sensitive.
-	 * @param escapeStartChar Whether to escape a starting <code>'^'</code> character.
+	 * @param wildcard        The wildcard pattern.
+	 * @param matchCase       Whether the pattern should be case sensitive.
+	 * @param escapeStartChar Whether to escape a starting <code>'^'</code>
+	 *                        character.
 	 * @return The pattern.
 	 */
 	public static Pattern wildcardToPattern(String wildcard, boolean matchCase, boolean escapeStartChar) {
-		
+
 		int flags = RSyntaxUtilities.getPatternFlags(matchCase, 0);
-		
+
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < wildcard.length(); i++) {
 			char ch = wildcard.charAt(i);
@@ -1386,7 +1433,7 @@ public class RSyntaxUtilities implements SwingConstants {
 				break;
 			}
 		}
-		
+
 		Pattern p = null;
 		try {
 			p = Pattern.compile(sb.toString(), flags);
@@ -1394,9 +1441,9 @@ public class RSyntaxUtilities implements SwingConstants {
 			pse.printStackTrace();
 			p = Pattern.compile(".+");
 		}
-		
+
 		return p;
-		
+
 	}
-	
+
 }

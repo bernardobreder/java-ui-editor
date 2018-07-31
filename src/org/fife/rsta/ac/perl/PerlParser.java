@@ -30,55 +30,56 @@ import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
  * @version 0.6
  */
 public class PerlParser extends AbstractParser {
-	
+
 	private DefaultParseResult result;
-	
+
 	private boolean taintModeEnabled;
-	
+
 	private boolean warningsEnabled;
-	
+
 	/**
-	 * The user's requested value for <code>PERL5LIB</code> when parsing Perl code, or
-	 * <code>null</code> to use the default.
+	 * The user's requested value for <code>PERL5LIB</code> when parsing Perl code,
+	 * or <code>null</code> to use the default.
 	 */
 	private String perl5LibOverride;
-	
+
 	/**
-	 * The environment to use when launching Perl to parse code, in the format expected by
-	 * <code>Runtime.exec()</code>. This may be <code>null</code>.
+	 * The environment to use when launching Perl to parse code, in the format
+	 * expected by <code>Runtime.exec()</code>. This may be <code>null</code>.
 	 */
 	private String[] perlEnvironment;
-	
+
 	/**
-	 * The maximum amount of time to wait for Perl to finish compiling a source file.
+	 * The maximum amount of time to wait for Perl to finish compiling a source
+	 * file.
 	 */
 	private static final int MAX_COMPILE_MILLIS = 10000;
-	
+
 	/**
 	 * Constructor.
 	 */
 	public PerlParser() {
 		result = new DefaultParseResult(this);
 	}
-	
+
 	/**
-	 * Creates the array of environment variables to use when running Perl to syntax check code,
-	 * based on the user's requested <code>PERL5LIB</code>.
+	 * Creates the array of environment variables to use when running Perl to syntax
+	 * check code, based on the user's requested <code>PERL5LIB</code>.
 	 */
 	private void createPerlEnvironment() {
-		
+
 		// Default to using the same environment as parent process
 		perlEnvironment = null;
-		
+
 		// See if they specified a special value for PERL5LIB
 		String perl5Lib = getPerl5LibOverride();
 		if (perl5Lib != null) {
 			String[] toAdd = { "PERL5LIB", perl5Lib };
 			perlEnvironment = IOUtil.getEnvironmentSafely(toAdd);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Returns the value to use for <code>PERL5LIB</code> when parsing Perl code.
 	 *
@@ -88,7 +89,7 @@ public class PerlParser extends AbstractParser {
 	public String getPerl5LibOverride() {
 		return perl5LibOverride;
 	}
-	
+
 	/**
 	 * Returns whether warnings are enabled when checking syntax.
 	 *
@@ -98,7 +99,7 @@ public class PerlParser extends AbstractParser {
 	public boolean getWarningsEnabled() {
 		return warningsEnabled;
 	}
-	
+
 	/**
 	 * Returns whether taint mode is enabled when checking syntax.
 	 *
@@ -108,21 +109,21 @@ public class PerlParser extends AbstractParser {
 	public boolean isTaintModeEnabled() {
 		return taintModeEnabled;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public ParseResult parse(RSyntaxDocument doc, String style) {
-		
+
 		result.clearNotices();
-		
+
 		int lineCount = doc.getDefaultRootElement().getElementCount();
 		result.setParsedLines(0, lineCount - 1);
-		
+
 		long start = System.currentTimeMillis();
 		try {
-			
+
 			// Bail early if install location is misconfigured.
 			File dir = PerlLanguageSupport.getPerlInstallLocation();
 			if (dir == null) {
@@ -133,7 +134,7 @@ public class PerlParser extends AbstractParser {
 			if (!perl.isFile()) {
 				return result;
 			}
-			
+
 			File tempFile = File.createTempFile("perlParser", ".tmp");
 			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(tempFile));
 			try {
@@ -143,7 +144,7 @@ public class PerlParser extends AbstractParser {
 				throw new IOException(ble.getMessage());
 			}
 			out.close();
-			
+
 			String opts = "-c";
 			if (getWarningsEnabled()) {
 				opts += "w";
@@ -151,7 +152,7 @@ public class PerlParser extends AbstractParser {
 			if (isTaintModeEnabled()) {
 				opts += "t";
 			}
-			
+
 			String[] envp = perlEnvironment;
 			String[] cmd = { perl.getAbsolutePath(), opts, tempFile.getAbsolutePath() };
 			Process p = Runtime.getRuntime().exec(cmd, envp);
@@ -176,20 +177,20 @@ public class PerlParser extends AbstractParser {
 			} catch (InterruptedException ie) {
 				ie.printStackTrace();
 			}
-			
+
 			long time = System.currentTimeMillis() - start;
 			result.setParseTime(time);
 			// System.out.println(time + "ms");
-			
+
 		} catch (IOException ioe) {
 			result.setError(ioe);
 			ioe.printStackTrace();
 		}
-		
+
 		return result;
-		
+
 	}
-	
+
 	/**
 	 * Sets the value to use for <code>PERL5LIB</code> when parsing Perl code.
 	 *
@@ -200,7 +201,7 @@ public class PerlParser extends AbstractParser {
 		perl5LibOverride = override;
 		createPerlEnvironment(); // Refresh our cached environment map.
 	}
-	
+
 	/**
 	 * Toggles whether taint mode is enabled when checking syntax.
 	 *
@@ -210,7 +211,7 @@ public class PerlParser extends AbstractParser {
 	public void setTaintModeEnabled(boolean enabled) {
 		taintModeEnabled = enabled;
 	}
-	
+
 	/**
 	 * Toggles whether warnings are returned when checking syntax.
 	 *
@@ -220,5 +221,5 @@ public class PerlParser extends AbstractParser {
 	public void setWarningsEnabled(boolean enabled) {
 		warningsEnabled = enabled;
 	}
-	
+
 }

@@ -19,12 +19,12 @@ import org.fife.ui.rsyntaxtextarea.parser.Parser;
  * @version 1.0
  */
 public class CLanguageSupport extends AbstractLanguageSupport {
-	
+
 	/**
 	 * The completion provider, shared amongst all text areas editing C.
 	 */
 	private CCompletionProvider provider;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -32,7 +32,7 @@ public class CLanguageSupport extends AbstractLanguageSupport {
 		setParameterAssistanceEnabled(true);
 		setShowDescWindow(true);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -40,14 +40,14 @@ public class CLanguageSupport extends AbstractLanguageSupport {
 	protected ListCellRenderer createDefaultCompletionCellRenderer() {
 		return new CCellRenderer();
 	}
-	
+
 	private CCompletionProvider getProvider() {
 		if (provider == null) {
 			provider = new CCompletionProvider();
 		}
 		return provider;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -65,7 +65,7 @@ public class CLanguageSupport extends AbstractLanguageSupport {
 		textArea.putClientProperty(PROPERTY_LANGUAGE_PARSER, parser);
 		textArea.addParser(parser);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -74,5 +74,5 @@ public class CLanguageSupport extends AbstractLanguageSupport {
 		uninstallImpl(textArea);
 		textArea.setToolTipSupplier(null);
 	}
-	
+
 }

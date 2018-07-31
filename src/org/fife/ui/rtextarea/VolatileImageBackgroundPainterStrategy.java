@@ -10,16 +10,18 @@ import java.awt.Image;
 import java.awt.image.VolatileImage;
 
 /**
- * A strategy for painting the background of an <code>RTextAreaBase</code> as an image. The image is
- * always stretched to completely fill the <code>RTextAreaBase</code>.
+ * A strategy for painting the background of an <code>RTextAreaBase</code> as an
+ * image. The image is always stretched to completely fill the
+ * <code>RTextAreaBase</code>.
  * <p>
- * A <code>java.awt.image.VolatileImage</code> is used for rendering; theoretically, this should be
- * the best image format for performance.
+ * A <code>java.awt.image.VolatileImage</code> is used for rendering;
+ * theoretically, this should be the best image format for performance.
  * <p>
- * You can set the scaling hint used when stretching/skewing the image to fit in the
- * <code>RTextAreaBase</code>'s background via the <code>setScalingHint</code> method, but keep in
- * mind the more accurate the scaling hint, the less responsive your application will be when
- * stretching the window (as that's the only time the image's size is recalculated).
+ * You can set the scaling hint used when stretching/skewing the image to fit in
+ * the <code>RTextAreaBase</code>'s background via the
+ * <code>setScalingHint</code> method, but keep in mind the more accurate the
+ * scaling hint, the less responsive your application will be when stretching
+ * the window (as that's the only time the image's size is recalculated).
  *
  * @author Robert Futrell
  * @version 0.1
@@ -27,9 +29,9 @@ import java.awt.image.VolatileImage;
  * @see org.fife.ui.rtextarea.BufferedImageBackgroundPainterStrategy
  */
 public class VolatileImageBackgroundPainterStrategy extends ImageBackgroundPainterStrategy {
-	
+
 	private VolatileImage bgImage;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -38,10 +40,10 @@ public class VolatileImageBackgroundPainterStrategy extends ImageBackgroundPaint
 	public VolatileImageBackgroundPainterStrategy(RTextAreaBase ta) {
 		super(ta);
 	}
-	
+
 	/**
-	 * Paints the image at the specified location. This method assumes scaling has already been
-	 * done, and simply paints the background image "as-is."
+	 * Paints the image at the specified location. This method assumes scaling has
+	 * already been done, and simply paints the background image "as-is."
 	 *
 	 * @param g The graphics context.
 	 * @param x The x-coordinate at which to paint.
@@ -62,14 +64,14 @@ public class VolatileImageBackgroundPainterStrategy extends ImageBackgroundPaint
 			} while (bgImage.contentsLost());
 		}
 	}
-	
+
 	/**
-	 * Renders the image at the proper size into <code>bgImage</code>. This method assumes that
-	 * <code>bgImage</code> is not <code>null</code>.
+	 * Renders the image at the proper size into <code>bgImage</code>. This method
+	 * assumes that <code>bgImage</code> is not <code>null</code>.
 	 *
-	 * @param width The width of the volatile image to render into.
+	 * @param width  The width of the volatile image to render into.
 	 * @param height The height of the volatile image to render into.
-	 * @param hint The scaling hint to use.
+	 * @param hint   The scaling hint to use.
 	 */
 	private void renderImage(int width, int height, int hint) {
 		Image master = getMasterImage();
@@ -103,13 +105,13 @@ public class VolatileImageBackgroundPainterStrategy extends ImageBackgroundPaint
 			bgImage = null;
 		}
 	}
-	
+
 	/**
 	 * Rescales the displayed image to be the specified size.
 	 *
-	 * @param width The new width of the image.
+	 * @param width  The new width of the image.
 	 * @param height The new height of the image.
-	 * @param hint The scaling hint to use.
+	 * @param hint   The scaling hint to use.
 	 */
 	@Override
 	protected void rescaleImage(int width, int height, int hint) {
@@ -118,5 +120,5 @@ public class VolatileImageBackgroundPainterStrategy extends ImageBackgroundPaint
 			renderImage(width, height, hint);
 		}
 	}
-	
+
 }

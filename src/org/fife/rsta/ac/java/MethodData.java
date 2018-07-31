@@ -12,20 +12,20 @@ import org.fife.rsta.ac.java.rjc.lang.Modifiers;
 import org.fife.rsta.ac.java.rjc.lang.Type;
 
 /**
- * Metadata about a method as read from a Java source file. This class is used by instances of
- * {@link MethodCompletion}.
+ * Metadata about a method as read from a Java source file. This class is used
+ * by instances of {@link MethodCompletion}.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 class MethodData implements Data {
-	
+
 	private Method method;
-	
+
 	public MethodData(Method method) {
 		this.method = method;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -40,12 +40,12 @@ class MethodData implements Data {
 		}
 		return td.getName(fullyQualified);
 	}
-	
+
 	@Override
 	public String getIcon() {
-		
+
 		String key = null;
-		
+
 		Modifiers mod = method.getModifiers();
 		if (mod == null) {
 			key = IconFactory.METHOD_DEFAULT_ICON;
@@ -58,51 +58,51 @@ class MethodData implements Data {
 		} else {
 			key = IconFactory.METHOD_DEFAULT_ICON;
 		}
-		
+
 		return key;
-		
+
 	}
-	
+
 	@Override
 	public String getSignature() {
 		return method.getNameAndParameters();
 	}
-	
+
 	@Override
 	public String getSummary() {
 		String docComment = method.getDocComment();
 		return docComment != null ? docComment : method.toString();
 	}
-	
+
 	@Override
 	public String getType() {
 		Type type = method.getType();
 		return type == null ? "void" : type.toString();
 	}
-	
+
 	@Override
 	public boolean isAbstract() {
 		return method.getModifiers().isAbstract();
 	}
-	
+
 	@Override
 	public boolean isConstructor() {
 		return method.isConstructor();
 	}
-	
+
 	@Override
 	public boolean isDeprecated() {
 		return method.isDeprecated();
 	}
-	
+
 	@Override
 	public boolean isFinal() {
 		return method.getModifiers().isFinal();
 	}
-	
+
 	@Override
 	public boolean isStatic() {
 		return method.getModifiers().isStatic();
 	}
-	
+
 }

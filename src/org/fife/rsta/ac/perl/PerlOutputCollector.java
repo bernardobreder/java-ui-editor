@@ -23,15 +23,15 @@ import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
  * @version 1.0
  */
 class PerlOutputCollector extends OutputCollector {
-	
+
 	private PerlParser parser;
-	
+
 	private DefaultParseResult result;
-	
+
 	private Element root;
-	
+
 	private static final Pattern ERROR_PATTERN = Pattern.compile(" at .+ line (\\d+)\\.$");
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -43,30 +43,30 @@ class PerlOutputCollector extends OutputCollector {
 		this.result = result;
 		this.root = root;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void handleLineRead(String line) throws IOException {
-		
+
 		Matcher m = ERROR_PATTERN.matcher(line);
-		
+
 		if (m.find()) {
-			
+
 			line = line.substring(0, line.length() - m.group().length());
-			
+
 			int lineNumber = Integer.parseInt(m.group(1)) - 1;
 			Element elem = root.getElement(lineNumber);
 			int start = elem.getStartOffset();
 			int end = elem.getEndOffset();
-			
+
 			DefaultParserNotice pn = new DefaultParserNotice(parser, line, lineNumber, start, end - start);
-			
+
 			result.addNotice(pn);
-			
+
 		}
-		
+
 	}
-	
+
 }

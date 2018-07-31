@@ -17,30 +17,31 @@ import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 
 /**
- * This class manages undos/redos for a particular editor pane. It groups all undos that occur one
- * character position apart together, to avoid Java's horrible "one character at a time" undo
- * behavior. It also recognizes "replace" actions (i.e., text is selected, then the user types), and
- * treats it as a single action, instead of a remove/insert action pair.
+ * This class manages undos/redos for a particular editor pane. It groups all
+ * undos that occur one character position apart together, to avoid Java's
+ * horrible "one character at a time" undo behavior. It also recognizes
+ * "replace" actions (i.e., text is selected, then the user types), and treats
+ * it as a single action, instead of a remove/insert action pair.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class RUndoManager extends UndoManager {
-	
+
 	private RCompoundEdit compoundEdit;
-	
+
 	private RTextArea textArea;
-	
+
 	private int lastOffset;
-	
+
 	private String cantUndoText;
-	
+
 	private String cantRedoText;
-	
+
 	private int internalAtomicEditDepth;
-	
+
 	private static final String MSG = "org.fife.ui.rtextarea.RTextArea";
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -52,11 +53,12 @@ public class RUndoManager extends UndoManager {
 		cantUndoText = msg.getString("Action.CantUndo.Name");
 		cantRedoText = msg.getString("Action.CantRedo.Name");
 	}
-	
+
 	/**
-	 * Begins an "atomic" edit. This method is called when RTextArea KNOWS that some edits should be
-	 * compound automatically, such as when the user is typing in overwrite mode (the deletion of
-	 * the current char + insertion of the new one) or the playing back of a macro.
+	 * Begins an "atomic" edit. This method is called when RTextArea KNOWS that some
+	 * edits should be compound automatically, such as when the user is typing in
+	 * overwrite mode (the deletion of the current char + insertion of the new one)
+	 * or the playing back of a macro.
 	 *
 	 * @see #endInternalAtomicEdit()
 	 */
@@ -68,7 +70,7 @@ public class RUndoManager extends UndoManager {
 			compoundEdit = new RCompoundEdit();
 		}
 	}
-	
+
 	/**
 	 * Ends an "atomic" edit.
 	 *
@@ -82,7 +84,7 @@ public class RUndoManager extends UndoManager {
 			updateActions(); // Needed to show the new display name.
 		}
 	}
-	
+
 	/**
 	 * Returns the localized "Can't Redo" string.
 	 *
@@ -92,7 +94,7 @@ public class RUndoManager extends UndoManager {
 	public String getCantRedoText() {
 		return cantRedoText;
 	}
-	
+
 	/**
 	 * Returns the localized "Can't Undo" string.
 	 *
@@ -102,7 +104,7 @@ public class RUndoManager extends UndoManager {
 	public String getCantUndoText() {
 		return cantUndoText;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -111,7 +113,7 @@ public class RUndoManager extends UndoManager {
 		super.redo();
 		updateActions();
 	}
-	
+
 	private RCompoundEdit startCompoundEdit(UndoableEdit edit) {
 		lastOffset = textArea.getCaretPosition();
 		compoundEdit = new RCompoundEdit();
@@ -119,7 +121,7 @@ public class RUndoManager extends UndoManager {
 		addEdit(compoundEdit);
 		return compoundEdit;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -128,10 +130,10 @@ public class RUndoManager extends UndoManager {
 		super.undo();
 		updateActions();
 	}
-	
+
 	@Override
 	public void undoableEditHappened(UndoableEditEvent e) {
-		
+
 		// This happens when the first undoable edit occurs, and
 		// just after an undo. So, we need to update our actions.
 		if (compoundEdit == null) {
@@ -139,12 +141,12 @@ public class RUndoManager extends UndoManager {
 			updateActions();
 			return;
 		}
-		
+
 		else if (internalAtomicEditDepth > 0) {
 			compoundEdit.addEdit(e.getEdit());
 			return;
 		}
-		
+
 		// This happens when there's already an undo that has occurred.
 		// Test to see if these undos are on back-to-back characters,
 		// and if they are, group them as a single edit. Since an
@@ -159,7 +161,7 @@ public class RUndoManager extends UndoManager {
 			// updateActions();
 			return;
 		}
-		
+
 		// This happens when this UndoableEdit didn't occur at the
 		// character just after the previous undlabeledit. Since an
 		// undo has already occurred, there is no need to update our
@@ -167,17 +169,17 @@ public class RUndoManager extends UndoManager {
 		compoundEdit.end();
 		compoundEdit = startCompoundEdit(e.getEdit());
 		// updateActions();
-		
+
 	}
-	
+
 	/**
-	 * Ensures that undo/redo actions are enabled appropriately and have descriptive text at all
-	 * times.
+	 * Ensures that undo/redo actions are enabled appropriately and have descriptive
+	 * text at all times.
 	 */
 	public void updateActions() {
-		
+
 		String text;
-		
+
 		Action a = RTextArea.getAction(RTextArea.UNDO_ACTION);
 		if (canUndo()) {
 			a.setEnabled(true);
@@ -192,7 +194,7 @@ public class RUndoManager extends UndoManager {
 				a.putValue(Action.SHORT_DESCRIPTION, text);
 			}
 		}
-		
+
 		a = RTextArea.getAction(RTextArea.REDO_ACTION);
 		if (canRedo()) {
 			a.setEnabled(true);
@@ -207,29 +209,29 @@ public class RUndoManager extends UndoManager {
 				a.putValue(Action.SHORT_DESCRIPTION, text);
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * The edit used by {@link RUndoManager}.
 	 */
 	class RCompoundEdit extends CompoundEdit {
-		
+
 		@Override
 		public String getUndoPresentationName() {
 			return UIManager.getString("AbstractUndoableEdit.undoText");
 		}
-		
+
 		@Override
 		public String getRedoPresentationName() {
 			return UIManager.getString("AbstractUndoableEdit.redoText");
 		}
-		
+
 		@Override
 		public boolean isInProgress() {
 			return false;
 		}
-		
+
 		@Override
 		public void undo() throws CannotUndoException {
 			if (compoundEdit != null) {
@@ -238,7 +240,7 @@ public class RUndoManager extends UndoManager {
 			super.undo();
 			compoundEdit = null;
 		}
-		
+
 	}
-	
+
 }

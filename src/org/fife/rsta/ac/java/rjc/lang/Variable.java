@@ -14,29 +14,29 @@ import org.fife.rsta.ac.java.rjc.lexer.Token;
  * @version 1.0
  */
 public abstract class Variable {
-	
+
 	private boolean isFinal;
-	
+
 	private Type type;
-	
+
 	private Token name;
-	
+
 	public Variable(boolean isFinal, Type type, Token name) {
 		this.isFinal = isFinal;
 		this.type = type;
 		this.name = name;
 	}
-	
+
 	public String getName() {
 		return name.getLexeme();
 	}
-	
+
 	public Type getType() {
 		return type;
 	}
-	
+
 	public boolean isFinal() {
 		return isFinal;
 	}
-	
+
 }

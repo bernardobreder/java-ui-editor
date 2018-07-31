@@ -9,28 +9,28 @@ import java.util.Set;
 import org.fife.ui.rsyntaxtextarea.modes.PlainTextTokenMaker;
 
 /**
- * A factory that maps syntax styles to {@link TokenMaker}s capable of splitting text into tokens
- * for those syntax styles.
+ * A factory that maps syntax styles to {@link TokenMaker}s capable of splitting
+ * text into tokens for those syntax styles.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public abstract class TokenMakerFactory {
-	
+
 	/**
-	 * If this system property is set, a custom <code>TokenMakerFactory</code> of the specified
-	 * class will be used as the default token maker factory.
+	 * If this system property is set, a custom <code>TokenMakerFactory</code> of
+	 * the specified class will be used as the default token maker factory.
 	 */
 	public static final String PROPERTY_DEFAULT_TOKEN_MAKER_FACTORY = "TokenMakerFactory";
-	
+
 	/**
 	 * The singleton default <code>TokenMakerFactory</code> instance.
 	 */
 	private static TokenMakerFactory DEFAULT_INSTANCE;
-	
+
 	/**
-	 * Returns the default <code>TokenMakerFactory</code> instance. This is the factory used by all
-	 * {@link RSyntaxDocument}s by default.
+	 * Returns the default <code>TokenMakerFactory</code> instance. This is the
+	 * factory used by all {@link RSyntaxDocument}s by default.
 	 *
 	 * @return The factory.
 	 * @see #setDefaultInstance(TokenMakerFactory)
@@ -57,13 +57,13 @@ public abstract class TokenMakerFactory {
 		}
 		return DEFAULT_INSTANCE;
 	}
-	
+
 	/**
 	 * Returns a {@link TokenMaker} for the specified key.
 	 *
 	 * @param key The key.
-	 * @return The corresponding <code>TokenMaker</code>, or {@link PlainTextTokenMaker} if none
-	 *         matches the specified key.
+	 * @return The corresponding <code>TokenMaker</code>, or
+	 *         {@link PlainTextTokenMaker} if none matches the specified key.
 	 */
 	public final TokenMaker getTokenMaker(String key) {
 		TokenMaker tm = getTokenMakerImpl(key);
@@ -72,27 +72,28 @@ public abstract class TokenMakerFactory {
 		}
 		return tm;
 	}
-	
+
 	/**
 	 * Returns a {@link TokenMaker} for the specified key.
 	 *
 	 * @param key The key.
-	 * @return The corresponding <code>TokenMaker</code>, or <code>null</code> if none matches the
-	 *         specified key.
+	 * @return The corresponding <code>TokenMaker</code>, or <code>null</code> if
+	 *         none matches the specified key.
 	 */
 	protected abstract TokenMaker getTokenMakerImpl(String key);
-	
+
 	/**
 	 * Returns the set of keys that this factory maps to token makers.
 	 *
 	 * @return The set of keys.
 	 */
 	public abstract Set<String> keySet();
-	
+
 	/**
-	 * Sets the default <code>TokenMakerFactory</code> instance. This is the factory used by all
-	 * future {@link RSyntaxDocument}s by default. <code>RSyntaxDocument</code>s that have already
-	 * been created are not affected.
+	 * Sets the default <code>TokenMakerFactory</code> instance. This is the factory
+	 * used by all future {@link RSyntaxDocument}s by default.
+	 * <code>RSyntaxDocument</code>s that have already been created are not
+	 * affected.
 	 *
 	 * @param tmf The factory.
 	 * @throws IllegalArgumentException If <code>tmf</code> is <code>null</code>.
@@ -104,5 +105,5 @@ public abstract class TokenMakerFactory {
 		}
 		DEFAULT_INSTANCE = tmf;
 	}
-	
+
 }

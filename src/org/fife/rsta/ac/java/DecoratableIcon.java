@@ -19,32 +19,32 @@ import javax.swing.Icon;
  * @version 1.0
  */
 public class DecoratableIcon implements Icon {
-	
+
 	/**
 	 * The width of this icon.
 	 */
 	private int width;
-	
+
 	/**
 	 * The "main" icon (the icon that is decorated).
 	 */
 	private Icon mainIcon;
-	
+
 	/**
 	 * The "decoration" icons.
 	 */
 	private List<Icon> decorations;
-	
+
 	/**
 	 * Whether this icon is for a "deprecated" item.
 	 */
 	private boolean deprecated;
-	
+
 	/**
 	 * The width of a decoratable icon (16 + 8 + 8, - 8 for overlap).
 	 */
 	private static final int DEFAULT_WIDTH = 24;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -53,18 +53,18 @@ public class DecoratableIcon implements Icon {
 	public DecoratableIcon(Icon mainIcon) {
 		this(DEFAULT_WIDTH, mainIcon);
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param width The width for this icon.
+	 * @param width    The width for this icon.
 	 * @param mainIcon The "main" icon. This cannot be <code>null</code>.
 	 */
 	public DecoratableIcon(int width, Icon mainIcon) {
 		setMainIcon(mainIcon);
 		this.width = width;
 	}
-	
+
 	/**
 	 * Adds a decoration icon.
 	 *
@@ -80,7 +80,7 @@ public class DecoratableIcon implements Icon {
 		}
 		decorations.add(decoration);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -88,7 +88,7 @@ public class DecoratableIcon implements Icon {
 	public int getIconHeight() {
 		return mainIcon.getIconHeight();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -96,7 +96,7 @@ public class DecoratableIcon implements Icon {
 	public int getIconWidth() {
 		return width;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -115,7 +115,7 @@ public class DecoratableIcon implements Icon {
 			}
 		}
 	}
-	
+
 	/**
 	 * Sets whether this icon is for a deprecated item.
 	 *
@@ -124,7 +124,7 @@ public class DecoratableIcon implements Icon {
 	public void setDeprecated(boolean deprecated) {
 		this.deprecated = deprecated;
 	}
-	
+
 	/**
 	 * Sets the main icon.
 	 *
@@ -137,5 +137,5 @@ public class DecoratableIcon implements Icon {
 		}
 		this.mainIcon = icon;
 	}
-	
+
 }

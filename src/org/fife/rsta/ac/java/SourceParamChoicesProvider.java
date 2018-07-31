@@ -39,22 +39,22 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 /**
  * A parameter choices provider for Java methods.
  * <p>
- * NOTE: This class is not thread-safe, but it's assumed that it is only ever called on the EDT, so
- * it should be a non-issue.
+ * NOTE: This class is not thread-safe, but it's assumed that it is only ever
+ * called on the EDT, so it should be a non-issue.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 class SourceParamChoicesProvider implements ParameterChoicesProvider {
-	
+
 	/**
 	 * The parent {@link JavaCompletionProvider}.
 	 */
 	private CompletionProvider provider;
-	
+
 	/**
-	 * Adds all accessible fields and getters of a specific type, from an extended class or
-	 * implemented interface.
+	 * Adds all accessible fields and getters of a specific type, from an extended
+	 * class or implemented interface.
 	 *
 	 * @param type
 	 * @param jm
@@ -62,33 +62,34 @@ class SourceParamChoicesProvider implements ParameterChoicesProvider {
 	 * @param list
 	 */
 	private void addPublicAndProtectedFieldsAndGetters(Type type, JarManager jm, Package pkg, List<Completion> list) {
-		
+
 		// TODO: Implement me.
-		
+
 	}
-	
+
 	/**
-	 * Gets all local variables, fields, and simple getters defined in a class, that are of a
-	 * specific type, and are accessible from a given offset.
+	 * Gets all local variables, fields, and simple getters defined in a class, that
+	 * are of a specific type, and are accessible from a given offset.
 	 *
-	 * @param ncd The class.
-	 * @param type The type that the variables, fields, and (return value of) getters must be.
+	 * @param ncd  The class.
+	 * @param type The type that the variables, fields, and (return value of)
+	 *             getters must be.
 	 * @param offs The offset of the caret.
 	 * @return The list of stuff, or an empty list if none are found.
 	 */
 	public List<Completion> getLocalVarsFieldsAndGetters(NormalClassDeclaration ncd, String type, int offs) {
-		
+
 		List<Completion> members = new ArrayList<Completion>();
-		
+
 		if (!ncd.getBodyContainsOffset(offs)) {
 			return members;
 		}
-		
+
 		// First, if the offset is in a method, get any local variables in
 		// that method.
 		Method method = ncd.getMethodContainingOffset(offs);
 		if (method != null) {
-			
+
 			// Parameters to the method
 			Iterator<FormalParameter> i = method.getParameterIterator();
 			while (i.hasNext()) {
@@ -99,7 +100,7 @@ class SourceParamChoicesProvider implements ParameterChoicesProvider {
 					members.add(new LocalVariableCompletion(provider, param));
 				}
 			}
-			
+
 			// Local variables in the method
 			CodeBlock body = method.getBody();
 			if (body != null) { // Should always be true?
@@ -113,15 +114,15 @@ class SourceParamChoicesProvider implements ParameterChoicesProvider {
 					}
 				}
 			}
-			
+
 		}
-		
+
 		// Next, any fields/getters taking no parameters (for simplicity)
 		// in this class.
 		for (Iterator<Member> i = ncd.getMemberIterator(); i.hasNext();) {
-			
+
 			Member member = i.next();
-			
+
 			if (member instanceof Field) {
 				Type fieldType = member.getType();
 				if (isTypeCompatible(fieldType, type)) {
@@ -137,25 +138,25 @@ class SourceParamChoicesProvider implements ParameterChoicesProvider {
 					}
 				}
 			}
-			
+
 		}
-		
+
 		return members;
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Completion> getParameterChoices(JTextComponent tc, ParameterizedCompletion.Parameter param) {
-		
+
 		// Get the language support for Java
 		LanguageSupportFactory lsf = LanguageSupportFactory.get();
 		LanguageSupport support = lsf.getSupportFor(SyntaxConstants.SYNTAX_STYLE_JAVA);
 		JavaLanguageSupport jls = (JavaLanguageSupport) support;
 		JarManager jm = jls.getJarManager();
-		
+
 		// Get the deepest TypeDeclaration AST containing the caret position
 		// for the source code in the editor.
 		RSyntaxTextArea textArea = (RSyntaxTextArea) tc;
@@ -172,48 +173,48 @@ class SourceParamChoicesProvider implements ParameterChoicesProvider {
 		if (typeDec == null) {
 			return null;
 		}
-		
+
 		List<Completion> list = null;
 		Package pkg = typeDec.getPackage();
 		provider = jls.getCompletionProvider(textArea);
-		
+
 		// If we're in a class, we'll have to check for local variables, etc.
 		if (typeDec instanceof NormalClassDeclaration) {
-			
+
 			// Get accessible members of this type.
 			NormalClassDeclaration ncd = (NormalClassDeclaration) typeDec;
 			list = getLocalVarsFieldsAndGetters(ncd, param.getType(), dot);
 			// list = typeDec.getAccessibleMembersOfType(param.getType(), dot);
-			
+
 			// Get accessible members of the extended type.
 			Type extended = ncd.getExtendedType();
 			if (extended != null) {
 				addPublicAndProtectedFieldsAndGetters(extended, jm, pkg, list);
 			}
-			
+
 			// Get accessible members of any implemented interfaces.
 			for (Iterator<Type> i = ncd.getImplementedIterator(); i.hasNext();) {
 				Type implemented = i.next();
 				addPublicAndProtectedFieldsAndGetters(implemented, jm, pkg, list);
 			}
-			
+
 		}
-		
+
 		// If we're an interface, local vars, etc. don't exist
 		else if (typeDec instanceof NormalInterfaceDeclaration) {
 			// Nothing to do
 		}
-		
+
 		// If we're in an enum...
 		else {// if (typeDec instanceof EnumDeclaration) {
 				// TODO: Implement me
 		}
-		
+
 		// Check for any public/protected fields/getters in enclosing type.
 		if (!typeDec.isStatic()) {
 			// TODO: Implement me.
 		}
-		
+
 		// Add defaults for common types - "0" for primitive numeric types,
 		// "null" for Objects, etc.
 		Object typeObj = param.getTypeObject();
@@ -231,17 +232,18 @@ class SourceParamChoicesProvider implements ParameterChoicesProvider {
 				list.add(new SimpleCompletion(provider, "null"));
 			}
 		}
-		
+
 		// And we're done!
 		return list;
-		
+
 	}
-	
+
 	private boolean isPrimitiveNumericType(Type type) {
 		String str = type.getName(true);
-		return "byte".equals(str) || "float".equals(str) || "double".equals(str) || "int".equals(str) || "short".equals(str) || "long".equals(str);
+		return "byte".equals(str) || "float".equals(str) || "double".equals(str) || "int".equals(str)
+				|| "short".equals(str) || "long".equals(str);
 	}
-	
+
 	/**
 	 * Returns whether a method is a no-argument getter method.
 	 *
@@ -251,10 +253,10 @@ class SourceParamChoicesProvider implements ParameterChoicesProvider {
 	private boolean isSimpleGetter(Method method) {
 		return method.getParameterCount() == 0 && method.getName().startsWith("get");
 	}
-	
+
 	/**
-	 * Returns whether a <code>Type</code> and a type name are type compatible. This method
-	 * currently is a sham!
+	 * Returns whether a <code>Type</code> and a type name are type compatible. This
+	 * method currently is a sham!
 	 *
 	 * @param type
 	 * @param typeName
@@ -262,9 +264,9 @@ class SourceParamChoicesProvider implements ParameterChoicesProvider {
 	 */
 	// TODO: Get me working! Probably need better parameters passed in!!!
 	private boolean isTypeCompatible(Type type, String typeName) {
-		
+
 		String typeName2 = type.getName(false);
-		
+
 		// Remove generics info for now
 		// TODO: Handle messy generics cases
 		int lt = typeName2.indexOf('<');
@@ -279,34 +281,34 @@ class SourceParamChoicesProvider implements ParameterChoicesProvider {
 				typeName2 += arrayDepth;
 			}
 		}
-		
+
 		return typeName2.equalsIgnoreCase(typeName);
-		
+
 	}
-	
+
 	/**
-	 * A very simple, low-relevance parameter choice completion. This is never used as a
-	 * general-purpose completion in Java code, as it cannot render itself.
+	 * A very simple, low-relevance parameter choice completion. This is never used
+	 * as a general-purpose completion in Java code, as it cannot render itself.
 	 */
 	private static class SimpleCompletion extends BasicCompletion implements JavaSourceCompletion {
-		
+
 		private Icon ICON = new EmptyIcon(16);
-		
+
 		public SimpleCompletion(CompletionProvider provider, String text) {
 			super(provider, text);
 			setRelevance(-1);
 		}
-		
+
 		@Override
 		public Icon getIcon() {
 			return ICON;
 		}
-		
+
 		@Override
 		public void rendererText(Graphics g, int x, int y, boolean selected) {
 			// Never called
 		}
-		
+
 	}
-	
+
 }

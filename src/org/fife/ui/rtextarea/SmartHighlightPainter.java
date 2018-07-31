@@ -17,12 +17,13 @@ import javax.swing.text.Position;
 import javax.swing.text.View;
 
 /**
- * A "smart" highlight painter designed for use in RSyntaxTextArea. Adds the following features:
+ * A "smart" highlight painter designed for use in RSyntaxTextArea. Adds the
+ * following features:
  * <ul>
- * <li>Rendered highlights don't "grow" when users append text to the "end" of them. This is
- * implemented by assuming that the highlights themselves specify their end offset as one offset
- * "too short". This behavior is baked into various RSTA highlights (mark all, mark occurrences,
- * etc.).
+ * <li>Rendered highlights don't "grow" when users append text to the "end" of
+ * them. This is implemented by assuming that the highlights themselves specify
+ * their end offset as one offset "too short". This behavior is baked into
+ * various RSTA highlights (mark all, mark occurrences, etc.).
  * <li>Ability to paint a border line around highlights.
  * </ul>
  *
@@ -30,18 +31,18 @@ import javax.swing.text.View;
  * @version 1.0
  */
 public class SmartHighlightPainter extends ChangeableHighlightPainter {
-	
+
 	private Color borderColor;
-	
+
 	private boolean paintBorder;
-	
+
 	/**
 	 * Creates a highlight painter that defaults to blue.
 	 */
 	public SmartHighlightPainter() {
 		super(Color.BLUE);
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -50,7 +51,7 @@ public class SmartHighlightPainter extends ChangeableHighlightPainter {
 	public SmartHighlightPainter(Paint paint) {
 		super(paint);
 	}
-	
+
 	/**
 	 * Returns whether a border is painted around marked occurrences.
 	 *
@@ -61,15 +62,15 @@ public class SmartHighlightPainter extends ChangeableHighlightPainter {
 	public boolean getPaintBorder() {
 		return paintBorder;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Shape paintLayer(Graphics g, int p0, int p1, Shape viewBounds, JTextComponent c, View view) {
-		
+
 		g.setColor((Color) getPaint());
-		
+
 		// This special case isn't needed for most standard Swing Views (which
 		// always return a width of 1 for modelToView() calls), but it is
 		// needed for RSTA views, which actually return the width of chars for
@@ -86,7 +87,7 @@ public class SmartHighlightPainter extends ChangeableHighlightPainter {
 				return null;
 			}
 		}
-		
+
 		if (p0 == view.getStartOffset() && p1 == view.getEndOffset()) {
 			// Contained in view, can just use bounds.
 			Rectangle alloc;
@@ -98,7 +99,7 @@ public class SmartHighlightPainter extends ChangeableHighlightPainter {
 			g.fillRect(alloc.x, alloc.y, alloc.width, alloc.height);
 			return alloc;
 		}
-		
+
 		// Should only render part of View.
 		try {
 			// --- determine locations ---
@@ -114,9 +115,9 @@ public class SmartHighlightPainter extends ChangeableHighlightPainter {
 			e.printStackTrace();
 			return null;
 		}
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -127,7 +128,7 @@ public class SmartHighlightPainter extends ChangeableHighlightPainter {
 			borderColor = ((Color) paint).darker();
 		}
 	}
-	
+
 	/**
 	 * Toggles whether a border is painted around highlights.
 	 *
@@ -138,5 +139,5 @@ public class SmartHighlightPainter extends ChangeableHighlightPainter {
 	public void setPaintBorder(boolean paint) {
 		this.paintBorder = paint;
 	}
-	
+
 }

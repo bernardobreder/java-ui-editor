@@ -26,34 +26,36 @@ import org.fife.ui.rsyntaxtextarea.TokenImpl;
 import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
- * A completion provider that, in the absence of a DTD or XML schema, makes a best guess at what
- * completion choices the user might want for XML. It does this by looking at what XML element names
- * and attributes have been used elsewhere in the document:
+ * A completion provider that, in the absence of a DTD or XML schema, makes a
+ * best guess at what completion choices the user might want for XML. It does
+ * this by looking at what XML element names and attributes have been used
+ * elsewhere in the document:
  * <p>
  * <ul>
  * <li>If the caret is not in an XML tag, no completion choices are suggested.
- * <li>If the caret is in an XML tag name, other tag names in the document that start with that
- * prefix are suggested.
- * <li>If the caret is in an XML tag, but not in the tag's name, the document is parsed for other
- * instances of that tag. If any are found, all attributes used for that tag elsewhere are
- * suggested.
+ * <li>If the caret is in an XML tag name, other tag names in the document that
+ * start with that prefix are suggested.
+ * <li>If the caret is in an XML tag, but not in the tag's name, the document is
+ * parsed for other instances of that tag. If any are found, all attributes used
+ * for that tag elsewhere are suggested.
  * </ul>
  *
  * @author Robert Futrell
  * @version 1.0
  */
 class XmlCompletionProvider extends DefaultCompletionProvider {
-	
+
 	private static final char[] TAG_SELF_CLOSE = { '/', '>' };
-	
+
 	public XmlCompletionProvider() {
 		setAutoActivationRules(false, "<");
 	}
-	
+
 	/**
-	 * Creates a <code>Completion</code> of the proper type and adds it to the completions list.
+	 * Creates a <code>Completion</code> of the proper type and adds it to the
+	 * completions list.
 	 *
-	 * @param word The text of the completion.
+	 * @param word        The text of the completion.
 	 * @param desiredType The completion type we're collecting.
 	 */
 	private void addCompletionImpl(String word, int desiredType) {
@@ -66,24 +68,25 @@ class XmlCompletionProvider extends DefaultCompletionProvider {
 		}
 		completions.add(c);
 	}
-	
+
 	/**
-	 * Returns the list of attribute names to offer for completion choices for a given tag.
+	 * Returns the list of attribute names to offer for completion choices for a
+	 * given tag.
 	 *
-	 * @param doc The document being parsed.
-	 * @param inTag The XML tag whose attribute is being completed.
+	 * @param doc              The document being parsed.
+	 * @param inTag            The XML tag whose attribute is being completed.
 	 * @param currentWordStart The start of the current word.
 	 * @return The set of completion choices. This will never be <code>null</code> .
 	 */
 	private Set<String> collectCompletionWordsAttribute(RSyntaxDocument doc, Token inTag, int currentWordStart) {
-		
+
 		Set<String> possibleAttrs = new HashSet<String>();
 		Set<String> attrs = new HashSet<String>();
 		Set<String> attrsAlreadySpecified = new HashSet<String>();
 		String desiredTagName = inTag.getLexeme();
 		boolean collectAttrs = false;
 		boolean inCurTag = false;
-		
+
 		for (Token t2 : doc) {
 			int type = t2.getType();
 			if (type == TokenTypes.MARKUP_TAG_NAME) {
@@ -124,19 +127,19 @@ class XmlCompletionProvider extends DefaultCompletionProvider {
 				}
 			}
 		}
-		
+
 		if (!attrs.isEmpty()) {
 			possibleAttrs.addAll(attrs);
 		}
 		possibleAttrs.removeAll(attrsAlreadySpecified);
 		return possibleAttrs;
-		
+
 	}
-	
+
 	/**
 	 * Returns the list of tag names to offer for completion choices.
 	 *
-	 * @param doc The document being parsed.
+	 * @param doc              The document being parsed.
 	 * @param currentWordStart The start of the current word.
 	 * @return The set of completion choices. This will never be <code>null</code> .
 	 */
@@ -149,17 +152,17 @@ class XmlCompletionProvider extends DefaultCompletionProvider {
 		}
 		return words;
 	}
-	
+
 	@Override
 	protected List<Completion> getCompletionsImpl(JTextComponent comp) {
-		
+
 		completions.clear();
-		
+
 		String text = getAlreadyEnteredText(comp);
 		if (text == null) {
 			return completions;
 		}
-		
+
 		RSyntaxTextArea textArea = (RSyntaxTextArea) comp;
 		int dot = textArea.getCaretPosition();
 		RSyntaxDocument doc = (RSyntaxDocument) textArea.getDocument();
@@ -168,13 +171,13 @@ class XmlCompletionProvider extends DefaultCompletionProvider {
 			UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 			return completions;
 		}
-		
+
 		int desiredType = getDesiredTokenType(t, dot);
 		if (desiredType == TokenTypes.NULL) {
 			UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 			return completions;
 		}
-		
+
 		int currentWordStart = dot - text.length();
 		Set<String> words = null;
 		if (desiredType == TokenTypes.MARKUP_TAG_NAME) {
@@ -189,24 +192,24 @@ class XmlCompletionProvider extends DefaultCompletionProvider {
 				return completions;
 			}
 		}
-		
+
 		for (String word : words) {
 			addCompletionImpl(word, desiredType);
 		}
 		Collections.sort(completions);
-		
+
 		return super.getCompletionsImpl(comp);
-		
+
 	}
-	
+
 	/**
-	 * Returns the type of token to return as completion choices, based on the current caret
-	 * position.
+	 * Returns the type of token to return as completion choices, based on the
+	 * current caret position.
 	 *
-	 * @param t The previous "important" (e.g., non-whitespace) token.
+	 * @param t   The previous "important" (e.g., non-whitespace) token.
 	 * @param dot The caret position.
-	 * @return The token type, or {@link TokenTypes#NULL} if no completion choices should be
-	 *         suggested for the current caret position.
+	 * @return The token type, or {@link TokenTypes#NULL} if no completion choices
+	 *         should be suggested for the current caret position.
 	 */
 	private static final int getDesiredTokenType(Token t, int dot) {
 		switch (t.getType()) {
@@ -231,24 +234,25 @@ class XmlCompletionProvider extends DefaultCompletionProvider {
 			return TokenTypes.NULL;
 		}
 	}
-	
+
 	/**
-	 * If the caret is inside of a tag, this method returns the token representing the tag name;
-	 * otherwise, <code>null</code> is returned.
+	 * If the caret is inside of a tag, this method returns the token representing
+	 * the tag name; otherwise, <code>null</code> is returned.
 	 *
 	 * @param textArea The text area.
-	 * @return The token representing the tag name, or <code>null</code> if it could not be found.
+	 * @return The token representing the tag name, or <code>null</code> if it could
+	 *         not be found.
 	 */
 	public static final Token getTagNameTokenForCaretOffset(RSyntaxTextArea textArea) {
-		
+
 		int dot = textArea.getCaretPosition();
 		int line = textArea.getCaretLineNumber();
 		Token toMark = null;
-		
+
 		do {
-			
+
 			Token t = textArea.getTokenListForLine(line);
-			
+
 			while (t != null && t.isPaintable()) {
 				if (t.getType() == Token.MARKUP_TAG_NAME) {
 					toMark = t;
@@ -263,11 +267,11 @@ class XmlCompletionProvider extends DefaultCompletionProvider {
 				}
 				t = t.getNextToken();
 			}
-			
+
 		} while (toMark == null && --line >= 0);
-		
+
 		return toMark;
-		
+
 	}
-	
+
 }

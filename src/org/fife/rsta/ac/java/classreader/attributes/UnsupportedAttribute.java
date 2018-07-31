@@ -14,11 +14,11 @@ import org.fife.rsta.ac.java.classreader.ClassFile;
  * @version 1.0
  */
 public class UnsupportedAttribute extends AttributeInfo {
-	
+
 	private String name;
-	
+
 	// private int[] info;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -29,16 +29,16 @@ public class UnsupportedAttribute extends AttributeInfo {
 		this.name = name;
 		// this.info = info;
 	}
-	
+
 	/*
 	 * public int[] getInfo() { return info; }
 	 */
-	
+
 	@Override
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * Returns a string representation of this attribute. Useful for debugging.
 	 *
@@ -48,5 +48,5 @@ public class UnsupportedAttribute extends AttributeInfo {
 	public String toString() {
 		return "[UnsupportedAttribute: " + "name=" + getName() + "]";
 	}
-	
+
 }

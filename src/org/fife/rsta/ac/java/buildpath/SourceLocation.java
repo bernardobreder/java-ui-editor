@@ -11,8 +11,8 @@ import org.fife.rsta.ac.java.classreader.ClassFile;
 import org.fife.rsta.ac.java.rjc.ast.CompilationUnit;
 
 /**
- * Represents the location of Java source, either in a zip file (src.zip), a flat file (source in a
- * project's source folder), or in some other location.
+ * Represents the location of Java source, either in a zip file (src.zip), a
+ * flat file (source in a project's source folder), or in some other location.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -21,7 +21,7 @@ import org.fife.rsta.ac.java.rjc.ast.CompilationUnit;
  * @see ClasspathSourceLocation
  */
 public interface SourceLocation {
-	
+
 	/**
 	 * Returns an AST for the specified class file.
 	 *
@@ -30,14 +30,15 @@ public interface SourceLocation {
 	 * @throws IOException If an IO error occurs.
 	 */
 	CompilationUnit getCompilationUnit(ClassFile cf) throws IOException;
-	
+
 	/**
-	 * Returns a string representation of this source location. For locations on disk such as zip
-	 * files or directories, this should be the full path to the resource.
+	 * Returns a string representation of this source location. For locations on
+	 * disk such as zip files or directories, this should be the full path to the
+	 * resource.
 	 *
-	 * @return The location of this source as a string, or <code>null</code> if it is not an
-	 *         accessible location.
+	 * @return The location of this source as a string, or <code>null</code> if it
+	 *         is not an accessible location.
 	 */
 	public String getLocationAsString();
-	
+
 }

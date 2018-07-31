@@ -24,9 +24,9 @@ import org.fife.ui.autocomplete.Util;
  * @version 1.0
  */
 class MemberTreeNode extends JavaTreeNode {
-	
+
 	private String text;
-	
+
 	public MemberTreeNode(CodeBlock cb) {
 		super(cb);
 		text = "<html>" + cb.getName();
@@ -41,14 +41,14 @@ class MemberTreeNode extends JavaTreeNode {
 		setIcon(di);
 		setSortPriority(priority);
 	}
-	
+
 	public MemberTreeNode(Field field) {
-		
+
 		super(field);
-		
+
 		Modifiers mods = field.getModifiers();
 		String icon = null;
-		
+
 		if (mods == null) {
 			icon = IconFactory.FIELD_DEFAULT_ICON;
 		} else if (mods.isPrivate()) {
@@ -60,17 +60,17 @@ class MemberTreeNode extends JavaTreeNode {
 		} else {
 			icon = IconFactory.FIELD_DEFAULT_ICON;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html>");
 		sb.append(field.getName());
 		sb.append(" : ");
 		sb.append("<font color='#888888'>");
-		
+
 		appendType(field.getType(), sb);
 		text = sb.toString();
 		int priority = PRIORITY_FIELD;
-		
+
 		IconFactory fact = IconFactory.get();
 		Icon base = fact.getIcon(icon);
 		DecoratableIcon di = new DecoratableIcon(base);
@@ -85,18 +85,18 @@ class MemberTreeNode extends JavaTreeNode {
 			}
 		}
 		setIcon(di);
-		
+
 		setSortPriority(priority);
-		
+
 	}
-	
+
 	public MemberTreeNode(Method method) {
-		
+
 		super(method);
-		
+
 		String icon = null;
 		int priority = PRIORITY_METHOD;
-		
+
 		Modifiers mods = method.getModifiers();
 		if (mods == null) {
 			icon = IconFactory.METHOD_DEFAULT_ICON;
@@ -127,9 +127,9 @@ class MemberTreeNode extends JavaTreeNode {
 			sb.append("<font color='#888888'>");
 			appendType(method.getType(), sb);
 		}
-		
+
 		text = sb.toString();
-		
+
 		IconFactory fact = IconFactory.get();
 		Icon base = fact.getIcon(icon);
 		DecoratableIcon di = new DecoratableIcon(base);
@@ -151,11 +151,11 @@ class MemberTreeNode extends JavaTreeNode {
 			}
 		}
 		setIcon(di);
-		
+
 		setSortPriority(priority);
-		
+
 	}
-	
+
 	static void appendType(Type type, StringBuilder sb) {
 		if (type != null) {
 			String t = type.toString();
@@ -164,11 +164,11 @@ class MemberTreeNode extends JavaTreeNode {
 			sb.append(t);
 		}
 	}
-	
+
 	@Override
 	public String getText(boolean selected) {
 		// Strip out HTML tags
 		return selected ? Util.stripHtml(text).replaceAll("&lt;", "<").replaceAll("&gt;", ">") : text;
 	}
-	
+
 }

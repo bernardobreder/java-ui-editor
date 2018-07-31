@@ -23,13 +23,13 @@ import org.xml.sax.SAXException;
  * @version 1.0
  */
 public class SchemaValidationConfig implements ValidationConfig {
-	
+
 	private Schema schema;
-	
+
 	public SchemaValidationConfig(String language, InputStream in) throws IOException {
-		
+
 		SchemaFactory sf = SchemaFactory.newInstance(language);
-		
+
 		BufferedInputStream bis = new BufferedInputStream(in);
 		try {
 			schema = sf.newSchema(new StreamSource(bis));
@@ -39,9 +39,9 @@ public class SchemaValidationConfig implements ValidationConfig {
 		} finally {
 			bis.close();
 		}
-		
+
 	}
-	
+
 	@Override
 	public void configureParser(XmlParser parser) {
 		SAXParserFactory spf = parser.getSaxParserFactory();
@@ -50,10 +50,10 @@ public class SchemaValidationConfig implements ValidationConfig {
 			spf.setSchema(schema);
 		}
 	}
-	
+
 	@Override
 	public void configureHandler(XmlParser.Handler handler) {
 		handler.setEntityResolver(null); // Not used in schema validation
 	}
-	
+
 }

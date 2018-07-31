@@ -18,12 +18,12 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
  * @version 1.0
  */
 public class CssLanguageSupport extends AbstractLanguageSupport {
-	
+
 	/**
 	 * The completion provider, shared amongst all text areas editing C.
 	 */
 	private CssCompletionProvider provider;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -33,34 +33,34 @@ public class CssLanguageSupport extends AbstractLanguageSupport {
 		setParameterAssistanceEnabled(true);
 		// setShowDescWindow(true);
 	}
-	
+
 	@Override
 	protected ListCellRenderer createDefaultCompletionCellRenderer() {
 		return new CssCellRenderer();
 	}
-	
+
 	private CssCompletionProvider getProvider() {
 		if (provider == null) {
 			provider = new CssCompletionProvider();
 		}
 		return provider;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void install(RSyntaxTextArea textArea) {
-		
+
 		CssCompletionProvider provider = getProvider();
 		AutoCompletion ac = createAutoCompletion(provider);
 		ac.install(textArea);
 		installImpl(textArea, ac);
-		
+
 		textArea.setToolTipSupplier(provider);
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -69,5 +69,5 @@ public class CssLanguageSupport extends AbstractLanguageSupport {
 		uninstallImpl(textArea);
 		textArea.setToolTipSupplier(null);
 	}
-	
+
 }

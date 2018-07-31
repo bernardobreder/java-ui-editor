@@ -13,7 +13,8 @@ import org.fife.rsta.ac.java.rjc.lexer.Offset;
 import org.fife.rsta.ac.java.rjc.lexer.Token;
 
 /**
- * A <code>CompilationUnit</code> is the root node of an AST for a Java source file.
+ * A <code>CompilationUnit</code> is the root node of an AST for a Java source
+ * file.
  *
  * <pre>
  * CompilationUnit:
@@ -24,18 +25,18 @@ import org.fife.rsta.ac.java.rjc.lexer.Token;
  * @version 1.0
  */
 public class CompilationUnit extends AbstractASTNode {
-	
+
 	private List<ParserNotice> notices;
-	
+
 	private static final Offset ZERO_OFFSET = new ZeroOffset();
-	
+
 	/**
 	 * @param name
 	 */
 	public CompilationUnit(String name) {
 		super(name, ZERO_OFFSET);
 	}
-	
+
 	/**
 	 * Shorthand for "<tt>addParserNotice(new ParserNotice(t, msg))</tt>".
 	 *
@@ -45,7 +46,7 @@ public class CompilationUnit extends AbstractASTNode {
 	public void addParserNotice(Token t, String msg) {
 		addParserNotice(new ParserNotice(t, msg));
 	}
-	
+
 	/**
 	 * @param notice
 	 */
@@ -55,23 +56,23 @@ public class CompilationUnit extends AbstractASTNode {
 			notices.add(notice);
 		}
 	}
-	
+
 	public ParserNotice getParserNotice(int index) {
 		if (notices == null) {
 			throw new IndexOutOfBoundsException("No parser notices available");
 		}
 		return notices.get(index);
 	}
-	
+
 	public int getParserNoticeCount() {
 		return notices == null ? 0 : notices.size();
 	}
-	
+
 	/**
 	 * An offset that always returns 0.
 	 */
 	private static class ZeroOffset implements Offset {
-		
+
 		/**
 		 * {@inheritDoc}
 		 */
@@ -79,7 +80,7 @@ public class CompilationUnit extends AbstractASTNode {
 		public int getOffset() {
 			return 0;
 		}
-		
+
 	}
-	
+
 }

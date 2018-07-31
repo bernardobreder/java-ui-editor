@@ -20,39 +20,39 @@ import org.fife.rsta.ac.java.rjc.lexer.TokenTypes;
  * @version 1.0
  */
 public class Modifiers {
-	
+
 	public static final Integer ABSTRACT = new Integer(1024);
-	
+
 	public static final Integer FINAL = new Integer(16);
-	
+
 	public static final Integer INTERFACE = new Integer(512);
-	
+
 	public static final Integer NATIVE = new Integer(256);
-	
+
 	public static final Integer PRIVATE = new Integer(2);
-	
+
 	public static final Integer PROTECTED = new Integer(4);
-	
+
 	public static final Integer PUBLIC = new Integer(1);
-	
+
 	public static final Integer STATIC = new Integer(8);
-	
+
 	public static final Integer STRICTFP = new Integer(2048);
-	
+
 	public static final Integer SYNCHRONIZED = new Integer(32);
-	
+
 	public static final Integer TRANSIENT = new Integer(128);
-	
+
 	public static final Integer VOLATILE = new Integer(64);
-	
+
 	private List<Integer> modifiers;
-	
+
 	private List<Annotation> annotations;
-	
+
 	private static final Map<Integer, String> MODIFIER_TEXT = new HashMap<Integer, String>() {
-		
+
 		private static final long serialVersionUID = 1L;
-		
+
 		{
 			put(ABSTRACT, "abstract");
 			put(FINAL, "final");
@@ -68,20 +68,20 @@ public class Modifiers {
 			put(VOLATILE, "volatile");
 		}
 	};
-	
+
 	public Modifiers() {
 		modifiers = new ArrayList<Integer>(1); // Usually not many.
 		annotations = new ArrayList<Annotation>(0); // Often 0 or 1 (@Deprecated)
 	}
-	
+
 	public void addAnnotation(Annotation annotation) {
 		annotations.add(annotation);
 	}
-	
+
 	public boolean addModifier(int tokenType) {
-		
+
 		Integer key = null;
-		
+
 		switch (tokenType) {
 		case TokenTypes.KEYWORD_ABSTRACT:
 			key = ABSTRACT;
@@ -122,46 +122,46 @@ public class Modifiers {
 		default:
 			throw new IllegalArgumentException("Invalid tokenType: " + tokenType);
 		}
-		
+
 		int pos = Collections.binarySearch(modifiers, key);
 		if (pos < 0) {
 			// pos = -insertionPoint - 1
 			int insertionPoint = -(pos + 1);
 			modifiers.add(insertionPoint, key);
 		}
-		
+
 		return pos < 0;
-		
+
 	}
-	
+
 	private boolean containsModifier(Integer modifierKey) {
 		return Collections.binarySearch(modifiers, modifierKey) >= 0;
 	}
-	
+
 	public boolean isAbstract() {
 		return containsModifier(ABSTRACT);
 	}
-	
+
 	public boolean isFinal() {
 		return containsModifier(FINAL);
 	}
-	
+
 	public boolean isPrivate() {
 		return containsModifier(PRIVATE);
 	}
-	
+
 	public boolean isProtected() {
 		return containsModifier(PROTECTED);
 	}
-	
+
 	public boolean isPublic() {
 		return containsModifier(PUBLIC);
 	}
-	
+
 	public boolean isStatic() {
 		return containsModifier(STATIC);
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -180,5 +180,5 @@ public class Modifiers {
 		}
 		return sb.toString();
 	}
-	
+
 }

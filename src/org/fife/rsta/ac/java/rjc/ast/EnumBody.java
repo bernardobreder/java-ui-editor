@@ -30,9 +30,9 @@ import org.fife.rsta.ac.java.rjc.lexer.Offset;
  * @version 1.0
  */
 public class EnumBody extends AbstractASTNode {
-	
+
 	public EnumBody(String name, Offset start) {
 		super(name, start);
 	}
-	
+
 }

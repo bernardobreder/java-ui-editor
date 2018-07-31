@@ -36,25 +36,27 @@ import org.xml.sax.SAXException;
  */
 /*
  * NOTE: This isn't really optimized. A truly optimized provider wouldn't extend
- * HtmlCompletionProvider, as it doesn't provide enough hooks to do things most efficiently (re-use
- * token lists, etc.). If this implementation proves to not be efficient enough,
- * HtmlCompletionProvider could be modified to provide more hooks necessary to do so.
+ * HtmlCompletionProvider, as it doesn't provide enough hooks to do things most
+ * efficiently (re-use token lists, etc.). If this implementation proves to not
+ * be efficient enough, HtmlCompletionProvider could be modified to provide more
+ * hooks necessary to do so.
  */
 public class PhpCompletionProvider extends HtmlCompletionProvider {
-	
+
 	/**
-	 * Whether {@link #getAlreadyEnteredText(JTextComponent)} determined the caret to be in a
-	 * location where PHP completions were required (as opposed to HTML completions).
+	 * Whether {@link #getAlreadyEnteredText(JTextComponent)} determined the caret
+	 * to be in a location where PHP completions were required (as opposed to HTML
+	 * completions).
 	 */
 	private boolean phpCompletion;
-	
+
 	/**
 	 * PHP function completions.
 	 */
 	private List<Completion> phpCompletions;
-	
+
 	public PhpCompletionProvider() {
-		
+
 		// NOTE: If multiple instances of this provider are created, this
 		// rather hefty XML file will be loaded each time. Better to share
 		// this CompletionProvider amongst all PHP editors (which is what
@@ -69,20 +71,20 @@ public class PhpCompletionProvider extends HtmlCompletionProvider {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
-		
+
 	}
-	
+
 	/**
-	 * Loads completions from an XML input stream. The XML should validate against the completion
-	 * DTD found in the AutoComplete library.
+	 * Loads completions from an XML input stream. The XML should validate against
+	 * the completion DTD found in the AutoComplete library.
 	 *
 	 * @param in The input stream to read from.
 	 * @throws IOException If an IO error occurs.
 	 */
 	public void loadPhpCompletionsFromXML(InputStream in) throws IOException {
-		
+
 		long start = System.currentTimeMillis();
-		
+
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		CompletionXMLParser handler = new CompletionXMLParser(this);
 		BufferedInputStream bin = new BufferedInputStream(in);
@@ -107,17 +109,17 @@ public class PhpCompletionProvider extends HtmlCompletionProvider {
 			System.out.println("XML loaded in: " + time + "ms");
 			bin.close();
 		}
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String getAlreadyEnteredText(JTextComponent comp) {
-		
+
 		phpCompletion = false;
-		
+
 		String text = super.getAlreadyEnteredText(comp);
 		if (text == null) {
 			if (inPhpBlock(comp)) {
@@ -125,36 +127,36 @@ public class PhpCompletionProvider extends HtmlCompletionProvider {
 				phpCompletion = true;
 			}
 		}
-		
+
 		return text;
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected List<Completion> getCompletionsImpl(JTextComponent comp) {
-		
+
 		List<Completion> list = null;
 		String text = getAlreadyEnteredText(comp); // Sets phpCompletion
-		
+
 		if (phpCompletion) {
-			
+
 			if (text == null) {
 				list = new ArrayList<Completion>(0);
 			}
-			
+
 			else {
-				
+
 				list = new ArrayList<Completion>();
-				
+
 				@SuppressWarnings("unchecked")
 				int index = Collections.binarySearch(phpCompletions, text, comparator);
 				if (index < 0) {
 					index = -index - 1;
 				}
-				
+
 				while (index < phpCompletions.size()) {
 					Completion c = phpCompletions.get(index);
 					if (Util.startsWithIgnoreCase(c.getInputText(), text)) {
@@ -164,17 +166,17 @@ public class PhpCompletionProvider extends HtmlCompletionProvider {
 						break;
 					}
 				}
-				
+
 			}
-			
+
 		} else {
 			list = super.getCompletionsImpl(comp);
 		}
-		
+
 		return list;
-		
+
 	}
-	
+
 	/**
 	 * Returns whether the caret is inside of a PHP block in this text component.
 	 *
@@ -182,7 +184,7 @@ public class PhpCompletionProvider extends HtmlCompletionProvider {
 	 * @return Whether the caret is inside a PHP block.
 	 */
 	private boolean inPhpBlock(JTextComponent comp) {
-		
+
 		RSyntaxTextArea textArea = (RSyntaxTextArea) comp;
 		int dot = comp.getCaretPosition();
 		RSyntaxDocument doc = (RSyntaxDocument) comp.getDocument();
@@ -194,9 +196,9 @@ public class PhpCompletionProvider extends HtmlCompletionProvider {
 			return false;
 		}
 		Token token = doc.getTokenListForLine(line);
-		
+
 		boolean inPhp = false;
-		
+
 		// Check previous tokens on this line. We're looking to see if either
 		// "<?php" or "<?" comes after any "?>" (before our caret position).
 		while (token != null && token.isPaintable() && token.getOffset() <= dot) {
@@ -211,7 +213,7 @@ public class PhpCompletionProvider extends HtmlCompletionProvider {
 			}
 			token = token.getNextToken();
 		}
-		
+
 		// Check if previous line ended in a PHP block.
 		// HACK: This relies on insider knowledge of PhpTokenmaker! All
 		// PHP-related states have the "lowest" token types.
@@ -221,11 +223,11 @@ public class PhpCompletionProvider extends HtmlCompletionProvider {
 				inPhp = true;
 			}
 		}
-		
+
 		return inPhp;
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -233,5 +235,5 @@ public class PhpCompletionProvider extends HtmlCompletionProvider {
 	public boolean isAutoActivateOkay(JTextComponent tc) {
 		return inPhpBlock(tc) ? false : super.isAutoActivateOkay(tc);
 	}
-	
+
 }

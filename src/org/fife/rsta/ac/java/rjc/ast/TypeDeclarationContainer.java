@@ -6,14 +6,14 @@
 package org.fife.rsta.ac.java.rjc.ast;
 
 /**
- * Interface for tree nodes that can hold type declarations (e.g. {@link CompilationUnit}s and
- * {@link TypeDeclaration}s.
+ * Interface for tree nodes that can hold type declarations (e.g.
+ * {@link CompilationUnit}s and {@link TypeDeclaration}s.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public interface TypeDeclarationContainer {
-	
+
 	public void addTypeDeclaration(TypeDeclaration typeDec);
-	
+
 }

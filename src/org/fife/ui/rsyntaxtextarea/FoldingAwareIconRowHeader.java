@@ -19,13 +19,14 @@ import org.fife.ui.rtextarea.GutterIconInfo;
 import org.fife.ui.rtextarea.IconRowHeader;
 
 /**
- * A row header component that takes code folding into account when painting itself.
+ * A row header component that takes code folding into account when painting
+ * itself.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class FoldingAwareIconRowHeader extends IconRowHeader {
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -34,13 +35,13 @@ public class FoldingAwareIconRowHeader extends IconRowHeader {
 	public FoldingAwareIconRowHeader(RSyntaxTextArea textArea) {
 		super(textArea);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void paintComponent(Graphics g) {
-		
+
 		// When line wrap is not enabled, take the faster code path.
 		if (textArea == null) {
 			return;
@@ -51,7 +52,7 @@ public class FoldingAwareIconRowHeader extends IconRowHeader {
 			super.paintComponent(g);
 			return;
 		}
-		
+
 		visibleRect = g.getClipBounds(visibleRect);
 		if (visibleRect == null) { // ???
 			visibleRect = getVisibleRect();
@@ -61,12 +62,12 @@ public class FoldingAwareIconRowHeader extends IconRowHeader {
 			return;
 		}
 		paintBackgroundImpl(g, visibleRect);
-		
+
 		if (textArea.getLineWrap()) {
 			paintComponentWrapped(g);
 			return;
 		}
-		
+
 		Document doc = textArea.getDocument();
 		Element root = doc.getDefaultRootElement();
 		textAreaInsets = textArea.getInsets(textAreaInsets);
@@ -74,36 +75,36 @@ public class FoldingAwareIconRowHeader extends IconRowHeader {
 			visibleRect.height -= (textAreaInsets.top - visibleRect.y);
 			visibleRect.y = textAreaInsets.top;
 		}
-		
+
 		// Get the first line to paint.
 		int cellHeight = textArea.getLineHeight();
 		int topLine = (visibleRect.y - textAreaInsets.top) / cellHeight;
-		
+
 		// Get where to start painting (top of the row).
 		// We need to be "scrolled up" up just enough for the missing part of
 		// the first line.
 		int y = topLine * cellHeight + textAreaInsets.top;
-		
+
 		// AFTER calculating visual offset to paint at, account for folding.
 		topLine += fm.getHiddenLineCountAbove(topLine, true);
-		
+
 		// Paint the active line range.
 		if (activeLineRangeStart > -1 && activeLineRangeEnd > -1) {
 			Color activeLineRangeColor = getActiveLineRangeColor();
 			g.setColor(activeLineRangeColor);
 			try {
-				
+
 				int realY1 = rsta.yForLine(activeLineRangeStart);
 				if (realY1 > -1) { // Not in a collapsed fold...
-				
+
 					int y1 = realY1;// Math.max(y, realY1);
-					
+
 					int y2 = rsta.yForLine(activeLineRangeEnd);
 					if (y2 == -1) { // In a collapsed fold
 						y2 = y1;
 					}
 					y2 += cellHeight - 1;
-					
+
 					if (y2 < visibleRect.y || y1 > visibleRect.y + visibleRect.height) {
 						// System.out.println("... nothing to paint, bailing...");
 						return;
@@ -111,7 +112,7 @@ public class FoldingAwareIconRowHeader extends IconRowHeader {
 					y1 = Math.max(y, realY1);
 					y2 = Math.min(y2, visibleRect.y + visibleRect.height);
 					// System.out.println(y1 + "... " + y2 + "; " + realY1 + ", " + visibleRect);
-					
+
 					int j = y1;
 					while (j <= y2) {
 						int yEnd = Math.min(y2, j + getWidth());
@@ -119,28 +120,28 @@ public class FoldingAwareIconRowHeader extends IconRowHeader {
 						g.drawLine(0, j, xEnd, yEnd);
 						j += 2;
 					}
-					
+
 					int i = 2;
 					while (i < getWidth()) {
 						int yEnd = y1 + getWidth() - i;
 						g.drawLine(i, y1, getWidth(), yEnd);
 						i += 2;
 					}
-					
+
 					if (realY1 >= y && realY1 < visibleRect.y + visibleRect.height) {
 						g.drawLine(0, realY1, getWidth(), realY1);
 					}
 					if (y2 >= y && y2 < visibleRect.y + visibleRect.height) {
 						g.drawLine(0, y2, getWidth(), y2);
 					}
-					
+
 				}
-				
+
 			} catch (BadLocationException ble) {
 				ble.printStackTrace(); // Never happens
 			}
 		}
-		
+
 		// Paint icons
 		if (trackingIcons != null) {
 			int lastLine = textArea.getLineCount() - 1;
@@ -169,15 +170,16 @@ public class FoldingAwareIconRowHeader extends IconRowHeader {
 				}
 			}
 		}
-		
+
 	}
-	
+
 	/**
-	 * Paints icons when line wrapping is enabled. Note that this does not override the parent
-	 * class's implementation to avoid this version being called when line wrapping is disabled.
+	 * Paints icons when line wrapping is enabled. Note that this does not override
+	 * the parent class's implementation to avoid this version being called when
+	 * line wrapping is disabled.
 	 */
 	private void paintComponentWrapped(Graphics g) {
-		
+
 		// The variables we use are as follows:
 		// - visibleRect is the "visible" area of the text area; e.g.
 		// [0,100, 300,100+(lineCount*cellHeight)-1].
@@ -187,22 +189,22 @@ public class FoldingAwareIconRowHeader extends IconRowHeader {
 		// few physical lines scrolled past. Note also that this is NOT the
 		// visible rect of this line number list; this line number list has
 		// visible rect == [0,0, insets.left-1,visibleRect.height-1].
-		
+
 		// We avoid using modelToView/viewToModel where possible, as these
 		// methods trigger a parsing of the line into syntax tokens, which is
 		// costly. It's cheaper to just grab the child views' bounds.
-		
+
 		RSyntaxTextArea rsta = (RSyntaxTextArea) textArea;
 		// boolean currentLineHighlighted = textArea.getHighlightCurrentLine();
 		Document doc = textArea.getDocument();
 		Element root = doc.getDefaultRootElement();
 		int topPosition = textArea.viewToModel(new Point(visibleRect.x, visibleRect.y));
 		int topLine = root.getElementIndex(topPosition);
-		
+
 		int topY = visibleRect.y;
 		int bottomY = visibleRect.y + visibleRect.height;
 		int cellHeight = textArea.getLineHeight();
-		
+
 		// Paint icons
 		if (trackingIcons != null) {
 			int lastLine = textArea.getLineCount() - 1;
@@ -232,7 +234,7 @@ public class FoldingAwareIconRowHeader extends IconRowHeader {
 				}
 			}
 		}
-		
+
 	}
-	
+
 }

@@ -14,26 +14,27 @@ import java.util.List;
 import javax.swing.text.JTextComponent;
 
 /**
- * A base class for completion providers. {@link Completion}s are kept in a sorted list. To get the
- * list of completions that match a given input, a binary search is done to find the first matching
- * completion, then all succeeding completions that also match are also returned.
+ * A base class for completion providers. {@link Completion}s are kept in a
+ * sorted list. To get the list of completions that match a given input, a
+ * binary search is done to find the first matching completion, then all
+ * succeeding completions that also match are also returned.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public abstract class AbstractCompletionProvider extends CompletionProviderBase {
-	
+
 	/**
-	 * The completions this provider is aware of. Subclasses should ensure that this list is sorted
-	 * alphabetically (case-insensitively).
+	 * The completions this provider is aware of. Subclasses should ensure that this
+	 * list is sorted alphabetically (case-insensitively).
 	 */
 	protected List<Completion> completions;
-	
+
 	/**
 	 * Compares a {@link Completion} against a String.
 	 */
 	protected CaseInsensitiveComparator comparator;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -42,14 +43,15 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 		clearParameterizedCompletionParams();
 		completions = new ArrayList<Completion>();
 	}
-	
+
 	/**
-	 * Adds a single completion to this provider. If you are adding multiple completions to this
-	 * provider, for efficiency reasons please consider using {@link #addCompletions(List)} instead.
+	 * Adds a single completion to this provider. If you are adding multiple
+	 * completions to this provider, for efficiency reasons please consider using
+	 * {@link #addCompletions(List)} instead.
 	 *
 	 * @param c The completion to add.
 	 * @throws IllegalArgumentException If the completion's provider isn't this
-	 *             <tt>CompletionProvider</tt>.
+	 *                                  <tt>CompletionProvider</tt>.
 	 * @see #addCompletions(List)
 	 * @see #removeCompletion(Completion)
 	 * @see #clear()
@@ -58,13 +60,13 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 		checkProviderAndAdd(c);
 		Collections.sort(completions);
 	}
-	
+
 	/**
 	 * Adds {@link Completion}s to this provider.
 	 *
 	 * @param completions The completions to add. This cannot be <code>null</code> .
 	 * @throws IllegalArgumentException If a completion's provider isn't this
-	 *             <tt>CompletionProvider</tt>.
+	 *                                  <tt>CompletionProvider</tt>.
 	 * @see #addCompletion(Completion)
 	 * @see #removeCompletion(Completion)
 	 * @see #clear()
@@ -76,7 +78,7 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 		}
 		Collections.sort(this.completions);
 	}
-	
+
 	/**
 	 * Adds simple completions for a list of words.
 	 *
@@ -90,14 +92,14 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 		}
 		Collections.sort(completions);
 	}
-	
+
 	protected void checkProviderAndAdd(Completion c) {
 		if (c.getProvider() != this) {
 			throw new IllegalArgumentException("Invalid CompletionProvider");
 		}
 		completions.add(c);
 	}
-	
+
 	/**
 	 * Removes all completions from this provider. This does not affect the parent
 	 * <tt>CompletionProvider</tt>, if there is one.
@@ -109,23 +111,24 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 	public void clear() {
 		completions.clear();
 	}
-	
+
 	/**
-	 * Returns a list of <tt>Completion</tt>s in this provider with the specified input text.
+	 * Returns a list of <tt>Completion</tt>s in this provider with the specified
+	 * input text.
 	 *
 	 * @param inputText The input text to search for.
-	 * @return A list of {@link Completion}s, or <code>null</code> if there are no matching
-	 *         <tt>Completion</tt>s.
+	 * @return A list of {@link Completion}s, or <code>null</code> if there are no
+	 *         matching <tt>Completion</tt>s.
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Completion> getCompletionByInputText(String inputText) {
-		
+
 		// Find any entry that matches this input text (there may be > 1).
 		int end = Collections.binarySearch(completions, inputText, comparator);
 		if (end < 0) {
 			return null;
 		}
-		
+
 		// There might be multiple entries with the same input text.
 		int start = end;
 		while (start > 0 && comparator.compare(completions.get(start - 1), inputText) == 0) {
@@ -135,23 +138,23 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 		while (++end < count && comparator.compare(completions.get(end), inputText) == 0) {
 			;
 		}
-		
+
 		return completions.subList(start, end); // (inclusive, exclusive)
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	protected List<Completion> getCompletionsImpl(JTextComponent comp) {
-		
+
 		List<Completion> retVal = new ArrayList<Completion>();
 		String text = getAlreadyEnteredText(comp);
-		
+
 		if (text != null) {
-			
+
 			int index = Collections.binarySearch(completions, text, comparator);
 			if (index < 0) { // No exact match
 				index = -index - 1;
@@ -166,7 +169,7 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 					pos--;
 				}
 			}
-			
+
 			while (index < completions.size()) {
 				Completion c = completions.get(index);
 				if (Util.startsWithIgnoreCase(c.getInputText(), text)) {
@@ -176,19 +179,20 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 					break;
 				}
 			}
-			
+
 		}
-		
+
 		return retVal;
-		
+
 	}
-	
+
 	/**
-	 * Removes the specified completion from this provider. This method will not remove completions
-	 * from the parent provider, if there is one.
+	 * Removes the specified completion from this provider. This method will not
+	 * remove completions from the parent provider, if there is one.
 	 *
 	 * @param c The completion to remove.
-	 * @return <code>true</code> if this provider contained the specified completion.
+	 * @return <code>true</code> if this provider contained the specified
+	 *         completion.
 	 * @see #clear()
 	 * @see #addCompletion(Completion)
 	 * @see #addCompletions(List)
@@ -202,21 +206,21 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 		completions.remove(index);
 		return true;
 	}
-	
+
 	/**
-	 * A comparator that compares the input text of a {@link Completion} against a String
-	 * lexicographically, ignoring case.
+	 * A comparator that compares the input text of a {@link Completion} against a
+	 * String lexicographically, ignoring case.
 	 */
 	@SuppressWarnings("rawtypes")
 	public static class CaseInsensitiveComparator implements Comparator, Serializable {
-		
+
 		@Override
 		public int compare(Object o1, Object o2) {
 			String s1 = o1 instanceof String ? (String) o1 : ((Completion) o1).getInputText();
 			String s2 = o2 instanceof String ? (String) o2 : ((Completion) o2).getInputText();
 			return String.CASE_INSENSITIVE_ORDER.compare(s1, s2);
 		}
-		
+
 	}
-	
+
 }

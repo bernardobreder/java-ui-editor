@@ -13,41 +13,41 @@ import org.fife.rsta.ac.java.rjc.lang.Modifiers;
 import org.fife.rsta.ac.java.rjc.lexer.Offset;
 
 public abstract class AbstractTypeDeclarationNode extends AbstractASTNode implements TypeDeclaration {
-	
+
 	private Package pkg;
-	
+
 	private Modifiers modifiers;
-	
+
 	private TypeDeclaration parentType;
-	
+
 	private List<TypeDeclaration> childTypes;
-	
+
 	private Offset bodyStartOffs;
-	
+
 	private Offset bodyEndOffs;
-	
+
 	private boolean deprecated;
-	
+
 	private String docComment;
-	
+
 	// --- "ClassBody"/"InterfaceBody"/EnumConstant fields ---
 	private List<Member> memberList;
-	
+
 	public AbstractTypeDeclarationNode(String name, Offset start) {
 		super(name, start);
 		init();
 	}
-	
+
 	public AbstractTypeDeclarationNode(String name, Offset start, Offset end) {
 		super(name, start, end);
 		init();
 	}
-	
+
 	public void addMember(Member member) {
 		member.setParentTypeDeclaration(this);
 		memberList.add(member);
 	}
-	
+
 	@Override
 	public void addTypeDeclaration(TypeDeclaration type) {
 		if (childTypes == null) {
@@ -56,35 +56,35 @@ public abstract class AbstractTypeDeclarationNode extends AbstractASTNode implem
 		type.setParentType(this);
 		childTypes.add(type);
 	}
-	
+
 	@Override
 	public boolean getBodyContainsOffset(int offs) {
 		return offs >= getBodyStartOffset() && offs < getBodyEndOffset();
 	}
-	
+
 	@Override
 	public int getBodyEndOffset() {
 		return bodyEndOffs != null ? bodyEndOffs.getOffset() : Integer.MAX_VALUE;
 	}
-	
+
 	@Override
 	public int getBodyStartOffset() {
 		return bodyStartOffs == null ? 0 : bodyStartOffs.getOffset();
 	}
-	
+
 	@Override
 	public TypeDeclaration getChildType(int index) {
 		return childTypes.get(index);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public TypeDeclaration getChildTypeAtOffset(int offs) {
-		
+
 		TypeDeclaration typeDec = null;
-		
+
 		for (int i = 0; i < getChildTypeCount(); i++) {
 			TypeDeclaration td = getChildType(i);
 			if (td.getBodyContainsOffset(offs)) {
@@ -92,21 +92,21 @@ public abstract class AbstractTypeDeclarationNode extends AbstractASTNode implem
 				break;
 			}
 		}
-		
+
 		return typeDec;
-		
+
 	}
-	
+
 	@Override
 	public int getChildTypeCount() {
 		return childTypes == null ? 0 : childTypes.size();
 	}
-	
+
 	@Override
 	public String getDocComment() {
 		return docComment;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -121,17 +121,17 @@ public abstract class AbstractTypeDeclarationNode extends AbstractASTNode implem
 		}
 		return fields.iterator();
 	}
-	
+
 	@Override
 	public Member getMember(int index) {
 		return memberList.get(index);
 	}
-	
+
 	@Override
 	public int getMemberCount() {
 		return memberList.size();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -139,7 +139,7 @@ public abstract class AbstractTypeDeclarationNode extends AbstractASTNode implem
 	public Iterator<Member> getMemberIterator() {
 		return memberList.iterator();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -154,7 +154,7 @@ public abstract class AbstractTypeDeclarationNode extends AbstractASTNode implem
 		}
 		return methods.iterator();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -169,12 +169,12 @@ public abstract class AbstractTypeDeclarationNode extends AbstractASTNode implem
 		}
 		return methods;
 	}
-	
+
 	@Override
 	public Modifiers getModifiers() {
 		return modifiers;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -189,7 +189,7 @@ public abstract class AbstractTypeDeclarationNode extends AbstractASTNode implem
 		}
 		return name;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -197,7 +197,7 @@ public abstract class AbstractTypeDeclarationNode extends AbstractASTNode implem
 	public Package getPackage() {
 		return pkg;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -205,16 +205,16 @@ public abstract class AbstractTypeDeclarationNode extends AbstractASTNode implem
 	public TypeDeclaration getParentType() {
 		return parentType;
 	}
-	
+
 	private void init() {
 		memberList = new ArrayList<Member>();
 	}
-	
+
 	@Override
 	public boolean isDeprecated() {
 		return deprecated;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -222,38 +222,39 @@ public abstract class AbstractTypeDeclarationNode extends AbstractASTNode implem
 	public boolean isStatic() {
 		return modifiers == null ? false : modifiers.isStatic();
 	}
-	
+
 	public void setBodyEndOffset(Offset end) {
 		bodyEndOffs = end;
 	}
-	
+
 	public void setBodyStartOffset(Offset start) {
 		bodyStartOffs = start;
 	}
-	
+
 	public void setDeprecated(boolean deprecated) {
 		this.deprecated = deprecated;
 	}
-	
+
 	@Override
 	public void setDocComment(String comment) {
 		docComment = comment;
 	}
-	
+
 	public void setModifiers(Modifiers modifiers) {
 		this.modifiers = modifiers;
 	}
-	
+
 	/**
 	 * Sets the package this type is in.
 	 *
-	 * @param pkg The package, or <code>null</code> if this is in the default package.
+	 * @param pkg The package, or <code>null</code> if this is in the default
+	 *            package.
 	 * @see #getPackage()
 	 */
 	public void setPackage(Package pkg) {
 		this.pkg = pkg;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -261,7 +262,7 @@ public abstract class AbstractTypeDeclarationNode extends AbstractASTNode implem
 	public void setParentType(TypeDeclaration parentType) {
 		this.parentType = parentType;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -272,5 +273,5 @@ public abstract class AbstractTypeDeclarationNode extends AbstractASTNode implem
 		sb.append(getName());
 		return sb.toString();
 	}
-	
+
 }

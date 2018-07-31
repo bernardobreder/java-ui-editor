@@ -16,72 +16,80 @@ import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 
 /**
- * An extension of <code>JScrollPane</code> that will only take <code>RTextArea</code>s (or
- * <code>javax.swing.JLayer</code>s decorating <code>RTextArea</code>s) for its view. This class has
- * the ability to show:
+ * An extension of <code>JScrollPane</code> that will only take
+ * <code>RTextArea</code>s (or <code>javax.swing.JLayer</code>s decorating
+ * <code>RTextArea</code>s) for its view. This class has the ability to show:
  * <ul>
  * <li>Line numbers
- * <li>Per-line icons (for bookmarks, debugging breakpoints, error markers, etc.)
+ * <li>Per-line icons (for bookmarks, debugging breakpoints, error markers,
+ * etc.)
  * <li>+/- icons to denote code folding regions.
  * </ul>
- * The actual "meat" of these extras is contained in the {@link Gutter} class. Each
- * <code>RTextScrollPane</code> has a <code>Gutter</code> instance that it uses as its row header.
- * The gutter is only made visible when one of its features is being used (line numbering, folding,
- * and/or icons).
+ * The actual "meat" of these extras is contained in the {@link Gutter} class.
+ * Each <code>RTextScrollPane</code> has a <code>Gutter</code> instance that it
+ * uses as its row header. The gutter is only made visible when one of its
+ * features is being used (line numbering, folding, and/or icons).
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class RTextScrollPane extends JScrollPane {
-	
+
 	private Gutter gutter;
-	
+
 	/**
-	 * Constructor. If you use this constructor, you must call {@link #setViewportView(Component)}
-	 * and pass in an {@link RTextArea} for this scroll pane to render line numbers properly.
+	 * Constructor. If you use this constructor, you must call
+	 * {@link #setViewportView(Component)} and pass in an {@link RTextArea} for this
+	 * scroll pane to render line numbers properly.
 	 */
 	public RTextScrollPane() {
 		this(null, true);
 	}
-	
+
 	/**
-	 * Creates a scroll pane. A default value will be used for line number color (gray), and the
-	 * current line's line number will be highlighted.
+	 * Creates a scroll pane. A default value will be used for line number color
+	 * (gray), and the current line's line number will be highlighted.
 	 *
-	 * @param comp The component this scroll pane should display. This should be an instance of
-	 *            {@link RTextArea}, <code>javax.swing.JLayer</code> (or the older
-	 *            <code>org.jdesktop.jxlayer.JXLayer</code>), or <code>null</code>. If this argument
-	 *            is <code>null</code>, you must call {@link #setViewportView(Component)}, passing
-	 *            in an instance of one of the types above.
+	 * @param comp The component this scroll pane should display. This should be an
+	 *             instance of {@link RTextArea}, <code>javax.swing.JLayer</code>
+	 *             (or the older <code>org.jdesktop.jxlayer.JXLayer</code>), or
+	 *             <code>null</code>. If this argument is <code>null</code>, you
+	 *             must call {@link #setViewportView(Component)}, passing in an
+	 *             instance of one of the types above.
 	 */
 	public RTextScrollPane(Component comp) {
 		this(comp, true);
 	}
-	
+
 	/**
-	 * Creates a scroll pane. A default value will be used for line number color (gray), and the
-	 * current line's line number will be highlighted.
+	 * Creates a scroll pane. A default value will be used for line number color
+	 * (gray), and the current line's line number will be highlighted.
 	 *
-	 * @param comp The component this scroll pane should display. This should be an instance of
-	 *            {@link RTextArea}, <code>javax.swing.JLayer</code> (or the older
-	 *            <code>org.jdesktop.jxlayer.JXLayer</code>), or <code>null</code>. If this argument
-	 *            is <code>null</code>, you must call {@link #setViewportView(Component)}, passing
-	 *            in an instance of one of the types above.
+	 * @param comp        The component this scroll pane should display. This should
+	 *                    be an instance of {@link RTextArea},
+	 *                    <code>javax.swing.JLayer</code> (or the older
+	 *                    <code>org.jdesktop.jxlayer.JXLayer</code>), or
+	 *                    <code>null</code>. If this argument is <code>null</code>,
+	 *                    you must call {@link #setViewportView(Component)}, passing
+	 *                    in an instance of one of the types above.
 	 * @param lineNumbers Whether line numbers should be enabled.
 	 */
 	public RTextScrollPane(Component comp, boolean lineNumbers) {
 		this(comp, lineNumbers, Color.GRAY);
 	}
-	
+
 	/**
 	 * Creates a scroll pane.
 	 *
-	 * @param comp The component this scroll pane should display. This should be an instance of
-	 *            {@link RTextArea}, <code>javax.swing.JLayer</code> (or the older
-	 *            <code>org.jdesktop.jxlayer.JXLayer</code>), or <code>null</code>. If this argument
-	 *            is <code>null</code>, you must call {@link #setViewportView(Component)}, passing
-	 *            in an instance of one of the types above.
-	 * @param lineNumbers Whether line numbers are initially enabled.
+	 * @param comp            The component this scroll pane should display. This
+	 *                        should be an instance of {@link RTextArea},
+	 *                        <code>javax.swing.JLayer</code> (or the older
+	 *                        <code>org.jdesktop.jxlayer.JXLayer</code>), or
+	 *                        <code>null</code>. If this argument is
+	 *                        <code>null</code>, you must call
+	 *                        {@link #setViewportView(Component)}, passing in an
+	 *                        instance of one of the types above.
+	 * @param lineNumbers     Whether line numbers are initially enabled.
 	 * @param lineNumberColor The color to use for line numbers.
 	 */
 	public RTextScrollPane(Component comp, boolean lineNumbers, Color lineNumberColor) {
@@ -98,7 +106,7 @@ public class RTextScrollPane extends JScrollPane {
 		setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		setBorder(BorderFactory.createEmptyBorder());
 	}
-	
+
 	/**
 	 * Ensures the gutter is visible if it's showing anything.
 	 */
@@ -114,7 +122,7 @@ public class RTextScrollPane extends JScrollPane {
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns the gutter.
 	 *
@@ -123,7 +131,7 @@ public class RTextScrollPane extends JScrollPane {
 	public Gutter getGutter() {
 		return gutter;
 	}
-	
+
 	/**
 	 * Returns <code>true</code> if the line numbers are enabled and visible.
 	 *
@@ -133,7 +141,7 @@ public class RTextScrollPane extends JScrollPane {
 	public boolean getLineNumbersEnabled() {
 		return gutter.getLineNumbersEnabled();
 	}
-	
+
 	/**
 	 * Returns the text area being displayed.
 	 *
@@ -143,7 +151,7 @@ public class RTextScrollPane extends JScrollPane {
 	public RTextArea getTextArea() {
 		return (RTextArea) getViewport().getView();
 	}
-	
+
 	/**
 	 * Returns whether the fold indicator is enabled.
 	 *
@@ -153,7 +161,7 @@ public class RTextScrollPane extends JScrollPane {
 	public boolean isFoldIndicatorEnabled() {
 		return gutter.isFoldIndicatorEnabled();
 	}
-	
+
 	/**
 	 * Returns whether the icon row header is enabled.
 	 *
@@ -163,7 +171,7 @@ public class RTextScrollPane extends JScrollPane {
 	public boolean isIconRowHeaderEnabled() {
 		return gutter.isIconRowHeaderEnabled();
 	}
-	
+
 	/**
 	 * Toggles whether the fold indicator is enabled.
 	 *
@@ -174,9 +182,10 @@ public class RTextScrollPane extends JScrollPane {
 		gutter.setFoldIndicatorEnabled(enabled);
 		checkGutterVisibility();
 	}
-	
+
 	/**
-	 * Toggles whether the icon row header (used for breakpoints, bookmarks, etc.) is enabled.
+	 * Toggles whether the icon row header (used for breakpoints, bookmarks, etc.)
+	 * is enabled.
 	 *
 	 * @param enabled Whether the icon row header is enabled.
 	 * @see #isIconRowHeaderEnabled()
@@ -185,7 +194,7 @@ public class RTextScrollPane extends JScrollPane {
 		gutter.setIconRowHeaderEnabled(enabled);
 		checkGutterVisibility();
 	}
-	
+
 	/**
 	 * Toggles whether or not line numbers are visible.
 	 *
@@ -196,7 +205,7 @@ public class RTextScrollPane extends JScrollPane {
 		gutter.setLineNumbersEnabled(enabled);
 		checkGutterVisibility();
 	}
-	
+
 	/**
 	 * Sets the view for this scroll pane. This must be an {@link RTextArea}.
 	 *
@@ -205,9 +214,9 @@ public class RTextScrollPane extends JScrollPane {
 	 */
 	@Override
 	public void setViewportView(Component view) {
-		
+
 		RTextArea rtaCandidate = null;
-		
+
 		if (!(view instanceof RTextArea)) {
 			rtaCandidate = getFirstRTextAreaDescendant(view);
 			if (rtaCandidate == null) {
@@ -221,13 +230,15 @@ public class RTextScrollPane extends JScrollPane {
 			gutter.setTextArea(rtaCandidate);
 		}
 	}
-	
+
 	/**
-	 * Returns the first descendant of a component that is an <code>RTextArea</code>. This is
-	 * primarily here to support <code>javax.swing.JLayer</code>s that wrap <code>RTextArea</code>s.
+	 * Returns the first descendant of a component that is an
+	 * <code>RTextArea</code>. This is primarily here to support
+	 * <code>javax.swing.JLayer</code>s that wrap <code>RTextArea</code>s.
 	 *
 	 * @param comp The component to recursively look through.
-	 * @return The first descendant text area, or <code>null</code> if none is found.
+	 * @return The first descendant text area, or <code>null</code> if none is
+	 *         found.
 	 */
 	private static final RTextArea getFirstRTextAreaDescendant(Component comp) {
 		Stack<Component> stack = new Stack<Component>();
@@ -244,5 +255,5 @@ public class RTextScrollPane extends JScrollPane {
 		}
 		return null;
 	}
-	
+
 }

@@ -19,36 +19,38 @@ import javax.swing.text.TextAction;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 /**
- * Displays a popup dialog with the "Go to member" tree. Language support implementations that can
- * do in-depth parsing of the source code in an editor can create an {@link AbstractSourceTree}
- * representing that source, and add this action to <code>RSyntaxTextArea</code>'s input/action
- * maps, so users can easily navigate to functions, methods, etc.
+ * Displays a popup dialog with the "Go to member" tree. Language support
+ * implementations that can do in-depth parsing of the source code in an editor
+ * can create an {@link AbstractSourceTree} representing that source, and add
+ * this action to <code>RSyntaxTextArea</code>'s input/action maps, so users can
+ * easily navigate to functions, methods, etc.
  * <p>
- * The preferred keystroke to bind this action to is Ctrl+Shift+O (Cmd+Shift+O on Mac). Language
- * supports should also be sure to uninstall this shortcut when they are uninstalled themselves.
+ * The preferred keystroke to bind this action to is Ctrl+Shift+O (Cmd+Shift+O
+ * on Mac). Language supports should also be sure to uninstall this shortcut
+ * when they are uninstalled themselves.
  *
  * @author Robert Futrell
  * @version 1.0
  * @see GoToMemberWindow
  */
 public class GoToMemberAction extends TextAction {
-	
+
 	/**
 	 * The outline tree class appropriate for the current language.
 	 */
 	private Class<?> outlineTreeClass;
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param outlineTreeClass A class extending {@link AbstractSourceTree}. This class must have a
-	 *            no-argument constructor.
+	 * @param outlineTreeClass A class extending {@link AbstractSourceTree}. This
+	 *                         class must have a no-argument constructor.
 	 */
 	public GoToMemberAction(Class<?> outlineTreeClass) {
 		super("GoToType");
 		this.outlineTreeClass = outlineTreeClass;
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		AbstractSourceTree tree = createTree();
@@ -67,7 +69,7 @@ public class GoToMemberAction extends TextAction {
 			UIManager.getLookAndFeel().provideErrorFeedback(null);
 		}
 	}
-	
+
 	/**
 	 * Creates the outline tree.
 	 *
@@ -85,11 +87,11 @@ public class GoToMemberAction extends TextAction {
 		}
 		return tree;
 	}
-	
+
 	/**
 	 * Centers the window in the text area.
 	 *
-	 * @param gtmw The window to center.
+	 * @param gtmw     The window to center.
 	 * @param textArea The parent text area to center it in.
 	 */
 	private void setLocationBasedOn(GoToMemberWindow gtmw, RSyntaxTextArea textArea) {
@@ -101,5 +103,5 @@ public class GoToMemberAction extends TextAction {
 		SwingUtilities.convertPointToScreen(p, textArea);
 		gtmw.setLocation(p);
 	}
-	
+
 }

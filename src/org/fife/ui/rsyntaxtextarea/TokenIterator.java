@@ -8,19 +8,20 @@ package org.fife.ui.rsyntaxtextarea;
 import java.util.Iterator;
 
 /**
- * Allows you to iterate through all paintable tokens in an <code>RSyntaxDocument</code>.
+ * Allows you to iterate through all paintable tokens in an
+ * <code>RSyntaxDocument</code>.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 class TokenIterator implements Iterator<Token> {
-	
+
 	private RSyntaxDocument doc;
-	
+
 	private int curLine;
-	
+
 	private Token token;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -35,11 +36,11 @@ class TokenIterator implements Iterator<Token> {
 			loadTokenListForCurLine();
 		}
 	}
-	
+
 	private int getLineCount() {
 		return doc.getDefaultRootElement().getElementCount();
 	}
-	
+
 	/**
 	 * Returns whether any more paintable tokens are in the document.
 	 *
@@ -50,7 +51,7 @@ class TokenIterator implements Iterator<Token> {
 	public boolean hasNext() {
 		return token != null;
 	}
-	
+
 	private void loadTokenListForCurLine() {
 		token = doc.getTokenListForLine(curLine);
 		if (token != null && !token.isPaintable()) {
@@ -58,7 +59,7 @@ class TokenIterator implements Iterator<Token> {
 			token = null;
 		}
 	}
-	
+
 	/**
 	 * Returns the next paintable token in the document.
 	 *
@@ -67,11 +68,11 @@ class TokenIterator implements Iterator<Token> {
 	 */
 	@Override
 	public Token next() {
-		
+
 		Token t = token;
 		boolean tIsCloned = false;
 		int lineCount = getLineCount();
-		
+
 		// Get the next token, going to the next line if necessary.
 		if (token != null && token.isPaintable()) {
 			token = token.getNextToken();
@@ -84,7 +85,7 @@ class TokenIterator implements Iterator<Token> {
 			// Ends with a non-paintable token (not sure this ever happens)
 			token = null;
 		}
-		
+
 		while ((token == null || !token.isPaintable()) && curLine < lineCount - 1) {
 			if (!tIsCloned) {
 				t = new TokenImpl(t); // Clone t since tokens are pooled
@@ -96,14 +97,14 @@ class TokenIterator implements Iterator<Token> {
 		if (token != null && !token.isPaintable() && curLine == lineCount - 1) {
 			token = null;
 		}
-		
+
 		return t;
-		
+
 	}
-	
+
 	/**
-	 * Always throws {@link UnsupportedOperationException}, as <code>Token</code> removal is not
-	 * supported.
+	 * Always throws {@link UnsupportedOperationException}, as <code>Token</code>
+	 * removal is not supported.
 	 *
 	 * @throws UnsupportedOperationException always.
 	 */
@@ -111,5 +112,5 @@ class TokenIterator implements Iterator<Token> {
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 }

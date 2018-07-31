@@ -45,51 +45,53 @@ import org.fife.ui.rtextarea.RTextAreaHighlighter.HighlightInfo;
  * @version 0.9
  */
 class ParserManager implements DocumentListener, ActionListener, HyperlinkListener, PropertyChangeListener {
-	
+
 	private RSyntaxTextArea textArea;
-	
+
 	private List<Parser> parsers;
-	
+
 	private Timer timer;
-	
+
 	private boolean running;
-	
+
 	private Parser parserForTip;
-	
+
 	private Position firstOffsetModded;
-	
+
 	private Position lastOffsetModded;
-	
+
 	/**
-	 * Mapping of notices to their highlights in the editor. Can't use a Map since parsers could
-	 * return two <code>ParserNotice</code>s that compare equally via <code>equals()</code>.
-	 * Real-world example: The Perl compiler will return 2+ identical error messages if the same
-	 * error is committed in a single line more than once.
+	 * Mapping of notices to their highlights in the editor. Can't use a Map since
+	 * parsers could return two <code>ParserNotice</code>s that compare equally via
+	 * <code>equals()</code>. Real-world example: The Perl compiler will return 2+
+	 * identical error messages if the same error is committed in a single line more
+	 * than once.
 	 */
 	private List<NoticeHighlightPair> noticeHighlightPairs;
-	
+
 	/**
 	 * Painter used to underline errors.
 	 */
-	private SquiggleUnderlineHighlightPainter parserErrorHighlightPainter = new SquiggleUnderlineHighlightPainter(Color.RED);
-	
+	private SquiggleUnderlineHighlightPainter parserErrorHighlightPainter = new SquiggleUnderlineHighlightPainter(
+			Color.RED);
+
 	/**
-	 * If this system property is set to <code>true</code>, debug messages will be printed to stdout
-	 * to help diagnose parsing issues.
+	 * If this system property is set to <code>true</code>, debug messages will be
+	 * printed to stdout to help diagnose parsing issues.
 	 */
 	private static final String PROPERTY_DEBUG_PARSING = "rsta.debugParsing";
-	
+
 	/**
 	 * Whether to print debug messages while running parsers.
 	 */
 	private static final boolean DEBUG_PARSING;
-	
+
 	/**
-	 * The default delay between the last key press and when the document is parsed, in
-	 * milliseconds.
+	 * The default delay between the last key press and when the document is parsed,
+	 * in milliseconds.
 	 */
 	private static final int DEFAULT_DELAY_MS = 1250;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -98,11 +100,12 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 	public ParserManager(RSyntaxTextArea textArea) {
 		this(DEFAULT_DELAY_MS, textArea);
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param delay The delay between the last key press and when the document is parsed.
+	 * @param delay    The delay between the last key press and when the document is
+	 *                 parsed.
 	 * @param textArea The text area whose document the parser will be parsing.
 	 */
 	public ParserManager(int delay, RSyntaxTextArea textArea) {
@@ -114,7 +117,7 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 		timer.setRepeats(false);
 		running = true;
 	}
-	
+
 	/**
 	 * Called when the timer fires (e.g. it's time to parse the document).
 	 *
@@ -133,7 +136,8 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 		RSyntaxDocument doc = (RSyntaxDocument) textArea.getDocument();
 		Element root = doc.getDefaultRootElement();
 		int firstLine = firstOffsetModded == null ? 0 : root.getElementIndex(firstOffsetModded.getOffset());
-		int lastLine = lastOffsetModded == null ? root.getElementCount() - 1 : root.getElementIndex(lastOffsetModded.getOffset());
+		int lastLine = lastOffsetModded == null ? root.getElementCount() - 1
+				: root.getElementIndex(lastOffsetModded.getOffset());
 		firstOffsetModded = lastOffsetModded = null;
 		if (DEBUG_PARSING) {
 			System.out.println("[DEBUG]: Minimum lines to parse: " + firstLine + "-" + lastLine);
@@ -158,9 +162,9 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 			float time = (System.currentTimeMillis() - begin) / 1000f;
 			System.out.println("Total parsing time: " + time + " seconds");
 		}
-		
+
 	}
-	
+
 	/**
 	 * Adds a parser for the text area.
 	 *
@@ -183,37 +187,37 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 			}
 		}
 	}
-	
+
 	/**
-	 * Adds highlights for a list of parser notices. Any current notices from the same Parser, in
-	 * the same parsed range, are removed.
+	 * Adds highlights for a list of parser notices. Any current notices from the
+	 * same Parser, in the same parsed range, are removed.
 	 *
 	 * @param res The result of a parsing.
 	 * @see #clearParserNoticeHighlights()
 	 */
 	private void addParserNoticeHighlights(ParseResult res) {
-		
+
 		// Parsers are supposed to return at least empty ParseResults, but
 		// we'll be defensive here.
 		if (res == null) {
 			return;
 		}
-		
+
 		if (DEBUG_PARSING) {
 			System.out.println("[DEBUG]: Adding parser notices from " + res.getParser());
 		}
-		
+
 		if (noticeHighlightPairs == null) {
 			noticeHighlightPairs = new ArrayList<NoticeHighlightPair>();
 		}
-		
+
 		removeParserNotices(res);
-		
+
 		List<ParserNotice> notices = res.getNotices();
 		if (notices.size() > 0) { // Guaranteed non-null
-		
+
 			RSyntaxTextAreaHighlighter h = (RSyntaxTextAreaHighlighter) textArea.getHighlighter();
-			
+
 			for (ParserNotice notice : notices) {
 				if (DEBUG_PARSING) {
 					System.out.println("[DEBUG]: ... adding: " + notice);
@@ -228,15 +232,15 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 					ble.printStackTrace();
 				}
 			}
-			
+
 		}
-		
+
 		if (DEBUG_PARSING) {
 			System.out.println("[DEBUG]: Done adding parser notices from " + res.getParser());
 		}
-		
+
 	}
-	
+
 	/**
 	 * Called when the document is modified.
 	 *
@@ -245,7 +249,7 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 	@Override
 	public void changedUpdate(DocumentEvent e) {
 	}
-	
+
 	private void clearParserNoticeHighlights() {
 		RSyntaxTextAreaHighlighter h = (RSyntaxTextAreaHighlighter) textArea.getHighlighter();
 		if (h != null) {
@@ -255,7 +259,7 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 			noticeHighlightPairs.clear();
 		}
 	}
-	
+
 	/**
 	 * Removes all parser notice highlights for a specific parser.
 	 *
@@ -275,7 +279,7 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 			}
 		}
 	}
-	
+
 	/**
 	 * Removes all parsers and any highlights they have created.
 	 *
@@ -287,14 +291,15 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 		parsers.clear();
 		textArea.fireParserNoticesChange();
 	}
-	
+
 	/**
 	 * Forces the given {@link Parser} to re-parse the content of this text area.
 	 * <p>
-	 * This method can be useful when a <code>Parser</code> can be configured as to what notices it
-	 * returns. For example, if a Java language parser can be configured to set whether no
-	 * serialVersionUID is a warning, error, or ignored, this method can be called after changing
-	 * the expected notice type to have the document re-parsed.
+	 * This method can be useful when a <code>Parser</code> can be configured as to
+	 * what notices it returns. For example, if a Java language parser can be
+	 * configured to set whether no serialVersionUID is a warning, error, or
+	 * ignored, this method can be called after changing the expected notice type to
+	 * have the document re-parsed.
 	 *
 	 * @param parser The index of the <code>Parser</code> to re-run.
 	 * @see #getParser(int)
@@ -316,9 +321,10 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 			doc.readUnlock();
 		}
 	}
-	
+
 	/**
-	 * Returns the delay between the last "concurrent" edit and when the document is re-parsed.
+	 * Returns the delay between the last "concurrent" edit and when the document is
+	 * re-parsed.
 	 *
 	 * @return The delay, in milliseconds.
 	 * @see #setDelay(int)
@@ -326,7 +332,7 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 	public int getDelay() {
 		return timer.getDelay();
 	}
-	
+
 	/**
 	 * Returns the specified parser.
 	 *
@@ -339,7 +345,7 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 	public Parser getParser(int index) {
 		return parsers.get(index);
 	}
-	
+
 	/**
 	 * Returns the number of registered parsers.
 	 *
@@ -348,10 +354,10 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 	public int getParserCount() {
 		return parsers.size();
 	}
-	
+
 	/**
-	 * Returns a list of the current parser notices for this text area. This method (like most Swing
-	 * methods) should only be called on the EDT.
+	 * Returns a list of the current parser notices for this text area. This method
+	 * (like most Swing methods) should only be called on the EDT.
 	 *
 	 * @return The list of notices. This will be an empty list if there are none.
 	 */
@@ -364,31 +370,32 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 		}
 		return notices;
 	}
-	
+
 	/**
-	 * Returns the tool tip to display for a mouse event at the given location. This method is
-	 * overridden to give a registered parser a chance to display a tool tip (such as an error
-	 * description when the mouse is over an error highlight).
+	 * Returns the tool tip to display for a mouse event at the given location. This
+	 * method is overridden to give a registered parser a chance to display a tool
+	 * tip (such as an error description when the mouse is over an error highlight).
 	 *
 	 * @param e The mouse event.
 	 * @return The tool tip to display, and possibly a hyperlink event handler.
 	 */
 	public ToolTipInfo getToolTipText(MouseEvent e) {
-		
+
 		String tip = null;
 		HyperlinkListener listener = null;
 		parserForTip = null;
 		Point p = e.getPoint();
-		
+
 		// try {
 		int pos = textArea.viewToModel(p);
 		/*
-		 * Highlighter.Highlight[] highlights = textArea.getHighlighter(). getHighlights(); for (int
-		 * i=0; i<highlights.length; i++) { Highlighter.Highlight h = highlights[i]; //if (h
-		 * instanceof ParserNoticeHighlight) { // ParserNoticeHighlight pnh =
-		 * (ParserNoticeHighlight)h; int start = h.getStartOffset(); int end = h.getEndOffset(); if
-		 * (start<=pos && end>=pos) { //return pnh.getMessage(); return textArea.getText(start,
-		 * end-start); } //} }
+		 * Highlighter.Highlight[] highlights = textArea.getHighlighter().
+		 * getHighlights(); for (int i=0; i<highlights.length; i++) {
+		 * Highlighter.Highlight h = highlights[i]; //if (h instanceof
+		 * ParserNoticeHighlight) { // ParserNoticeHighlight pnh =
+		 * (ParserNoticeHighlight)h; int start = h.getStartOffset(); int end =
+		 * h.getEndOffset(); if (start<=pos && end>=pos) { //return pnh.getMessage();
+		 * return textArea.getText(start, end-start); } //} }
 		 */
 		if (noticeHighlightPairs != null) {
 			for (NoticeHighlightPair pair : noticeHighlightPairs) {
@@ -406,12 +413,12 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 		// } catch (BadLocationException ble) {
 		// ble.printStackTrace(); // Should never happen.
 		// }
-		
+
 		URL imageBase = parserForTip == null ? null : parserForTip.getImageBase();
 		return new ToolTipInfo(tip, listener, imageBase);
-		
+
 	}
-	
+
 	/**
 	 * Called when the document is modified.
 	 *
@@ -422,7 +429,7 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 			timer.restart();
 		}
 	}
-	
+
 	/**
 	 * Called when the user clicks a hyperlink in a {@link FocusableTip}.
 	 *
@@ -434,7 +441,7 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 			parserForTip.getHyperlinkListener().linkClicked(textArea, e);
 		}
 	}
-	
+
 	/**
 	 * Called when the document is modified.
 	 *
@@ -442,7 +449,7 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 	 */
 	@Override
 	public void insertUpdate(DocumentEvent e) {
-		
+
 		// Keep track of the first and last offset modified. Some parsers are
 		// smart and will only re-parse this section of the file.
 		try {
@@ -457,16 +464,16 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 		} catch (BadLocationException ble) {
 			ble.printStackTrace(); // Shouldn't happen
 		}
-		
+
 		handleDocumentEvent(e);
-		
+
 	}
-	
+
 	/**
 	 * Returns whether a parser notice contains the specified offset.
 	 *
 	 * @param notice The notice.
-	 * @param offs The offset.
+	 * @param offs   The offset.
 	 * @return Whether the notice contains the offset.
 	 */
 	private final boolean noticeContainsPosition(ParserNotice notice, int offs) {
@@ -482,20 +489,23 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 		Element elem = root.getElement(line);
 		return offs >= elem.getStartOffset() && offs < elem.getEndOffset();
 	}
-	
+
 	/**
-	 * Since <code>viewToModel()</code> returns the <em>closest</em> model position, and the
-	 * position doesn't <em>necessarily</em> contain the point passed in as an argument, this method
-	 * checks whether the point is indeed contained in the view rectangle for the specified offset.
+	 * Since <code>viewToModel()</code> returns the <em>closest</em> model position,
+	 * and the position doesn't <em>necessarily</em> contain the point passed in as
+	 * an argument, this method checks whether the point is indeed contained in the
+	 * view rectangle for the specified offset.
 	 *
 	 * @param notice The parser notice.
-	 * @param p The point possibly contained in the view range of the parser notice.
-	 * @return Whether the parser notice actually contains the specified point in the view.
+	 * @param p      The point possibly contained in the view range of the parser
+	 *               notice.
+	 * @return Whether the parser notice actually contains the specified point in
+	 *         the view.
 	 */
 	private final boolean noticeContainsPointInView(ParserNotice notice, Point p) {
-		
+
 		try {
-			
+
 			int start, end;
 			if (notice.getKnowsOffsetAndLength()) {
 				start = notice.getOffset();
@@ -512,7 +522,7 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 				start = elem.getStartOffset();
 				end = elem.getEndOffset() - 1;
 			}
-			
+
 			Rectangle r1 = textArea.modelToView(start);
 			Rectangle r2 = textArea.modelToView(end);
 			if (r1.y != r2.y) {
@@ -522,19 +532,19 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 				// end of a line anyway.
 				return true;
 			}
-			
+
 			r1.y--; // Be a tiny bit lenient.
 			r1.height += 2; // Ditto
 			return p.x >= r1.x && p.x < (r2.x + r2.width) && p.y >= r1.y && p.y < (r1.y + r1.height);
-			
+
 		} catch (BadLocationException ble) { // Never occurs
 			// Give them the benefit of the doubt, should 99% of the time be
 			// true anyway
 			return true;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Called when a property we're interested in changes.
 	 *
@@ -542,9 +552,9 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent e) {
-		
+
 		String name = e.getPropertyName();
-		
+
 		if ("document".equals(name)) {
 			// The document switched out from under us
 			RDocument old = (RDocument) e.getOldValue();
@@ -556,9 +566,9 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 				newDoc.addDocumentListener(this);
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Removes a parser.
 	 *
@@ -575,9 +585,10 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 		}
 		return removed;
 	}
-	
+
 	/**
-	 * Removes all parser notices (and clears highlights in the editor) from a particular parser.
+	 * Removes all parser notices (and clears highlights in the editor) from a
+	 * particular parser.
 	 *
 	 * @param parser The parser.
 	 */
@@ -593,10 +604,11 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 			}
 		}
 	}
-	
+
 	/**
-	 * Removes any currently stored notices (and the corresponding highlights from the editor) from
-	 * the same Parser, and in the given line range, as in the results.
+	 * Removes any currently stored notices (and the corresponding highlights from
+	 * the editor) from the same Parser, and in the given line range, as in the
+	 * results.
 	 *
 	 * @param res The results.
 	 */
@@ -618,11 +630,11 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 					System.out.println(text + pair.notice);
 				}
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	/**
 	 * Called when the document is modified.
 	 *
@@ -630,7 +642,7 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 	 */
 	@Override
 	public void removeUpdate(DocumentEvent e) {
-		
+
 		// Keep track of the first and last offset modified. Some parsers are
 		// smart and will only re-parse this section of the file. Note that
 		// for removals, only the line at the removal start needs to be
@@ -646,11 +658,11 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 		} catch (BadLocationException ble) { // Never happens
 			ble.printStackTrace();
 		}
-		
+
 		handleDocumentEvent(e);
-		
+
 	}
-	
+
 	/**
 	 * Restarts parsing the document.
 	 *
@@ -660,11 +672,13 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 		timer.restart();
 		running = true;
 	}
-	
+
 	/**
-	 * Sets the delay between the last "concurrent" edit and when the document is re-parsed.
+	 * Sets the delay between the last "concurrent" edit and when the document is
+	 * re-parsed.
 	 *
-	 * @param millis The new delay, in milliseconds. This must be greater than <code>0</code>.
+	 * @param millis The new delay, in milliseconds. This must be greater than
+	 *               <code>0</code>.
 	 * @see #getDelay()
 	 */
 	public void setDelay(int millis) {
@@ -677,20 +691,21 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 			timer.start();
 		}
 	}
-	
+
 	/**
 	 * Returns whether a parser notice should be removed, based on a parse result.
 	 *
 	 * @param notice The notice in question.
-	 * @param res The result.
+	 * @param res    The result.
 	 * @return Whether the notice should be removed.
 	 */
 	private final boolean shouldRemoveNotice(ParserNotice notice, ParseResult res) {
-		
+
 		if (DEBUG_PARSING) {
-			System.out.println("[DEBUG]: ... ... shouldRemoveNotice " + notice + ": " + (notice.getParser() == res.getParser()));
+			System.out.println(
+					"[DEBUG]: ... ... shouldRemoveNotice " + notice + ": " + (notice.getParser() == res.getParser()));
 		}
-		
+
 		// NOTE: We must currently remove all notices for the parser. Parser
 		// implementors are required to parse the entire document each parsing
 		// request, as RSTA is not yet sophisticated enough to determine the
@@ -699,9 +714,9 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 		// for this as well).
 		// return same_parser && (in_reparsed_range || in_deleted_end_of_doc)
 		return notice.getParser() == res.getParser();
-		
+
 	}
-	
+
 	/**
 	 * Stops parsing the document.
 	 *
@@ -711,23 +726,23 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 		timer.stop();
 		running = false;
 	}
-	
+
 	/**
 	 * Mapping of a parser notice to its highlight in the editor.
 	 */
 	private static class NoticeHighlightPair {
-		
+
 		public ParserNotice notice;
-		
+
 		public HighlightInfo highlight;
-		
+
 		public NoticeHighlightPair(ParserNotice notice, HighlightInfo highlight) {
 			this.notice = notice;
 			this.highlight = highlight;
 		}
-		
+
 	}
-	
+
 	static {
 		boolean debugParsing = false;
 		try {
@@ -737,5 +752,5 @@ class ParserManager implements DocumentListener, ActionListener, HyperlinkListen
 		}
 		DEBUG_PARSING = debugParsing;
 	}
-	
+
 }

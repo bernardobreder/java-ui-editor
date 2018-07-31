@@ -19,44 +19,44 @@ import javax.swing.text.Position;
  * @version 1.0
  */
 public class FunctionCompletion extends VariableCompletion implements ParameterizedCompletion {
-	
+
 	/**
 	 * Parameters to the function.
 	 */
 	private List<Parameter> params;
-	
+
 	/**
 	 * A description of the return value of this function.
 	 */
 	private String returnValDesc;
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param provider The parent provider.
-	 * @param name The name of this function.
+	 * @param provider   The parent provider.
+	 * @param name       The name of this function.
 	 * @param returnType The return type of this function.
 	 */
 	public FunctionCompletion(CompletionProvider provider, String name, String returnType) {
 		super(provider, name, returnType);
 	}
-	
+
 	@Override
 	protected void addDefinitionString(StringBuilder sb) {
 		sb.append("<html><b>");
 		sb.append(getDefinitionString());
 		sb.append("</b>");
 	}
-	
+
 	/**
 	 * Adds HTML describing the parameters to this function to a buffer.
 	 *
 	 * @param sb The buffer to append to.
 	 */
 	protected void addParameters(StringBuilder sb) {
-		
+
 		// TODO: Localize me
-		
+
 		int paramCount = getParamCount();
 		if (paramCount > 0) {
 			sb.append("<b>Parameters:</b><br>");
@@ -74,36 +74,36 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 			}
 			sb.append("</td></tr></table></center><br><br>");
 		}
-		
+
 		if (returnValDesc != null) {
 			sb.append("<b>Returns:</b><br><center><table width='90%'><tr><td>");
 			sb.append(returnValDesc);
 			sb.append("</td></tr></table></center><br><br>");
 		}
-		
+
 	}
-	
+
 	/**
-	 * Returns the "definition string" for this function completion. For example, for the C "
-	 * <code>printf</code>" function, this would return " <code>int printf(const char *, ...)</code>
-	 * ".
+	 * Returns the "definition string" for this function completion. For example,
+	 * for the C " <code>printf</code>" function, this would return "
+	 * <code>int printf(const char *, ...)</code> ".
 	 *
 	 * @return The definition string.
 	 */
 	@Override
 	public String getDefinitionString() {
-		
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		// Add the return type if applicable (C macros like NULL have no type).
 		String type = getType();
 		if (type != null) {
 			sb.append(type).append(' ');
 		}
-		
+
 		// Add the item being described's name.
 		sb.append(getName());
-		
+
 		// Add parameters for functions.
 		CompletionProvider provider = getProvider();
 		char start = provider.getParameterListStart();
@@ -131,16 +131,16 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 		if (end != 0) {
 			sb.append(end);
 		}
-		
+
 		return sb.toString();
-		
+
 	}
-	
+
 	@Override
 	public ParameterizedCompletionInsertionInfo getInsertionInfo(JTextComponent tc, boolean replaceTabsWithSpaces) {
-		
+
 		ParameterizedCompletionInsertionInfo info = new ParameterizedCompletionInsertionInfo();
-		
+
 		StringBuilder sb = new StringBuilder();
 		char paramListStart = getProvider().getParameterListStart();
 		if (paramListStart != '\0') {
@@ -148,7 +148,7 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 		}
 		int dot = tc.getCaretPosition() + sb.length();
 		int paramCount = getParamCount();
-		
+
 		// Get the range in which the caret can move before we hide
 		// this tool tip.
 		int minPos = dot;
@@ -160,7 +160,7 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 		}
 		info.setCaretRange(minPos, maxPos);
 		int firstParamLen = 0;
-		
+
 		// Create the text to insert (keep it one completion for
 		// performance and simplicity of undo/redo).
 		int start = dot;
@@ -186,14 +186,14 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 		endOffs -= 1;// getProvider().getParameterListStart().length();
 		info.addReplacementLocation(endOffs, endOffs); // offset after function
 		info.setDefaultEndOffs(endOffs);
-		
+
 		int selectionEnd = paramCount > 0 ? (dot + firstParamLen) : dot;
 		info.setInitialSelection(dot, selectionEnd);
 		info.setTextToInsert(sb.toString());
 		return info;
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -201,7 +201,7 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	public Parameter getParam(int index) {
 		return params.get(index);
 	}
-	
+
 	/**
 	 * Returns the number of parameters to this function.
 	 *
@@ -212,7 +212,7 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	public int getParamCount() {
 		return params == null ? 0 : params.size();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -220,7 +220,7 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	public boolean getShowParameterToolTip() {
 		return true;
 	}
-	
+
 	/**
 	 * Returns the text to insert for a parameter.
 	 *
@@ -237,7 +237,7 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 		}
 		return text;
 	}
-	
+
 	/**
 	 * Returns the description of the return value of this function.
 	 *
@@ -247,7 +247,7 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	public String getReturnValueDescription() {
 		return returnValDesc;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -262,7 +262,7 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 		possiblyAddDefinedIn(sb);
 		return sb.toString();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -274,12 +274,12 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 		}
 		return text;
 	}
-	
+
 	/**
 	 * Sets the parameters to this function.
 	 *
 	 * @param params The parameters. This should be a list of
-	 *            {@link ParameterizedCompletion.Parameter} s.
+	 *               {@link ParameterizedCompletion.Parameter} s.
 	 * @see #getParam(int)
 	 * @see #getParamCount()
 	 */
@@ -289,7 +289,7 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 			this.params = new ArrayList<Parameter>(params);
 		}
 	}
-	
+
 	/**
 	 * Sets the description of the return value of this function.
 	 *
@@ -299,5 +299,5 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	public void setReturnValueDescription(String desc) {
 		this.returnValDesc = desc;
 	}
-	
+
 }

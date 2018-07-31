@@ -20,9 +20,9 @@ import org.fife.ui.autocomplete.ShorthandCompletion;
  * @version 1.0
  */
 class JavaShorthandCompletion extends ShorthandCompletion implements JavaSourceCompletion {
-	
+
 	private static final Color SHORTHAND_COLOR = new Color(0, 127, 174);
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -33,7 +33,7 @@ class JavaShorthandCompletion extends ShorthandCompletion implements JavaSourceC
 	public JavaShorthandCompletion(CompletionProvider provider, String inputText, String replacementText) {
 		super(provider, inputText, replacementText);
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -42,10 +42,11 @@ class JavaShorthandCompletion extends ShorthandCompletion implements JavaSourceC
 	 * @param replacementText
 	 * @param shortDesc
 	 */
-	public JavaShorthandCompletion(CompletionProvider provider, String inputText, String replacementText, String shortDesc) {
+	public JavaShorthandCompletion(CompletionProvider provider, String inputText, String replacementText,
+			String shortDesc) {
 		super(provider, inputText, replacementText, shortDesc);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -53,7 +54,7 @@ class JavaShorthandCompletion extends ShorthandCompletion implements JavaSourceC
 	public Icon getIcon() {
 		return IconFactory.get().getIcon(IconFactory.TEMPLATE_ICON);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -61,16 +62,16 @@ class JavaShorthandCompletion extends ShorthandCompletion implements JavaSourceC
 	public void rendererText(Graphics g, int x, int y, boolean selected) {
 		renderText(g, getInputText(), getReplacementText(), x, y, selected);
 	}
-	
+
 	/**
 	 * Renders a completion in the style of a short-hand completion.
 	 *
-	 * @param g The graphics context.
-	 * @param input The text the user enters to display this completion.
+	 * @param g         The graphics context.
+	 * @param input     The text the user enters to display this completion.
 	 * @param shortDesc An optional short description of the completion.
-	 * @param x The x-offset at which to paint.
-	 * @param y The y-offset at which to paint.
-	 * @param selected Whether this completion choice is selected.
+	 * @param x         The x-offset at which to paint.
+	 * @param y         The y-offset at which to paint.
+	 * @param selected  Whether this completion choice is selected.
 	 */
 	public static void renderText(Graphics g, String input, String shortDesc, int x, int y, boolean selected) {
 		Color orig = g.getColor();
@@ -92,5 +93,5 @@ class JavaShorthandCompletion extends ShorthandCompletion implements JavaSourceC
 			g.drawString(shortDesc, x, y);
 		}
 	}
-	
+
 }

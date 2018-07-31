@@ -18,12 +18,12 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
  * @version 1.0
  */
 public class GroovyLanguageSupport extends AbstractLanguageSupport {
-	
+
 	/**
 	 * The completion provider, shared amongst all text areas.
 	 */
 	private GroovyCompletionProvider provider;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -31,36 +31,36 @@ public class GroovyLanguageSupport extends AbstractLanguageSupport {
 		setParameterAssistanceEnabled(true);
 		setShowDescWindow(true);
 	}
-	
+
 	// /**
 	// * {@inheritDoc}
 	// */
 	// protected ListCellRenderer createDefaultCompletionCellRenderer() {
 	// return new CCellRenderer();
 	// }
-	
+
 	private GroovyCompletionProvider getProvider() {
 		if (provider == null) {
 			provider = new GroovyCompletionProvider();
 		}
 		return provider;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void install(RSyntaxTextArea textArea) {
-		
+
 		GroovyCompletionProvider provider = getProvider();
 		AutoCompletion ac = createAutoCompletion(provider);
 		ac.install(textArea);
 		installImpl(textArea, ac);
-		
+
 		textArea.setToolTipSupplier(provider);
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -68,5 +68,5 @@ public class GroovyLanguageSupport extends AbstractLanguageSupport {
 	public void uninstall(RSyntaxTextArea textArea) {
 		uninstallImpl(textArea);
 	}
-	
+
 }

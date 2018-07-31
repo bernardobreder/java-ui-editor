@@ -16,33 +16,34 @@ import org.fife.rsta.ac.java.rjc.lexer.TokenTypes;
 /**
  * A block of code in curly braces in a class.
  * <p>
- * This class implements the <code>Member</code> interface because a block can be a member (say, a
- * static block in a class declaration), but usually it's not actually a <code>Member</code>, but
- * something else, e.g. the body of a method, or the content of an <code>if</code>-statement, etc.
+ * This class implements the <code>Member</code> interface because a block can
+ * be a member (say, a static block in a class declaration), but usually it's
+ * not actually a <code>Member</code>, but something else, e.g. the body of a
+ * method, or the content of an <code>if</code>-statement, etc.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class CodeBlock extends AbstractMember {
-	
+
 	/**
 	 * The name of all <code>CodeBlock</code>s.
 	 */
 	public static final String NAME = "{...}";
-	
+
 	private CodeBlock parent;
-	
+
 	private List<CodeBlock> children;
-	
+
 	private List<LocalVariable> localVars;
-	
+
 	private boolean isStatic;
-	
+
 	public CodeBlock(boolean isStatic, Offset startOffs) {
 		super(NAME, startOffs);
 		this.isStatic = isStatic;
 	}
-	
+
 	public void add(CodeBlock child) {
 		if (children == null) {
 			children = new ArrayList<CodeBlock>();
@@ -50,35 +51,36 @@ public class CodeBlock extends AbstractMember {
 		children.add(child);
 		child.setParent(this);
 	}
-	
+
 	public void addLocalVariable(LocalVariable localVar) {
 		if (localVars == null) {
 			localVars = new ArrayList<LocalVariable>();
 		}
 		localVars.add(localVar);
 	}
-	
+
 	public boolean containsOffset(int offs) {
 		// Do endOffset first since we'll often iterate from first CodeBlock
 		// to last, so checking it first should be faster.
 		return getNameEndOffset() >= offs && getNameStartOffset() <= offs;
 	}
-	
+
 	public CodeBlock getChildBlock(int index) {
 		return children.get(index);
 	}
-	
+
 	public int getChildBlockCount() {
 		return children == null ? 0 : children.size();
 	}
-	
+
 	/**
-	 * Returns the deepest code block nested under this one (or this one itself) containing a given
-	 * offset.
+	 * Returns the deepest code block nested under this one (or this one itself)
+	 * containing a given offset.
 	 *
 	 * @param offs The offset to look for.
-	 * @return The deepest-nested code block containing the offset, or <code>null</code> if this
-	 *         code block and none of its children contain the offset.
+	 * @return The deepest-nested code block containing the offset, or
+	 *         <code>null</code> if this code block and none of its children contain
+	 *         the offset.
 	 */
 	public CodeBlock getDeepestCodeBlockContaining(int offs) {
 		if (!containsOffset(offs)) {
@@ -92,32 +94,33 @@ public class CodeBlock extends AbstractMember {
 		}
 		return this;
 	}
-	
+
 	@Override
 	public String getDocComment() {
 		// TODO: Can static blocks have doc comments?
 		return null;
 	}
-	
+
 	public LocalVariable getLocalVar(int index) {
 		return localVars.get(index);
 	}
-	
+
 	public int getLocalVarCount() {
 		return localVars == null ? 0 : localVars.size();
 	}
-	
+
 	/**
-	 * Returns all local variables declared before a given offset, both in this code block and in
-	 * all parent blocks.
+	 * Returns all local variables declared before a given offset, both in this code
+	 * block and in all parent blocks.
 	 *
 	 * @param offs The offset.
-	 * @return The {@link LocalVariable}s, or an empty list of none were declared before the offset.
+	 * @return The {@link LocalVariable}s, or an empty list of none were declared
+	 *         before the offset.
 	 */
 	public List<LocalVariable> getLocalVarsBefore(int offs) {
-		
+
 		List<LocalVariable> vars = new ArrayList<LocalVariable>();
-		
+
 		if (localVars != null) {
 			for (int i = 0; i < getLocalVarCount(); i++) {
 				LocalVariable localVar = getLocalVar(i);
@@ -128,15 +131,15 @@ public class CodeBlock extends AbstractMember {
 				}
 			}
 		}
-		
+
 		if (parent != null) {
 			vars.addAll(parent.getLocalVarsBefore(offs));
 		}
-		
+
 		return vars;
-		
+
 	}
-	
+
 	@Override
 	public Modifiers getModifiers() {
 		Modifiers modifiers = new Modifiers();
@@ -145,11 +148,11 @@ public class CodeBlock extends AbstractMember {
 		}
 		return modifiers;
 	}
-	
+
 	public CodeBlock getParent() {
 		return parent;
 	}
-	
+
 	/**
 	 * Returns <code>null</code>, since blocks don't have types.
 	 *
@@ -159,12 +162,12 @@ public class CodeBlock extends AbstractMember {
 	public Type getType() {
 		return null;
 	}
-	
+
 	@Override
 	public boolean isDeprecated() {
 		return false;
 	}
-	
+
 	/**
 	 * Returns whether this block is a static block (in a class declaration).
 	 *
@@ -174,9 +177,9 @@ public class CodeBlock extends AbstractMember {
 	public boolean isStatic() {
 		return isStatic;
 	}
-	
+
 	public void setParent(CodeBlock parent) {
 		this.parent = parent;
 	}
-	
+
 }

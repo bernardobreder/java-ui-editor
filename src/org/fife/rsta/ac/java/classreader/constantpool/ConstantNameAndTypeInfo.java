@@ -12,11 +12,11 @@ package org.fife.rsta.ac.java.classreader.constantpool;
  * @version 1.0
  */
 public class ConstantNameAndTypeInfo extends ConstantPoolInfo {
-	
+
 	private int nameIndex;
-	
+
 	private int descriptorIndex;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -28,15 +28,15 @@ public class ConstantNameAndTypeInfo extends ConstantPoolInfo {
 		this.nameIndex = nameIndex;
 		this.descriptorIndex = descriptorIndex;
 	}
-	
+
 	public int getDescriptorIndex() {
 		return descriptorIndex;
 	}
-	
+
 	public int getNameIndex() {
 		return nameIndex;
 	}
-	
+
 	/**
 	 * Returns a string representation of this object. Useful for debugging.
 	 *
@@ -44,7 +44,8 @@ public class ConstantNameAndTypeInfo extends ConstantPoolInfo {
 	 */
 	@Override
 	public String toString() {
-		return "[ConstantNameAndTypeInfo: " + "descriptorIndex=" + getDescriptorIndex() + "; nameIndex=" + getNameIndex() + "]";
+		return "[ConstantNameAndTypeInfo: " + "descriptorIndex=" + getDescriptorIndex() + "; nameIndex="
+				+ getNameIndex() + "]";
 	}
-	
+
 }

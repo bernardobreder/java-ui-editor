@@ -26,28 +26,29 @@ import javax.swing.UIManager;
 import javax.swing.event.MouseInputAdapter;
 
 /**
- * A component that allows its parent window to be resizable, similar to the size grip seen on
- * status bars.
+ * A component that allows its parent window to be resizable, similar to the
+ * size grip seen on status bars.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 class SizeGrip extends JPanel {
-	
+
 	/**
 	 * The size grip to use if we're on OS X.
 	 */
 	private Image osxSizeGrip;
-	
+
 	public SizeGrip() {
 		MouseHandler adapter = new MouseHandler();
 		addMouseListener(adapter);
 		addMouseMotionListener(adapter);
 		setPreferredSize(new Dimension(16, 16));
 	}
-	
+
 	/**
-	 * Overridden to ensure that the cursor for this component is appropriate for the orientation.
+	 * Overridden to ensure that the cursor for this component is appropriate for
+	 * the orientation.
 	 *
 	 * @param o The new orientation.
 	 */
@@ -56,7 +57,7 @@ class SizeGrip extends JPanel {
 		possiblyFixCursor(o.isLeftToRight());
 		super.applyComponentOrientation(o);
 	}
-	
+
 	/**
 	 * Creates and returns the OS X size grip image.
 	 *
@@ -88,7 +89,7 @@ class SizeGrip extends JPanel {
 		}
 		return image;
 	}
-	
+
 	/**
 	 * Paints this panel.
 	 *
@@ -96,20 +97,20 @@ class SizeGrip extends JPanel {
 	 */
 	@Override
 	protected void paintComponent(Graphics g) {
-		
+
 		super.paintComponent(g);
-		
+
 		Dimension dim = getSize();
-		
+
 		if (osxSizeGrip != null) {
 			g.drawImage(osxSizeGrip, dim.width - 16, dim.height - 16, null);
 			return;
 		}
-		
+
 		Color c1 = UIManager.getColor("Label.disabledShadow");
 		Color c2 = UIManager.getColor("Label.disabledForeground");
 		ComponentOrientation orientation = getComponentOrientation();
-		
+
 		if (orientation.isLeftToRight()) {
 			int width = dim.width -= 3;
 			int height = dim.height -= 3;
@@ -144,11 +145,12 @@ class SizeGrip extends JPanel {
 			g.fillRect(2, height - 5, 2, 2);
 			g.fillRect(2, height - 9, 2, 2);
 		}
-		
+
 	}
-	
+
 	/**
-	 * Ensures that the cursor for this component is appropriate for the orientation.
+	 * Ensures that the cursor for this component is appropriate for the
+	 * orientation.
 	 *
 	 * @param ltr Whether the current component orientation is LTR.
 	 */
@@ -161,7 +163,7 @@ class SizeGrip extends JPanel {
 			setCursor(Cursor.getPredefinedCursor(cursor));
 		}
 	}
-	
+
 	@Override
 	public void updateUI() {
 		super.updateUI();
@@ -174,22 +176,23 @@ class SizeGrip extends JPanel {
 		} else { // Clear memory in case of runtime LaF change.
 			osxSizeGrip = null;
 		}
-		
+
 	}
-	
+
 	/**
-	 * Listens for mouse events on this panel and resizes the parent window appropriately.
+	 * Listens for mouse events on this panel and resizes the parent window
+	 * appropriately.
 	 */
 	/*
-	 * NOTE: We use SwingUtilities.convertPointToScreen() instead of just using the locations
-	 * relative to the corner component because the latter proved buggy - stretch the window too
-	 * wide and some kind of arithmetic error started happening somewhere - our window would grow
-	 * way too large.
+	 * NOTE: We use SwingUtilities.convertPointToScreen() instead of just using the
+	 * locations relative to the corner component because the latter proved buggy -
+	 * stretch the window too wide and some kind of arithmetic error started
+	 * happening somewhere - our window would grow way too large.
 	 */
 	private class MouseHandler extends MouseInputAdapter {
-		
+
 		private Point origPos;
-		
+
 		@Override
 		public void mouseDragged(MouseEvent e) {
 			Point newPos = e.getPoint();
@@ -219,18 +222,18 @@ class SizeGrip extends JPanel {
 			}
 			origPos.setLocation(newPos);
 		}
-		
+
 		@Override
 		public void mousePressed(MouseEvent e) {
 			origPos = e.getPoint();
 			SwingUtilities.convertPointToScreen(origPos, SizeGrip.this);
 		}
-		
+
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			origPos = null;
 		}
-		
+
 	}
-	
+
 }

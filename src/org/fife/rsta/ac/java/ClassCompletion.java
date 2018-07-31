@@ -27,18 +27,18 @@ import org.fife.ui.autocomplete.CompletionProvider;
  * @version 1.0
  */
 class ClassCompletion extends AbstractJavaSourceCompletion {
-	
+
 	private ClassFile cf;
-	
+
 	public ClassCompletion(CompletionProvider provider, ClassFile cf) {
 		super(provider, cf.getClassName(false));
 		this.cf = cf;
 	}
-	
+
 	/*
-	 * Fixed error when comparing classes of the same name, which did not allow classes with same
-	 * name but different packages. Thanks to Guilherme Joao Frantz and Jonatas Schuler for the
-	 * patch!
+	 * Fixed error when comparing classes of the same name, which did not allow
+	 * classes with same name but different packages. Thanks to Guilherme Joao
+	 * Frantz and Jonatas Schuler for the patch!
 	 */
 	@Override
 	public int compareTo(Completion c2) {
@@ -54,12 +54,13 @@ class ClassCompletion extends AbstractJavaSourceCompletion {
 		}
 		return super.compareTo(c2);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		return (obj instanceof ClassCompletion) && ((ClassCompletion) obj).getReplacementText().equals(getReplacementText());
+		return (obj instanceof ClassCompletion)
+				&& ((ClassCompletion) obj).getReplacementText().equals(getReplacementText());
 	}
-	
+
 	/**
 	 * Returns the name of the class represented by this completion.
 	 *
@@ -70,26 +71,26 @@ class ClassCompletion extends AbstractJavaSourceCompletion {
 	public String getClassName(boolean fullyQualified) {
 		return cf.getClassName(fullyQualified);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Icon getIcon() {
-		
+
 		// TODO: Add functionality to ClassFile to make this simpler.
-		
+
 		boolean isInterface = false;
 		boolean isPublic = false;
 		// boolean isProtected = false;
 		// boolean isPrivate = false;
 		boolean isDefault = false;
-		
+
 		int access = cf.getAccessFlags();
 		if ((access & AccessFlags.ACC_INTERFACE) > 0) {
 			isInterface = true;
 		}
-		
+
 		else if (org.fife.rsta.ac.java.classreader.Util.isPublic(access)) {
 			isPublic = true;
 		}
@@ -102,10 +103,10 @@ class ClassCompletion extends AbstractJavaSourceCompletion {
 		else {
 			isDefault = true;
 		}
-		
+
 		IconFactory fact = IconFactory.get();
 		String key = null;
-		
+
 		if (isInterface) {
 			if (isDefault) {
 				key = IconFactory.DEFAULT_INTERFACE_ICON;
@@ -119,11 +120,11 @@ class ClassCompletion extends AbstractJavaSourceCompletion {
 				key = IconFactory.CLASS_ICON;
 			}
 		}
-		
+
 		return fact.getIcon(key, cf.isDeprecated());
-		
+
 	}
-	
+
 	/**
 	 * Returns the package this class or interface is in.
 	 *
@@ -133,15 +134,15 @@ class ClassCompletion extends AbstractJavaSourceCompletion {
 	public String getPackageName() {
 		return cf.getPackageName();
 	}
-	
+
 	@Override
 	public String getSummary() {
-		
+
 		SourceCompletionProvider scp = (SourceCompletionProvider) getProvider();
 		SourceLocation loc = scp.getSourceLocForClass(cf.getClassName(true));
-		
+
 		if (loc != null) {
-			
+
 			CompilationUnit cu = Util.getCompilationUnitFromDisk(loc, cf);
 			if (cu != null) {
 				Iterator<TypeDeclaration> i = cu.getTypeDeclarationIterator();
@@ -158,27 +159,27 @@ class ClassCompletion extends AbstractJavaSourceCompletion {
 					}
 				}
 			}
-			
+
 		}
-		
+
 		// Default to the fully-qualified class name.
 		return cf.getClassName(true);
-		
+
 	}
-	
+
 	@Override
 	public String getToolTipText() {
 		return "class " + getReplacementText();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return getReplacementText().hashCode();
 	}
-	
+
 	@Override
 	public void rendererText(Graphics g, int x, int y, boolean selected) {
-		
+
 		String s = cf.getClassName(false);
 		g.drawString(s, x, y);
 		FontMetrics fm = g.getFontMetrics();
@@ -188,11 +189,11 @@ class ClassCompletion extends AbstractJavaSourceCompletion {
 			g.drawLine(x, midY, newX, midY);
 		}
 		x = newX;
-		
+
 		s = " - ";
 		g.drawString(s, x, y);
 		x += fm.stringWidth(s);
-		
+
 		String pkgName = cf.getClassName(true);
 		int lastIndexOf = pkgName.lastIndexOf('.');
 		if (lastIndexOf != -1) { // Class may not be in a package
@@ -206,7 +207,7 @@ class ClassCompletion extends AbstractJavaSourceCompletion {
 				g.setColor(origColor);
 			}
 		}
-		
+
 	}
-	
+
 }

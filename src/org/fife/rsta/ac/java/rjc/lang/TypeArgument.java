@@ -6,23 +6,23 @@
 package org.fife.rsta.ac.java.rjc.lang;
 
 public class TypeArgument {
-	
+
 	public static final int NOTHING = 0;
-	
+
 	public static final int EXTENDS = 1;
-	
+
 	public static final int SUPER = 2;
-	
+
 	private Type type;
-	
+
 	private int doesExtend;
-	
+
 	private Type otherType;
-	
+
 	public TypeArgument(Type type) {
 		this.type = type;
 	}
-	
+
 	public TypeArgument(Type type, int doesExtend, Type otherType) {
 		if (doesExtend < 0 || doesExtend > 2) {
 			throw new IllegalArgumentException("Illegal doesExtend: " + doesExtend);
@@ -31,7 +31,7 @@ public class TypeArgument {
 		this.doesExtend = doesExtend;
 		this.otherType = otherType;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -49,5 +49,5 @@ public class TypeArgument {
 		}
 		return sb.toString();
 	}
-	
+
 }

@@ -28,19 +28,19 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
  * @version 1.0
  */
 class XmlTreeCellRenderer extends DefaultTreeCellRenderer {
-	
+
 	private Icon elemIcon;
-	
+
 	private String elem;
-	
+
 	private String attr;
-	
+
 	private boolean selected;
-	
+
 	private static final XmlTreeCellUI UI = new XmlTreeCellUI();
-	
+
 	private static final Color ATTR_COLOR = new Color(0x808080);
-	
+
 	public XmlTreeCellRenderer() {
 		URL url = getClass().getResource("tag.png");
 		if (url != null) { // Always true
@@ -48,9 +48,10 @@ class XmlTreeCellRenderer extends DefaultTreeCellRenderer {
 		}
 		setUI(UI);
 	}
-	
+
 	@Override
-	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean focused) {
+	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf,
+			int row, boolean focused) {
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, focused);
 		this.selected = sel;
 		if (value instanceof XmlTreeNode) {
@@ -64,7 +65,7 @@ class XmlTreeCellRenderer extends DefaultTreeCellRenderer {
 		setIcon(elemIcon);
 		return this;
 	}
-	
+
 	@Override
 	public void updateUI() {
 		// We must call super.updateUI() since, as of Java 7, that's where
@@ -72,22 +73,23 @@ class XmlTreeCellRenderer extends DefaultTreeCellRenderer {
 		super.updateUI(); // Get "real" new defaults
 		setUI(UI); // Doesn't update colors, border, etc., just paint method
 	}
-	
+
 	/**
-	 * Custom UI for our renderer. This is basically a performance hack to avoid using HTML for our
-	 * rendering. Swing's HTML rendering engine is very slow, making tree views many thousands of
-	 * nodes large using HTML very slow for expand operations (our expandInitialNodes() method).
-	 * This is caused by calls to get the preferred size of each HTML view. A "plain text" renderer
-	 * that can paint the different colors itself is much faster (~ 4x faster), but still doesn't
-	 * eliminate the issue for huge trees.
+	 * Custom UI for our renderer. This is basically a performance hack to avoid
+	 * using HTML for our rendering. Swing's HTML rendering engine is very slow,
+	 * making tree views many thousands of nodes large using HTML very slow for
+	 * expand operations (our expandInitialNodes() method). This is caused by calls
+	 * to get the preferred size of each HTML view. A "plain text" renderer that can
+	 * paint the different colors itself is much faster (~ 4x faster), but still
+	 * doesn't eliminate the issue for huge trees.
 	 */
 	private static class XmlTreeCellUI extends BasicLabelUI {
-		
+
 		@Override
 		protected void installDefaults(JLabel label) {
 			// Do nothing
 		}
-		
+
 		@Override
 		protected void paintEnabledText(JLabel l, Graphics g, String s, int textX, int textY) {
 			XmlTreeCellRenderer r = (XmlTreeCellRenderer) l;
@@ -107,12 +109,12 @@ class XmlTreeCellRenderer extends DefaultTreeCellRenderer {
 			}
 			g2d.dispose();
 		}
-		
+
 		@Override
 		protected void uninstallDefaults(JLabel label) {
 			// Do nothing
 		}
-		
+
 	}
-	
+
 }

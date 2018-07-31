@@ -11,17 +11,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * A class that eats the stdout or stderr of a running <tt>Process</tt> to prevent deadlock.
+ * A class that eats the stdout or stderr of a running <tt>Process</tt> to
+ * prevent deadlock.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class OutputCollector implements Runnable {
-	
+
 	private InputStream in;
-	
+
 	private StringBuffer sb;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -30,7 +31,7 @@ public class OutputCollector implements Runnable {
 	public OutputCollector(InputStream in) {
 		this(in, true);
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -41,15 +42,15 @@ public class OutputCollector implements Runnable {
 		this.in = in;
 		this.sb = sb;
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param in The input stream.
+	 * @param in      The input stream.
 	 * @param collect Whether to actually collect the output in a buffer. If this is
-	 *            <code>false</code>, then {@link #getOutput()} will return <code>null</code>. This
-	 *            parameter can be used if you want to eat, but ignore, stdout or stderr for a
-	 *            process.
+	 *                <code>false</code>, then {@link #getOutput()} will return
+	 *                <code>null</code>. This parameter can be used if you want to
+	 *                eat, but ignore, stdout or stderr for a process.
 	 */
 	public OutputCollector(InputStream in, boolean collect) {
 		this.in = in;
@@ -57,7 +58,7 @@ public class OutputCollector implements Runnable {
 			sb = new StringBuffer();
 		}
 	}
-	
+
 	/**
 	 * Returns the output collected from the stream.
 	 *
@@ -66,11 +67,11 @@ public class OutputCollector implements Runnable {
 	public StringBuffer getOutput() {
 		return sb;
 	}
-	
+
 	/**
-	 * Called every time a line is read from the stream. This allows subclasses to handle lines
-	 * differently. They can also call into the super implementation if they want to log the lines
-	 * into the buffer.
+	 * Called every time a line is read from the stream. This allows subclasses to
+	 * handle lines differently. They can also call into the super implementation if
+	 * they want to log the lines into the buffer.
 	 *
 	 * @param line The line read.
 	 * @throws IOException If an IO error occurs.
@@ -80,7 +81,7 @@ public class OutputCollector implements Runnable {
 			sb.append(line).append('\n');
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -100,5 +101,5 @@ public class OutputCollector implements Runnable {
 			ioe.printStackTrace();
 		}
 	}
-	
+
 }

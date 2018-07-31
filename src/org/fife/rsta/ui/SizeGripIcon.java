@@ -20,9 +20,9 @@ import javax.swing.UIManager;
  * @version 1.0
  */
 public class SizeGripIcon implements Icon {
-	
+
 	private static final int SIZE = 16;
-	
+
 	/**
 	 * Returns the height of this icon.
 	 *
@@ -32,7 +32,7 @@ public class SizeGripIcon implements Icon {
 	public int getIconHeight() {
 		return SIZE;
 	}
-	
+
 	/**
 	 * Returns the width of this icon.
 	 *
@@ -42,7 +42,7 @@ public class SizeGripIcon implements Icon {
 	public int getIconWidth() {
 		return SIZE;
 	}
-	
+
 	/**
 	 * Paints this icon.
 	 *
@@ -53,14 +53,14 @@ public class SizeGripIcon implements Icon {
 	 */
 	@Override
 	public void paintIcon(Component c, Graphics g, int x, int y) {
-		
+
 		Dimension dim = c.getSize();
 		Color c1 = UIManager.getColor("Label.disabledShadow");
 		Color c2 = UIManager.getColor("Label.disabledForeground");
-		
+
 		ComponentOrientation orientation = c.getComponentOrientation();
 		int height = dim.height -= 3;
-		
+
 		if (orientation.isLeftToRight()) {
 			int width = dim.width -= 3;
 			g.setColor(c1);
@@ -93,7 +93,7 @@ public class SizeGripIcon implements Icon {
 			g.fillRect(2, height - 5, 2, 2);
 			g.fillRect(2, height - 9, 2, 2);
 		}
-		
+
 	}
-	
+
 }

@@ -28,24 +28,24 @@ import org.fife.rsta.ac.java.classreader.ClassFile;
  * @see ClasspathLibraryInfo
  */
 public class JarLibraryInfo extends LibraryInfo {
-	
+
 	private File jarFile;
-	
+
 	private JarFile bulkCreateJar;
-	
+
 	public JarLibraryInfo(String jarFile) {
 		this(new File(jarFile));
 	}
-	
+
 	public JarLibraryInfo(File jarFile) {
 		this(jarFile, null);
 	}
-	
+
 	public JarLibraryInfo(File jarFile, SourceLocation sourceLoc) {
 		setJarFile(jarFile);
 		setSourceLocation(sourceLoc);
 	}
-	
+
 	@Override
 	public void bulkClassFileCreationEnd() {
 		try {
@@ -54,7 +54,7 @@ public class JarLibraryInfo extends LibraryInfo {
 			ioe.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void bulkClassFileCreationStart() {
 		try {
@@ -63,11 +63,11 @@ public class JarLibraryInfo extends LibraryInfo {
 			ioe.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * Compares this <code>LibraryInfo</code> to another one. Two instances of this class are only
-	 * considered equal if they represent the same class file location. Source attachment is
-	 * irrelevant.
+	 * Compares this <code>LibraryInfo</code> to another one. Two instances of this
+	 * class are only considered equal if they represent the same class file
+	 * location. Source attachment is irrelevant.
 	 *
 	 * @return The sort order of these two library infos.
 	 */
@@ -82,7 +82,7 @@ public class JarLibraryInfo extends LibraryInfo {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public ClassFile createClassFile(String entryName) throws IOException {
 		JarFile jar = new JarFile(jarFile);
@@ -92,12 +92,12 @@ public class JarLibraryInfo extends LibraryInfo {
 			jar.close();
 		}
 	}
-	
+
 	@Override
 	public ClassFile createClassFileBulk(String entryName) throws IOException {
 		return createClassFileImpl(bulkCreateJar, entryName);
 	}
-	
+
 	private static final ClassFile createClassFileImpl(JarFile jar, String entryName) throws IOException {
 		JarEntry entry = (JarEntry) jar.getEntry(entryName);
 		if (entry == null) {
@@ -113,15 +113,15 @@ public class JarLibraryInfo extends LibraryInfo {
 		}
 		return cf;
 	}
-	
+
 	@Override
 	public TreeMap createPackageMap() throws IOException {
-		
+
 		TreeMap packageMap = new TreeMap();
 		JarFile jar = new JarFile(jarFile);
-		
+
 		try {
-			
+
 			Enumeration<JarEntry> e = jar.entries();
 			while (e.hasMoreElements()) {
 				ZipEntry entry = e.nextElement();
@@ -142,25 +142,25 @@ public class JarLibraryInfo extends LibraryInfo {
 					m.put(className, null); // Lazily set value to ClassFile later
 				}
 			}
-			
+
 		} finally {
 			jar.close();
 		}
-		
+
 		return packageMap;
-		
+
 	}
-	
+
 	@Override
 	public long getLastModified() {
 		return jarFile.lastModified();
 	}
-	
+
 	@Override
 	public String getLocationAsString() {
 		return jarFile.getAbsolutePath();
 	}
-	
+
 	/**
 	 * Returns the jar file this instance is wrapping.
 	 *
@@ -169,12 +169,12 @@ public class JarLibraryInfo extends LibraryInfo {
 	public File getJarFile() {
 		return jarFile;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return jarFile.hashCode();
 	}
-	
+
 	/**
 	 * Sets the jar file location.
 	 *
@@ -187,9 +187,10 @@ public class JarLibraryInfo extends LibraryInfo {
 		}
 		this.jarFile = jarFile;
 	}
-	
+
 	/**
-	 * Returns a string representation of this jar information. Useful for debugging.
+	 * Returns a string representation of this jar information. Useful for
+	 * debugging.
 	 *
 	 * @return A string representation of this object.
 	 */
@@ -197,5 +198,5 @@ public class JarLibraryInfo extends LibraryInfo {
 	public String toString() {
 		return "[JarLibraryInfo: " + "jar=" + jarFile.getAbsolutePath() + "; source=" + getSourceLocation() + "]";
 	}
-	
+
 }

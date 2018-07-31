@@ -15,35 +15,35 @@ import org.fife.rsta.ac.java.rjc.lang.Type;
  * @version 1.0
  */
 public interface Member extends ASTNode {
-	
+
 	public String getDocComment();
-	
+
 	@Override
 	public int getNameEndOffset();
-	
+
 	@Override
 	public int getNameStartOffset();
-	
+
 	public Modifiers getModifiers();
-	
+
 	@Override
 	public String getName();
-	
+
 	public TypeDeclaration getParentTypeDeclaration();
-	
+
 	public Type getType();
-	
+
 	public boolean isDeprecated();
-	
+
 	/**
-	 * Shortcut for <code>getModifiers().isStatic()</code>; useful since <code>getModifiers()</code>
-	 * may return <code>null</code>.
+	 * Shortcut for <code>getModifiers().isStatic()</code>; useful since
+	 * <code>getModifiers()</code> may return <code>null</code>.
 	 *
 	 * @return Whether this member is static.
 	 * @see #getModifiers()
 	 */
 	public boolean isStatic();
-	
+
 	public void setParentTypeDeclaration(TypeDeclaration dec);
-	
+
 }

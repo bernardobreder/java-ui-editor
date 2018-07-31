@@ -29,17 +29,17 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
  * @version 1.0
  */
 public class HtmlLanguageSupport extends AbstractMarkupLanguageSupport {
-	
+
 	/**
 	 * The completion provider. This is shared amongst all HTML text areas.
 	 */
 	private HtmlCompletionProvider provider;
-	
+
 	/**
 	 * A cached set of tags that require closing tags.
 	 */
 	private static Set<String> tagsToClose = new HashSet<String>();
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -48,7 +48,7 @@ public class HtmlLanguageSupport extends AbstractMarkupLanguageSupport {
 		setParameterAssistanceEnabled(false);
 		setShowDescWindow(true);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -56,27 +56,27 @@ public class HtmlLanguageSupport extends AbstractMarkupLanguageSupport {
 	protected ListCellRenderer createDefaultCompletionCellRenderer() {
 		return new HtmlCellRenderer();
 	}
-	
+
 	private HtmlCompletionProvider getProvider() {
 		if (provider == null) {
 			provider = new HtmlCompletionProvider();
 		}
 		return provider;
 	}
-	
+
 	/**
-	 * Dirty hack to share this with others, such as PHP and JSP supports. Note that we should be
-	 * passing doctype information here.
+	 * Dirty hack to share this with others, such as PHP and JSP supports. Note that
+	 * we should be passing doctype information here.
 	 *
 	 * @return The set of tags to close.
 	 */
 	public static Set<String> getTagsToClose() {
 		return tagsToClose;
 	}
-	
+
 	/**
-	 * Returns a set of tags that require a closing tag, based on a resource in this class's
-	 * package.
+	 * Returns a set of tags that require a closing tag, based on a resource in this
+	 * class's package.
 	 *
 	 * @param res The resource.
 	 * @return The set of tags that require closing.
@@ -100,23 +100,23 @@ public class HtmlLanguageSupport extends AbstractMarkupLanguageSupport {
 		}
 		return tags;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void install(RSyntaxTextArea textArea) {
-		
+
 		HtmlCompletionProvider provider = getProvider();
 		AutoCompletion ac = createAutoCompletion(provider);
 		ac.install(textArea);
 		installImpl(textArea, ac);
 		installKeyboardShortcuts(textArea);
-		
+
 		textArea.setToolTipSupplier(null);
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -124,7 +124,7 @@ public class HtmlLanguageSupport extends AbstractMarkupLanguageSupport {
 	protected boolean shouldAutoCloseTag(String tag) {
 		return tagsToClose.contains(tag.toLowerCase());
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -133,9 +133,9 @@ public class HtmlLanguageSupport extends AbstractMarkupLanguageSupport {
 		uninstallImpl(textArea);
 		uninstallKeyboardShortcuts(textArea);
 	}
-	
+
 	static {
 		tagsToClose = getTagsToClose("html5_close_tags.txt");
 	}
-	
+
 }

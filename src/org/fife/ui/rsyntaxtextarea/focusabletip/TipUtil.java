@@ -28,23 +28,23 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
  * @version 1.0
  */
 public class TipUtil {
-	
+
 	private TipUtil() {
 	}
-	
+
 	/**
 	 * Returns a hex string for the specified color, suitable for HTML.
 	 *
 	 * @param c The color.
-	 * @return The string representation, in the form "<code>#rrggbb</code>", or <code>null</code>
-	 *         if <code>c</code> is <code>null</code>.
+	 * @return The string representation, in the form "<code>#rrggbb</code>", or
+	 *         <code>null</code> if <code>c</code> is <code>null</code>.
 	 */
 	private static final String getHexString(Color c) {
-		
+
 		if (c == null) {
 			return null;
 		}
-		
+
 		StringBuilder sb = new StringBuilder("#");
 		int r = c.getRed();
 		if (r < 16) {
@@ -61,15 +61,15 @@ public class TipUtil {
 			sb.append('0');
 		}
 		sb.append(Integer.toHexString(b));
-		
+
 		return sb.toString();
-		
+
 	}
-	
+
 	/**
-	 * Returns the screen coordinates for the monitor that contains the specified point. This is
-	 * useful for setups with multiple monitors, to ensure that popup windows are positioned
-	 * properly.
+	 * Returns the screen coordinates for the monitor that contains the specified
+	 * point. This is useful for setups with multiple monitors, to ensure that popup
+	 * windows are positioned properly.
 	 *
 	 * @param x The x-coordinate, in screen coordinates.
 	 * @param y The y-coordinate, in screen coordinates.
@@ -90,16 +90,16 @@ public class TipUtil {
 		// If point is outside all monitors, default to default monitor (?)
 		return env.getMaximumWindowBounds();
 	}
-	
+
 	/**
 	 * Returns the default background color to use for tool tip windows.
 	 *
 	 * @return The default background color.
 	 */
 	public static Color getToolTipBackground() {
-		
+
 		Color c = UIManager.getColor("ToolTip.background");
-		
+
 		// Tooltip.background is wrong color on Nimbus (!)
 		boolean isNimbus = isNimbusLookAndFeel();
 		if (c == null || isNimbus) {
@@ -108,40 +108,41 @@ public class TipUtil {
 				c = SystemColor.info; // System default
 			}
 		}
-		
+
 		// Workaround for a bug (?) with Nimbus - calling JLabel.setBackground()
 		// with a ColorUIResource does nothing, must be a normal Color
 		if (c instanceof ColorUIResource) {
 			c = new Color(c.getRGB());
 		}
-		
+
 		return c;
-		
+
 	}
-	
+
 	/**
 	 * Returns the border used by tool tips in this look and feel.
 	 *
 	 * @return The border.
 	 */
 	public static Border getToolTipBorder() {
-		
+
 		Border border = UIManager.getBorder("ToolTip.border");
-		
+
 		if (border == null || isNimbusLookAndFeel()) {
 			border = UIManager.getBorder("nimbusBorder");
 			if (border == null) {
 				border = BorderFactory.createLineBorder(SystemColor.controlDkShadow);
 			}
 		}
-		
+
 		return border;
-		
+
 	}
-	
+
 	/**
-	 * Returns whether a color is a Nimbus DerivedColor, which is troublesome in that it doesn't use
-	 * its RGB values (uses HSB instead?) and so querying them is useless.
+	 * Returns whether a color is a Nimbus DerivedColor, which is troublesome in
+	 * that it doesn't use its RGB values (uses HSB instead?) and so querying them
+	 * is useless.
 	 *
 	 * @param c The color to check.
 	 * @return Whether it is a DerivedColor
@@ -149,7 +150,7 @@ public class TipUtil {
 	private static final boolean isDerivedColor(Color c) {
 		return c != null && c.getClass().getName().endsWith(".DerivedColor");
 	}
-	
+
 	/**
 	 * Returns whether the Nimbus Look and Feel is installed.
 	 *
@@ -158,15 +159,16 @@ public class TipUtil {
 	private static final boolean isNimbusLookAndFeel() {
 		return UIManager.getLookAndFeel().getName().equals("Nimbus");
 	}
-	
+
 	/**
-	 * Tweaks a <code>JEditorPane</code> so it can be used to render the content in a focusable
-	 * pseudo-tool tip. It is assumed that the editor pane is using an <code>HTMLDocument</code>.
+	 * Tweaks a <code>JEditorPane</code> so it can be used to render the content in
+	 * a focusable pseudo-tool tip. It is assumed that the editor pane is using an
+	 * <code>HTMLDocument</code>.
 	 *
 	 * @param textArea The editor pane to tweak.
 	 */
 	public static void tweakTipEditorPane(JEditorPane textArea) {
-		
+
 		// Jump through a few hoops to get things looking nice in Nimbus
 		boolean isNimbus = isNimbusLookAndFeel();
 		if (isNimbus) {
@@ -176,13 +178,13 @@ public class TipUtil {
 			textArea.setSelectedTextColor(selFG);
 			textArea.setSelectionColor(selBG);
 		}
-		
+
 		textArea.setEditable(false); // Required for links to work!
 		textArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		
+
 		// Make selection visible even though we are not (initially) focusable.
 		textArea.getCaret().setSelectionVisible(true);
-		
+
 		// Set the foreground color. Important because when rendering HTML,
 		// default foreground becomes black, which may not match all LAF's
 		// (e.g. Substance).
@@ -191,10 +193,10 @@ public class TipUtil {
 			fg = SystemColor.textText;
 		}
 		textArea.setForeground(fg);
-		
+
 		// Make it use the "tool tip" background color.
 		textArea.setBackground(TipUtil.getToolTipBackground());
-		
+
 		// Force JEditorPane to use a certain font even in HTML.
 		// All standard LookAndFeels, even Nimbus (!), define Label.font.
 		Font font = UIManager.getFont("Label.font");
@@ -202,14 +204,15 @@ public class TipUtil {
 			font = new Font("SansSerif", Font.PLAIN, 12);
 		}
 		HTMLDocument doc = (HTMLDocument) textArea.getDocument();
-		doc.getStyleSheet().addRule("body { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "pt" + "; color: " + getHexString(fg) + "; }");
-		
+		doc.getStyleSheet().addRule("body { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "pt"
+				+ "; color: " + getHexString(fg) + "; }");
+
 		// Always add link foreground rule. Unfortunately these CSS rules
 		// stack each time the LaF is changed (how can we overwrite them
 		// without clearing out the important "standard" ones?).
 		Color linkFG = RSyntaxUtilities.getHyperlinkForeground();
 		doc.getStyleSheet().addRule("a { color: " + getHexString(linkFG) + "; }");
-		
+
 	}
-	
+
 }

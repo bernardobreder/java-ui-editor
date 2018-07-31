@@ -5,13 +5,12 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 public class ValidationConfigSniffer {
-	
+
 	public ValidationConfig sniff(RSyntaxDocument doc) {
-		
+
 		ValidationConfig config = null;
-		
-		OUTER:
-		for (Token token : doc) {
+
+		OUTER: for (Token token : doc) {
 			switch (token.getType()) {
 			case TokenTypes.MARKUP_DTD:
 				// System.out.println("DTD: " + token.getLexeme());
@@ -22,9 +21,9 @@ public class ValidationConfigSniffer {
 				break OUTER;
 			}
 		}
-		
+
 		return config;
-		
+
 	}
-	
+
 }

@@ -8,8 +8,8 @@ package org.fife.ui.rsyntaxtextarea.parser;
 import java.awt.Color;
 
 /**
- * Base implementation of a parser notice. Most <code>Parser</code> implementations can return
- * instances of this in their parse result.
+ * Base implementation of a parser notice. Most <code>Parser</code>
+ * implementations can return instances of this in their parse result.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -17,51 +17,51 @@ import java.awt.Color;
  * @see ParseResult
  */
 public class DefaultParserNotice implements ParserNotice {
-	
+
 	private Parser parser;
-	
+
 	private Level level;
-	
+
 	private int line;
-	
+
 	private int offset;
-	
+
 	private int length;
-	
+
 	private boolean showInEditor;
-	
+
 	private Color color;
-	
+
 	private String message;
-	
+
 	private String toolTipText;
-	
+
 	private static final Color[] DEFAULT_COLORS = { new Color(255, 0, 128), // Error
-	new Color(244, 200, 45), // Warning
-	Color.gray, // Info
+			new Color(244, 200, 45), // Warning
+			Color.gray, // Info
 	};
-	
+
 	/**
 	 * Constructor.
 	 *
 	 * @param parser The parser that created this notice.
-	 * @param msg The text of the message.
-	 * @param line The line number for the message.
+	 * @param msg    The text of the message.
+	 * @param line   The line number for the message.
 	 */
 	public DefaultParserNotice(Parser parser, String msg, int line) {
 		this(parser, msg, line, -1, -1);
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param parser The parser that created this notice.
+	 * @param parser  The parser that created this notice.
 	 * @param message The message.
-	 * @param line The line number corresponding to the message.
-	 * @param offset The offset in the input stream of the code the message is concerned with, or
-	 *            <code>-1</code> if unknown.
-	 * @param length The length of the code the message is concerned with, or <code>-1</code> if
-	 *            unknown.
+	 * @param line    The line number corresponding to the message.
+	 * @param offset  The offset in the input stream of the code the message is
+	 *                concerned with, or <code>-1</code> if unknown.
+	 * @param length  The length of the code the message is concerned with, or
+	 *                <code>-1</code> if unknown.
 	 */
 	public DefaultParserNotice(Parser parser, String message, int line, int offset, int length) {
 		this.parser = parser;
@@ -72,7 +72,7 @@ public class DefaultParserNotice implements ParserNotice {
 		setLevel(Level.ERROR);
 		setShowInEditor(true);
 	}
-	
+
 	/**
 	 * Compares this parser notice to another.
 	 *
@@ -93,7 +93,7 @@ public class DefaultParserNotice implements ParserNotice {
 		}
 		return diff;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -101,7 +101,7 @@ public class DefaultParserNotice implements ParserNotice {
 	public boolean containsPosition(int pos) {
 		return offset <= pos && pos < (offset + length);
 	}
-	
+
 	/**
 	 * Returns whether this parser notice is equal to another one.
 	 *
@@ -115,7 +115,7 @@ public class DefaultParserNotice implements ParserNotice {
 		}
 		return compareTo((ParserNotice) obj) == 0;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -127,7 +127,7 @@ public class DefaultParserNotice implements ParserNotice {
 		}
 		return c;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -135,7 +135,7 @@ public class DefaultParserNotice implements ParserNotice {
 	public boolean getKnowsOffsetAndLength() {
 		return offset >= 0 && length >= 0;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -143,7 +143,7 @@ public class DefaultParserNotice implements ParserNotice {
 	public int getLength() {
 		return length;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -151,7 +151,7 @@ public class DefaultParserNotice implements ParserNotice {
 	public Level getLevel() {
 		return level;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -159,7 +159,7 @@ public class DefaultParserNotice implements ParserNotice {
 	public int getLine() {
 		return line;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -167,7 +167,7 @@ public class DefaultParserNotice implements ParserNotice {
 	public String getMessage() {
 		return message;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -175,7 +175,7 @@ public class DefaultParserNotice implements ParserNotice {
 	public int getOffset() {
 		return offset;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -183,7 +183,7 @@ public class DefaultParserNotice implements ParserNotice {
 	public Parser getParser() {
 		return parser;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -191,7 +191,7 @@ public class DefaultParserNotice implements ParserNotice {
 	public boolean getShowInEditor() {
 		return showInEditor;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -199,7 +199,7 @@ public class DefaultParserNotice implements ParserNotice {
 	public String getToolTipText() {
 		return toolTipText != null ? toolTipText : getMessage();
 	}
-	
+
 	/**
 	 * Returns the hash code for this notice.
 	 *
@@ -209,7 +209,7 @@ public class DefaultParserNotice implements ParserNotice {
 	public int hashCode() {
 		return (line << 16) | offset;
 	}
-	
+
 	/**
 	 * Sets the color to use when painting this notice.
 	 *
@@ -219,7 +219,7 @@ public class DefaultParserNotice implements ParserNotice {
 	public void setColor(Color color) {
 		this.color = color;
 	}
-	
+
 	/**
 	 * Sets the level of this notice.
 	 *
@@ -232,9 +232,10 @@ public class DefaultParserNotice implements ParserNotice {
 		}
 		this.level = level;
 	}
-	
+
 	/**
-	 * Sets whether a squiggle underline should be drawn in the editor for this notice.
+	 * Sets whether a squiggle underline should be drawn in the editor for this
+	 * notice.
 	 *
 	 * @param show Whether to draw a squiggle underline.
 	 * @see #getShowInEditor()
@@ -242,18 +243,19 @@ public class DefaultParserNotice implements ParserNotice {
 	public void setShowInEditor(boolean show) {
 		showInEditor = show;
 	}
-	
+
 	/**
 	 * Sets the tooltip text to display for this notice.
 	 *
-	 * @param text The new tooltip text. This can be HTML. If this is <code>null</code>, then
-	 *            tooltips will return the same text as {@link #getMessage()}.
+	 * @param text The new tooltip text. This can be HTML. If this is
+	 *             <code>null</code>, then tooltips will return the same text as
+	 *             {@link #getMessage()}.
 	 * @see #getToolTipText()
 	 */
 	public void setToolTipText(String text) {
 		toolTipText = text;
 	}
-	
+
 	/**
 	 * Returns a string representation of this parser notice.
 	 *
@@ -263,5 +265,5 @@ public class DefaultParserNotice implements ParserNotice {
 	public String toString() {
 		return "Line " + getLine() + ": " + getMessage();
 	}
-	
+
 }

@@ -16,49 +16,50 @@ import javax.swing.text.Document;
 import javax.swing.text.Position;
 
 /**
- * A scanner that allows the user to "push back" tokens. This scanner allows arbitrary lookahead.
+ * A scanner that allows the user to "push back" tokens. This scanner allows
+ * arbitrary lookahead.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class Scanner {
-	
+
 	private static final boolean DEBUG = false;
-	
+
 	/**
 	 * The scanner we delegate to.
 	 */
 	private SourceCodeScanner s;
-	
+
 	/**
 	 * Stack of tokens that have been "pushed back."
 	 */
 	private Stack<Token> stack;
-	
+
 	/**
 	 * The depth in which we're in TypeArguments or TypeParameters.
 	 */
 	private int typeArgLevel;
-	
+
 	/**
-	 * If we are parsing text in a Swing <code>JTextComponent</code>, this should be the document of
-	 * that component.
+	 * If we are parsing text in a Swing <code>JTextComponent</code>, this should be
+	 * the document of that component.
 	 */
 	private Document doc;
-	
+
 	/**
 	 * The most recently lexed token, or <code>null</code> if EOS was reached.
 	 */
 	private Token mostRecentToken;
-	
+
 	/**
-	 * Constructor. This scanner will return no tokens unless some are pushed onto it via
-	 * {@link #yyPushback(Token)}.
+	 * Constructor. This scanner will return no tokens unless some are pushed onto
+	 * it via {@link #yyPushback(Token)}.
 	 */
 	public Scanner() {
 		this((Reader) null);
 	}
-	
+
 	/**
 	 * Constructor. This scanner will only return those tokens pushed onto it.
 	 *
@@ -70,7 +71,7 @@ public class Scanner {
 			stack.push(tokens.get(i));
 		}
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -81,9 +82,10 @@ public class Scanner {
 		s.setKeepLastDocComment(true);
 		stack = new Stack<Token>();
 	}
-	
+
 	/**
-	 * This method is just here for debugging purposes to make sure our parser is sound.
+	 * This method is just here for debugging purposes to make sure our parser is
+	 * sound.
 	 *
 	 * @param t A token to push onto the stack (non-<code>null</code>).
 	 */
@@ -99,7 +101,7 @@ public class Scanner {
 		}
 		stack.push(t);
 	}
-	
+
 	/**
 	 * Decreases the depth in which we're in TypeArguments or TypeParameters.
 	 *
@@ -111,10 +113,10 @@ public class Scanner {
 			throw new InternalError("typeArgLevel dipped below 0");
 		}
 	}
-	
+
 	/**
-	 * Returns an offset into the source being parsed. This offset will be tracked if we are parsing
-	 * code from a Swing <code>JTextComponent</code>.
+	 * Returns an offset into the source being parsed. This offset will be tracked
+	 * if we are parsing code from a Swing <code>JTextComponent</code>.
 	 *
 	 * @param offs The offset.
 	 * @return An object representing the offset.
@@ -129,14 +131,14 @@ public class Scanner {
 			}
 		}
 		return new Offset() {
-			
+
 			@Override
 			public int getOffset() {
 				return offs;
 			}
 		};
 	}
-	
+
 	private void debugPrintToken(Token t) {
 		if (DEBUG) {
 			if (t == null) {
@@ -146,7 +148,7 @@ public class Scanner {
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns the current column into the current line.
 	 *
@@ -156,17 +158,18 @@ public class Scanner {
 	public int getColumn() {
 		return s.getColumn();
 	}
-	
+
 	/**
-	 * Returns the last documentation comment parsed. The "last documentation comment" is cleared
-	 * when this method returns.
+	 * Returns the last documentation comment parsed. The "last documentation
+	 * comment" is cleared when this method returns.
 	 *
-	 * @return The last documentation comment parsed, or <code>null</code> if there was none.
+	 * @return The last documentation comment parsed, or <code>null</code> if there
+	 *         was none.
 	 */
 	public String getLastDocComment() {
 		return s.getLastDocComment();
 	}
-	
+
 	/**
 	 * Returns the current line into the document.
 	 *
@@ -176,7 +179,7 @@ public class Scanner {
 	public int getLine() {
 		return s.getLine();
 	}
-	
+
 	/**
 	 * Returns the most recently-lexed token.
 	 *
@@ -185,7 +188,7 @@ public class Scanner {
 	public Token getMostRecentToken() {
 		return mostRecentToken;
 	}
-	
+
 	/**
 	 * Returns the current offset into the document.
 	 *
@@ -194,7 +197,7 @@ public class Scanner {
 	public int getOffset() {
 		return s.getOffset();
 	}
-	
+
 	/**
 	 * Eats through (possibly nested) paren pairs, e.g.:
 	 *
@@ -204,19 +207,19 @@ public class Scanner {
 	 *
 	 * . Blocks nested inside the paren pairs are also skipped.
 	 *
-	 * @throws IOException If an IO error occurs.
+	 * @throws IOException   If an IO error occurs.
 	 * @throws InternalError If the next token is not a '('.
 	 */
 	public void eatParenPairs() throws IOException {
-		
+
 		Token t = yylex();
 		if (t == null || t.getType() != TokenTypes.SEPARATOR_LPAREN) {
 			throw new InternalError("'(' expected, found: " + t);
 		}
-		
+
 		int blockDepth = 0;
 		int parenDepth = 1;
-		
+
 		while ((t = yylex()) != null) {
 			int type = t.getType();
 			switch (type) {
@@ -238,12 +241,12 @@ public class Scanner {
 				break;
 			}
 		}
-		
+
 	}
-	
+
 	/**
-	 * Eats all tokens up to (and including) the next token of the specified type. This is useful,
-	 * for example, to eat until the next semicolon.
+	 * Eats all tokens up to (and including) the next token of the specified type.
+	 * This is useful, for example, to eat until the next semicolon.
 	 *
 	 * @param tokenType The type of token to eat through.
 	 * @throws IOException If an IO error occurs.
@@ -254,10 +257,10 @@ public class Scanner {
 			;
 		}
 	}
-	
+
 	/**
-	 * Eats all tokens up to (and including) the next token of the specified type. This is useful,
-	 * for example, to eat until the next semicolon.
+	 * Eats all tokens up to (and including) the next token of the specified type.
+	 * This is useful, for example, to eat until the next semicolon.
 	 *
 	 * @param tokenType The type of token to eat through.
 	 * @throws IOException If an IO error occurs.
@@ -280,15 +283,16 @@ public class Scanner {
 			}
 		}
 	}
-	
+
 	/**
-	 * Eats all tokens up to (and including) the next token of one of the specified types. This is
-	 * useful, for example, to eat until the next equal sign or semicolon.
+	 * Eats all tokens up to (and including) the next token of one of the specified
+	 * types. This is useful, for example, to eat until the next equal sign or
+	 * semicolon.
 	 *
 	 * @param tokenType1 The type of token to eat through.
 	 * @param tokenType2 Another type of token to eat through.
-	 * @return The last token read. This will either be one of the two token types passed in, or
-	 *         <code>null</code> if the end of the stream is reached.
+	 * @return The last token read. This will either be one of the two token types
+	 *         passed in, or <code>null</code> if the end of the stream is reached.
 	 * @throws IOException If an IO error occurs.
 	 * @see #eatThroughNextSkippingBlocksAndStuffInParens(int, int)
 	 */
@@ -309,24 +313,25 @@ public class Scanner {
 		}
 		return null;
 	}
-	
+
 	/**
-	 * Eats all tokens up to (and including) the next token of one of the specified types. This is
-	 * useful, for example, to eat until the next equal sign or semicolon.
+	 * Eats all tokens up to (and including) the next token of one of the specified
+	 * types. This is useful, for example, to eat until the next equal sign or
+	 * semicolon.
 	 *
 	 * @param tokenType1 The type of token to eat through.
 	 * @param tokenType2 Another type of token to eat through.
-	 * @return The last token read. This will either be one of the two token types passed in, or
-	 *         <code>null</code> if the end of the stream is reached.
+	 * @return The last token read. This will either be one of the two token types
+	 *         passed in, or <code>null</code> if the end of the stream is reached.
 	 * @throws IOException If an IO error occurs.
 	 * @see #eatThroughNextSkippingBlocks(int, int)
 	 */
 	public Token eatThroughNextSkippingBlocksAndStuffInParens(int tokenType1, int tokenType2) throws IOException {
-		
+
 		Token t = null;
 		int blockDepth = 0;
 		int parenDepth = 0;
-		
+
 		while ((t = yylex()) != null) {
 			int type = t.getType();
 			switch (type) {
@@ -350,11 +355,11 @@ public class Scanner {
 				}
 			}
 		}
-		
+
 		return null;
-		
+
 	}
-	
+
 	public void eatUntilNext(int type1, int type2) throws IOException {
 		Token t = null;
 		while ((t = yylex()) != null) {
@@ -365,7 +370,7 @@ public class Scanner {
 			}
 		}
 	}
-	
+
 	public void eatUntilNext(int type1, int type2, int type3) throws IOException {
 		Token t = null;
 		while ((t = yylex()) != null) {
@@ -376,7 +381,7 @@ public class Scanner {
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns the current TypeArgument/TypeParameter level.
 	 *
@@ -387,7 +392,7 @@ public class Scanner {
 	public int getTypeArgumentsLevel() {
 		return typeArgLevel;
 	}
-	
+
 	/**
 	 * Increases the depth in which we're in TypeArguments or TypeParameters.
 	 *
@@ -397,13 +402,13 @@ public class Scanner {
 	public void increaseTypeArgumentsLevel() {
 		typeArgLevel++;
 	}
-	
+
 	private Stack<Stack<Token>> resetPositions;
-	
+
 	private Stack<Token> currentResetTokenStack;
-	
+
 	private int currentResetStartOffset;
-	
+
 	public void markResetPosition() {
 		if (s != null) { // Hack! We should really do something for token-only scanners
 			if (resetPositions == null) {
@@ -414,7 +419,7 @@ public class Scanner {
 			currentResetStartOffset = s.getOffset();
 		}
 	}
-	
+
 	public void resetToLastMarkedPosition() {
 		if (s != null) { // Hack! We should really do something for token-only scanners
 			if (currentResetTokenStack == null) {
@@ -439,7 +444,7 @@ public class Scanner {
 			currentResetStartOffset = -1;
 		}
 	}
-	
+
 	public void clearResetPosition() {
 		if (s != null) { // Hack! We should really do something for token-only scanners
 			if (currentResetTokenStack == null) {
@@ -450,19 +455,20 @@ public class Scanner {
 			currentResetStartOffset = -1;
 		}
 	}
-	
+
 	/**
-	 * Sets the Swing <code>Document</code> whose content is being parsed. This method should be
-	 * called if we are parsing code inside a <code>JTextComponent</code>, as it will help our
-	 * parsed code to track changes when the document is modified. If we are parsing source from a
-	 * flat file, this method shouldn't be called.
+	 * Sets the Swing <code>Document</code> whose content is being parsed. This
+	 * method should be called if we are parsing code inside a
+	 * <code>JTextComponent</code>, as it will help our parsed code to track changes
+	 * when the document is modified. If we are parsing source from a flat file,
+	 * this method shouldn't be called.
 	 *
 	 * @param doc The document being parsed.
 	 */
 	public void setDocument(Document doc) {
 		this.doc = doc;
 	}
-	
+
 	/**
 	 * Skips all bracket pairs ('[' followed by ']') in the stream.
 	 *
@@ -470,19 +476,20 @@ public class Scanner {
 	 * @throws IOException If an IO error occurs.
 	 */
 	public int skipBracketPairs() throws IOException {
-		
+
 		int count = 0;
-		
-		while (yyPeekCheckType() == TokenTypes.SEPARATOR_LBRACKET && yyPeekCheckType(2) == TokenTypes.SEPARATOR_RBRACKET) {
+
+		while (yyPeekCheckType() == TokenTypes.SEPARATOR_LBRACKET
+				&& yyPeekCheckType(2) == TokenTypes.SEPARATOR_RBRACKET) {
 			yylex();
 			yylex();
 			count++;
 		}
-		
+
 		return count;
-		
+
 	}
-	
+
 	/**
 	 * Returns the next token from the input stream.
 	 *
@@ -493,14 +500,14 @@ public class Scanner {
 	 * NOTE: All other lex'ing methods should call into this one.
 	 */
 	public Token yylex() throws IOException {
-		
+
 		Token t = null;
 		if (stack.isEmpty()) {
 			t = s != null ? s.yylex() : null;
 		} else {
 			t = stack.pop();
 		}
-		
+
 		// If we have nested TypeArguments ("Set<Map.Entry<String,String>>"),
 		// Prevent the ">>" from coming across as a single token.
 		if (typeArgLevel > 0 && t != null && t.isOperator()) {
@@ -511,13 +518,15 @@ public class Scanner {
 					Token rest = null;
 					switch (t.getType()) {
 					case TokenTypes.OPERATOR_LTE:
-						rest = new TokenImpl(Token.OPERATOR_EQUALS, "=", t.getLine(), t.getColumn() + 1, t.getOffset() + 1);
+						rest = new TokenImpl(Token.OPERATOR_EQUALS, "=", t.getLine(), t.getColumn() + 1,
+								t.getOffset() + 1);
 						break;
 					case TokenTypes.OPERATOR_LSHIFT:
 						rest = new TokenImpl(Token.OPERATOR_LT, "<", t.getLine(), t.getColumn() + 1, t.getOffset() + 1);
 						break;
 					case TokenTypes.OPERATOR_LSHIFT_EQUALS:
-						rest = new TokenImpl(Token.OPERATOR_LTE, "<=", t.getLine(), t.getColumn() + 1, t.getOffset() + 1);
+						rest = new TokenImpl(Token.OPERATOR_LTE, "<=", t.getLine(), t.getColumn() + 1,
+								t.getOffset() + 1);
 						break;
 					}
 					stack.push(rest);
@@ -526,19 +535,23 @@ public class Scanner {
 					Token rest = null;
 					switch (t.getType()) {
 					case TokenTypes.OPERATOR_GTE:
-						rest = new TokenImpl(Token.OPERATOR_EQUALS, "=", t.getLine(), t.getColumn() + 1, t.getOffset() + 1);
+						rest = new TokenImpl(Token.OPERATOR_EQUALS, "=", t.getLine(), t.getColumn() + 1,
+								t.getOffset() + 1);
 						break;
 					case TokenTypes.OPERATOR_RSHIFT:
 						rest = new TokenImpl(Token.OPERATOR_GT, ">", t.getLine(), t.getColumn() + 1, t.getOffset() + 1);
 						break;
 					case TokenTypes.OPERATOR_RSHIFT2:
-						rest = new TokenImpl(Token.OPERATOR_RSHIFT, ">>", t.getLine(), t.getColumn() + 1, t.getOffset() + 1);
+						rest = new TokenImpl(Token.OPERATOR_RSHIFT, ">>", t.getLine(), t.getColumn() + 1,
+								t.getOffset() + 1);
 						break;
 					case TokenTypes.OPERATOR_RSHIFT_EQUALS:
-						rest = new TokenImpl(Token.OPERATOR_GTE, ">=", t.getLine(), t.getColumn() + 1, t.getOffset() + 1);
+						rest = new TokenImpl(Token.OPERATOR_GTE, ">=", t.getLine(), t.getColumn() + 1,
+								t.getOffset() + 1);
 						break;
 					case TokenTypes.OPERATOR_RSHIFT2_EQUALS:
-						rest = new TokenImpl(Token.OPERATOR_RSHIFT_EQUALS, ">>=", t.getLine(), t.getColumn() + 1, t.getOffset() + 1);
+						rest = new TokenImpl(Token.OPERATOR_RSHIFT_EQUALS, ">>=", t.getLine(), t.getColumn() + 1,
+								t.getOffset() + 1);
 						break;
 					}
 					stack.push(rest);
@@ -546,7 +559,7 @@ public class Scanner {
 				}
 			}
 		}
-		
+
 		debugPrintToken(t);
 		if (currentResetTokenStack != null) {
 			currentResetTokenStack.push(t);
@@ -555,14 +568,15 @@ public class Scanner {
 			mostRecentToken = t;
 		}
 		return t;
-		
+
 	}
-	
+
 	/**
-	 * Returns the next token from the input stream, or throws an exception if the end of stream is
-	 * reached.
+	 * Returns the next token from the input stream, or throws an exception if the
+	 * end of stream is reached.
 	 *
-	 * @param error The error description for the exception if the end of stream is reached.
+	 * @param error The error description for the exception if the end of stream is
+	 *              reached.
 	 * @return The token.
 	 * @throws IOException If an IO error occurs or the end of stream is reached.
 	 */
@@ -573,53 +587,53 @@ public class Scanner {
 		}
 		return t;
 	}
-	
+
 	/**
-	 * Returns the next token from the input stream, or throws an exception if the end of stream is
-	 * reached or if the token is not of a given type.
+	 * Returns the next token from the input stream, or throws an exception if the
+	 * end of stream is reached or if the token is not of a given type.
 	 *
-	 * @param type The type the token must be.
-	 * @param error The error description for the exception if the end of stream is reached, or if
-	 *            the token is of an unexpected type.
+	 * @param type  The type the token must be.
+	 * @param error The error description for the exception if the end of stream is
+	 *              reached, or if the token is of an unexpected type.
 	 * @return The token.
-	 * @throws IOException If an IO error occurs or the end of stream is reached, or if the token is
-	 *             of the wrong type.
+	 * @throws IOException If an IO error occurs or the end of stream is reached, or
+	 *                     if the token is of the wrong type.
 	 */
 	public Token yylexNonNull(int type, String error) throws IOException {
 		return yylexNonNull(type, -1, error);
 	}
-	
+
 	/**
-	 * Returns the next token from the input stream, or throws an exception if the end of stream is
-	 * reached or if the token is not of two given types.
+	 * Returns the next token from the input stream, or throws an exception if the
+	 * end of stream is reached or if the token is not of two given types.
 	 *
 	 * @param type1 One type the token can be.
-	 * @param type2 Another type the token can be, or <tt>-1</tt> if we should only check against
-	 *            <tt>type1</tt>.
-	 * @param error The error description for the exception if the end of stream is reached, or if
-	 *            the token is of an unexpected type.
+	 * @param type2 Another type the token can be, or <tt>-1</tt> if we should only
+	 *              check against <tt>type1</tt>.
+	 * @param error The error description for the exception if the end of stream is
+	 *              reached, or if the token is of an unexpected type.
 	 * @return The token.
-	 * @throws IOException If an IO error occurs or the end of stream is reached, or if the token is
-	 *             of a wrong type.
+	 * @throws IOException If an IO error occurs or the end of stream is reached, or
+	 *                     if the token is of a wrong type.
 	 */
 	public Token yylexNonNull(int type1, int type2, String error) throws IOException {
 		return yylexNonNull(type1, type2, -1, error);
 	}
-	
+
 	/**
-	 * Returns the next token from the input stream, or throws an exception if the end of stream is
-	 * reached or if the token is not of three given types.
+	 * Returns the next token from the input stream, or throws an exception if the
+	 * end of stream is reached or if the token is not of three given types.
 	 *
 	 * @param type1 One type the token can be.
-	 * @param type2 Another type the token can be, or <tt>-1</tt> if we should only check against
-	 *            <tt>type1</tt>.
-	 * @param type3 Another type the token can be, or <tt>-1</tt> if we should only check against
-	 *            <tt>type1</tt> and <tt>type2</tt>.
-	 * @param error The error description for the exception if the end of stream is reached, or if
-	 *            the token is of an unexpected type.
+	 * @param type2 Another type the token can be, or <tt>-1</tt> if we should only
+	 *              check against <tt>type1</tt>.
+	 * @param type3 Another type the token can be, or <tt>-1</tt> if we should only
+	 *              check against <tt>type1</tt> and <tt>type2</tt>.
+	 * @param error The error description for the exception if the end of stream is
+	 *              reached, or if the token is of an unexpected type.
 	 * @return The token.
-	 * @throws IOException If an IO error occurs or the end of stream is reached, or if the token is
-	 *             of a wrong type.
+	 * @throws IOException If an IO error occurs or the end of stream is reached, or
+	 *                     if the token is of a wrong type.
 	 */
 	public Token yylexNonNull(int type1, int type2, int type3, String error) throws IOException {
 		Token t = yylex();
@@ -631,9 +645,10 @@ public class Scanner {
 		}
 		return t;
 	}
-	
+
 	/**
-	 * Returns the next token, but does not take it off of the stream. This is useful for lookahead.
+	 * Returns the next token, but does not take it off of the stream. This is
+	 * useful for lookahead.
 	 *
 	 * @return The next token.
 	 * @throws IOException If an IO error occurs.
@@ -645,13 +660,14 @@ public class Scanner {
 		}
 		return t;
 	}
-	
+
 	/**
-	 * Returns the <tt>depth</tt>-th token, but does not anything off of the stream. This is useful
-	 * for lookahead.
+	 * Returns the <tt>depth</tt>-th token, but does not anything off of the stream.
+	 * This is useful for lookahead.
 	 *
 	 * @param depth The token to peek at, from <tt>1</tt> forward.
-	 * @return The token, or <code>null</code> if that token index is past the end of the stream.
+	 * @return The token, or <code>null</code> if that token index is past the end
+	 *         of the stream.
 	 * @throws IOException If an IO error occurs.
 	 */
 	public Token yyPeek(int depth) throws IOException {
@@ -676,32 +692,35 @@ public class Scanner {
 		}
 		return t;
 	}
-	
+
 	/**
 	 * Peeks at and returns the type of the next token on the stream.
 	 *
-	 * @return The type of the next token, or <tt>-1</tt> if the end of stream has been reached.
+	 * @return The type of the next token, or <tt>-1</tt> if the end of stream has
+	 *         been reached.
 	 * @throws IOException If an IO error occurs.
 	 */
 	public int yyPeekCheckType() throws IOException {
 		Token t = yyPeek();
 		return t != null ? t.getType() : -1;
 	}
-	
+
 	/**
 	 * Peeks at and returns the type of the specified token on the stream.
 	 *
 	 * @param index The index of the token to retrieve.
-	 * @return The type of the token, or <tt>-1</tt> if the end of stream was reached first.
+	 * @return The type of the token, or <tt>-1</tt> if the end of stream was
+	 *         reached first.
 	 * @throws IOException If an IO error occurs.
 	 */
 	public int yyPeekCheckType(int index) throws IOException {
 		Token t = yyPeek(index);
 		return t != null ? t.getType() : -1;
 	}
-	
+
 	/**
-	 * Returns the next token, but does not take it off of the stream. This is useful for lookahead.
+	 * Returns the next token, but does not take it off of the stream. This is
+	 * useful for lookahead.
 	 *
 	 * @return The next token.
 	 * @throws IOException If an IO error occurs.
@@ -713,41 +732,44 @@ public class Scanner {
 		}
 		return t;
 	}
-	
+
 	/**
-	 * Returns the next token, but does not take it off of the stream. This is useful for lookahead.
+	 * Returns the next token, but does not take it off of the stream. This is
+	 * useful for lookahead.
 	 *
 	 * @param type The type the token must be.
 	 * @return The next token.
-	 * @throws IOException If an IO error occurs, or if EOS is reached, or if the token is not of
-	 *             the specified type.
+	 * @throws IOException If an IO error occurs, or if EOS is reached, or if the
+	 *                     token is not of the specified type.
 	 */
 	public Token yyPeekNonNull(int type, String error) throws IOException {
 		return yyPeekNonNull(type, -1, error);
 	}
-	
+
 	/**
-	 * Returns the next token, but does not take it off of the stream. This is useful for lookahead.
+	 * Returns the next token, but does not take it off of the stream. This is
+	 * useful for lookahead.
 	 *
 	 * @param type1 One of the two types the token must be.
 	 * @param type2 The other of the two types the token must be.
 	 * @return The next token.
-	 * @throws IOException If an IO error occurs, or if EOS is reached, or if the token is not of
-	 *             the specified type.
+	 * @throws IOException If an IO error occurs, or if EOS is reached, or if the
+	 *                     token is not of the specified type.
 	 */
 	public Token yyPeekNonNull(int type1, int type2, String error) throws IOException {
 		return yyPeekNonNull(type1, type2, -1, error);
 	}
-	
+
 	/**
-	 * Returns the next token, but does not take it off of the stream. This is useful for lookahead.
+	 * Returns the next token, but does not take it off of the stream. This is
+	 * useful for lookahead.
 	 *
 	 * @param type1 One of the three types the token must be.
 	 * @param type2 Another of the three types the token must be.
 	 * @param type3 The third of the types the token must be.
 	 * @return The next token.
-	 * @throws IOException If an IO error occurs, or if EOS is reached, or if the token is not of
-	 *             the specified type.
+	 * @throws IOException If an IO error occurs, or if EOS is reached, or if the
+	 *                     token is not of the specified type.
 	 */
 	public Token yyPeekNonNull(int type1, int type2, int type3, String error) throws IOException {
 		Token t = yyPeek();
@@ -759,7 +781,7 @@ public class Scanner {
 		}
 		return t;
 	}
-	
+
 	/**
 	 * Pushes a token back onto the stream.
 	 *
@@ -770,20 +792,20 @@ public class Scanner {
 			pushOntoStack(t);
 		}
 	}
-	
+
 	private class DocumentOffset implements Offset {
-		
+
 		public Position pos;
-		
+
 		public DocumentOffset(Position pos) {
 			this.pos = pos;
 		}
-		
+
 		@Override
 		public int getOffset() {
 			return pos.getOffset();
 		}
-		
+
 	}
-	
+
 }

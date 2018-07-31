@@ -15,14 +15,14 @@ import javax.swing.text.PlainDocument;
  * @version 1.0
  */
 public class RDocument extends PlainDocument {
-	
+
 	/**
 	 * Constructor.
 	 */
 	public RDocument() {
 		super(new RGapContent());
 	}
-	
+
 	/**
 	 * Returns the character in the document at the specified offset.
 	 *
@@ -33,12 +33,12 @@ public class RDocument extends PlainDocument {
 	public char charAt(int offset) throws BadLocationException {
 		return ((RGapContent) getContent()).charAt(offset);
 	}
-	
+
 	/**
 	 * Document content that provides fast access to individual characters.
 	 */
 	private static class RGapContent extends GapContent {
-		
+
 		public char charAt(int offset) throws BadLocationException {
 			if (offset < 0 || offset >= length()) {
 				throw new BadLocationException("Invalid offset", offset);
@@ -50,7 +50,7 @@ public class RDocument extends PlainDocument {
 			}
 			return array[getGapEnd() + offset - g0]; // above gap
 		}
-		
+
 	}
-	
+
 }

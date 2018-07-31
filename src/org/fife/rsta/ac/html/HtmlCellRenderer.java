@@ -21,11 +21,11 @@ import org.fife.ui.autocomplete.VariableCompletion;
  * @version 1.0
  */
 public class HtmlCellRenderer extends CompletionCellRenderer {
-	
+
 	private Icon tagIcon;
-	
+
 	private Icon attrIcon;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -33,25 +33,27 @@ public class HtmlCellRenderer extends CompletionCellRenderer {
 		tagIcon = getIcon("tag.png");
 		attrIcon = getIcon("attribute.png");
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void prepareForFunctionCompletion(JList list, FunctionCompletion fc, int index, boolean selected, boolean hasFocus) {
+	protected void prepareForFunctionCompletion(JList list, FunctionCompletion fc, int index, boolean selected,
+			boolean hasFocus) {
 		super.prepareForFunctionCompletion(list, fc, index, selected, hasFocus);
 		setIcon(getEmptyIcon());
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void prepareForMarkupTagCompletion(JList list, MarkupTagCompletion c, int index, boolean selected, boolean hasFocus) {
+	protected void prepareForMarkupTagCompletion(JList list, MarkupTagCompletion c, int index, boolean selected,
+			boolean hasFocus) {
 		super.prepareForMarkupTagCompletion(list, c, index, selected, hasFocus);
 		setIcon(tagIcon);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -64,14 +66,15 @@ public class HtmlCellRenderer extends CompletionCellRenderer {
 			setIcon(getEmptyIcon());
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void prepareForVariableCompletion(JList list, VariableCompletion vc, int index, boolean selected, boolean hasFocus) {
+	protected void prepareForVariableCompletion(JList list, VariableCompletion vc, int index, boolean selected,
+			boolean hasFocus) {
 		super.prepareForVariableCompletion(list, vc, index, selected, hasFocus);
 		setIcon(getEmptyIcon());
 	}
-	
+
 }

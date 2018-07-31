@@ -17,7 +17,7 @@ import org.fife.ui.autocomplete.LanguageAwareCompletionProvider;
  * @version 1.0
  */
 public class CssCompletionProvider extends LanguageAwareCompletionProvider {
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -25,7 +25,7 @@ public class CssCompletionProvider extends LanguageAwareCompletionProvider {
 		setDefaultCompletionProvider(createCodeCompletionProvider());
 		setCommentCompletionProvider(createCommentCompletionProvider());
 	}
-	
+
 	/**
 	 * Returns the provider to use when editing code.
 	 *
@@ -34,9 +34,9 @@ public class CssCompletionProvider extends LanguageAwareCompletionProvider {
 	 */
 	protected CompletionProvider createCodeCompletionProvider() {
 		return new PropertyValueCompletionProvider();
-		
+
 	}
-	
+
 	/**
 	 * Returns the provider to use when in a comment.
 	 *
@@ -49,5 +49,5 @@ public class CssCompletionProvider extends LanguageAwareCompletionProvider {
 		cp.addCompletion(new BasicCompletion(cp, "FIXME:", "A bug that needs to be fixed"));
 		return cp;
 	}
-	
+
 }

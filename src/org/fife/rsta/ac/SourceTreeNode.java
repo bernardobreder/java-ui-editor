@@ -18,25 +18,25 @@ import javax.swing.tree.TreeNode;
 import org.fife.ui.autocomplete.Util;
 
 /**
- * Base class for tree nodes in an {@link AbstractSourceTree}. They can be sorted and filtered based
- * on user input.
+ * Base class for tree nodes in an {@link AbstractSourceTree}. They can be
+ * sorted and filtered based on user input.
  *
  * @author Robert Futrell
  * @version 1.0
  * @see AbstractSourceTree
  */
 public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable<SourceTreeNode> {
-	
+
 	private boolean sortable;
-	
+
 	private boolean sorted;
-	
+
 	private Pattern pattern;
-	
+
 	private Vector<TreeNode> visibleChildren;
-	
+
 	private int sortPriority;
-	
+
 	/**
 	 * Creates an unsorted tree node.
 	 *
@@ -45,12 +45,12 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 	public SourceTreeNode(Object userObject) {
 		this(userObject, false);
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
 	 * @param userObject The user data for this tree node.
-	 * @param sorted Whether any child nodes added to this one should be sorted.
+	 * @param sorted     Whether any child nodes added to this one should be sorted.
 	 */
 	public SourceTreeNode(Object userObject, boolean sorted) {
 		super(userObject);
@@ -58,10 +58,10 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 		setSortable(true);
 		setSorted(sorted);
 	}
-	
+
 	/**
-	 * Overridden to ensure the new child is only made visible if it is matched by the current
-	 * filter.
+	 * Overridden to ensure the new child is only made visible if it is matched by
+	 * the current filter.
 	 *
 	 * @param child The child node to add.
 	 */
@@ -77,7 +77,7 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 			refreshVisibleChildren(); // TODO: Find index and add for performance
 		}
 	}
-	
+
 	/**
 	 * Overridden to operate over visible children only.
 	 *
@@ -87,9 +87,10 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 	public Enumeration<TreeNode> children() {
 		return visibleChildren.elements();
 	}
-	
+
 	/**
-	 * Returns a clone of this tree node. The clone will not contain any child nodes.
+	 * Returns a clone of this tree node. The clone will not contain any child
+	 * nodes.
 	 *
 	 * @return The clone of this node.
 	 * @see #cloneWithChildren()
@@ -101,7 +102,7 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 		node.visibleChildren = new Vector<TreeNode>();
 		return node;
 	}
-	
+
 	/**
 	 * Returns a clone of this tree node and all of its children.
 	 *
@@ -115,12 +116,13 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 		}
 		return clone;
 	}
-	
+
 	/**
 	 * Overridden to provide proper sorting of source tree nodes when the parent
-	 * <code>AbstractSourceTree</code> is sorted. Sorting is done first by priority, and nodes with
-	 * equal priority are then sorted by their string representations, ignoring case. Subclasses can
-	 * override this method if they wish to do more intricate sorting.
+	 * <code>AbstractSourceTree</code> is sorted. Sorting is done first by priority,
+	 * and nodes with equal priority are then sorted by their string
+	 * representations, ignoring case. Subclasses can override this method if they
+	 * wish to do more intricate sorting.
 	 *
 	 * @param stn2 A tree node to compare to.
 	 * @return How these tree nodes compare relative to each other.
@@ -136,12 +138,12 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 		}
 		return res;
 	}
-	
+
 	/**
 	 * Filters the children of this tree node based on the specified prefix.
 	 *
-	 * @param pattern The pattern that the child nodes must match. If this is <code>null</code>, all
-	 *            possible children are shown.
+	 * @param pattern The pattern that the child nodes must match. If this is
+	 *                <code>null</code>, all possible children are shown.
 	 */
 	protected void filter(Pattern pattern) {
 		this.pattern = pattern;
@@ -153,12 +155,13 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 			}
 		}
 	}
-	
+
 	/**
 	 * Overridden to operate over visible children only.
 	 *
 	 * @param child The child node.
-	 * @return The visible child after the specified node, or <code>null</code> if none.
+	 * @return The visible child after the specified node, or <code>null</code> if
+	 *         none.
 	 */
 	@Override
 	public TreeNode getChildAfter(TreeNode child) {
@@ -171,7 +174,7 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 		}
 		return index < getChildCount() - 1 ? getChildAt(index + 1) : null;
 	}
-	
+
 	/**
 	 * Overridden to operate over visible children only.
 	 *
@@ -183,12 +186,13 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 		// System.out.println(index);
 		return visibleChildren.get(index);
 	}
-	
+
 	/**
 	 * Overridden to operate over visible children only.
 	 *
 	 * @param child The child node.
-	 * @return The visible child before the specified node, or <code>null</code> if none.
+	 * @return The visible child before the specified node, or <code>null</code> if
+	 *         none.
 	 */
 	@Override
 	public TreeNode getChildBefore(TreeNode child) {
@@ -201,7 +205,7 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 		}
 		return index > 0 ? getChildAt(index - 1) : null;
 	}
-	
+
 	/**
 	 * Overridden to operate over visible children only.
 	 *
@@ -211,13 +215,14 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 	public int getChildCount() {
 		return visibleChildren.size();
 	}
-	
+
 	/**
 	 * Overridden to operate over visible children only.
 	 *
 	 * @param child The child node.
-	 * @return The index of the child, if it is visible. If the child node is not contained in this
-	 *         tree, or is simply not visible, <code>-1</code> is returned.
+	 * @return The index of the child, if it is visible. If the child node is not
+	 *         contained in this tree, or is simply not visible, <code>-1</code> is
+	 *         returned.
 	 */
 	@Override
 	public int getIndex(TreeNode child) {
@@ -232,10 +237,10 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 		}
 		return -1;
 	}
-	
+
 	/**
-	 * Returns the relative priority of this node against others when being sorted (lower is higher
-	 * priority).
+	 * Returns the relative priority of this node against others when being sorted
+	 * (lower is higher priority).
 	 *
 	 * @return The relative priority.
 	 * @see #setSortPriority(int)
@@ -243,7 +248,7 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 	public int getSortPriority() {
 		return sortPriority;
 	}
-	
+
 	/**
 	 * Returns whether this particular node's children can be sorted.
 	 *
@@ -253,7 +258,7 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 	public boolean isSortable() {
 		return sortable;
 	}
-	
+
 	/**
 	 * Returns whether this node is sorted.
 	 *
@@ -262,7 +267,7 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 	public boolean isSorted() {
 		return sorted;
 	}
-	
+
 	public void refresh() {
 		refreshVisibleChildren();
 		for (int i = 0; i < getChildCount(); i++) {
@@ -272,7 +277,7 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 			}
 		}
 	}
-	
+
 	/**
 	 * Refreshes what children are visible in the tree.
 	 */
@@ -299,10 +304,11 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 			}
 		}
 	}
-	
+
 	/**
-	 * Sets whether this particular node's children are sortable. Usually, only tree nodes
-	 * containing only "leaves" should be sorted (for example, a "types" node).
+	 * Sets whether this particular node's children are sortable. Usually, only tree
+	 * nodes containing only "leaves" should be sorted (for example, a "types"
+	 * node).
 	 *
 	 * @param sortable Whether this node's children are sortable.
 	 * @see #isSortable()
@@ -310,9 +316,10 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 	public void setSortable(boolean sortable) {
 		this.sortable = sortable;
 	}
-	
+
 	/**
-	 * Sets whether this tree node (and any child sortable tree nodes) are sorting their children.
+	 * Sets whether this tree node (and any child sortable tree nodes) are sorting
+	 * their children.
 	 *
 	 * @param sorted Whether sorting is enabled.
 	 * @see #isSorted()
@@ -335,10 +342,10 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 			}
 		}
 	}
-	
+
 	/**
-	 * Sets the relative sort priority of this tree node when it is compared against others (lower
-	 * is higher priority).
+	 * Sets the relative sort priority of this tree node when it is compared against
+	 * others (lower is higher priority).
 	 *
 	 * @param priority The relative priority.
 	 * @see #getSortPriority()
@@ -346,5 +353,5 @@ public class SourceTreeNode extends DefaultMutableTreeNode implements Comparable
 	public void setSortPriority(int priority) {
 		this.sortPriority = priority;
 	}
-	
+
 }

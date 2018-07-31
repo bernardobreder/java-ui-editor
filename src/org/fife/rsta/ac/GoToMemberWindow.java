@@ -47,45 +47,45 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.focusabletip.TipUtil;
 
 /**
- * A popup window that displays a text field and tree, allowing the user to jump to a specific part
- * of code in the current source file.
+ * A popup window that displays a text field and tree, allowing the user to jump
+ * to a specific part of code in the current source file.
  *
  * @author Robert Futrell
  * @version 1.0
  * @see GoToMemberAction
  */
 public class GoToMemberWindow extends JWindow {
-	
+
 	private RSyntaxTextArea textArea;
-	
+
 	private JTextField field;
-	
+
 	private AbstractSourceTree tree;
-	
+
 	private Listener listener;
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param parent The parent window (hosting the text component).
+	 * @param parent   The parent window (hosting the text component).
 	 * @param textArea The text area.
-	 * @param tree The source tree appropriate for the current language.
+	 * @param tree     The source tree appropriate for the current language.
 	 */
 	public GoToMemberWindow(Window parent, RSyntaxTextArea textArea, AbstractSourceTree tree) {
-		
+
 		super(parent);
 		this.textArea = textArea;
 		ComponentOrientation o = parent.getComponentOrientation();
 		JPanel contentPane = new JPanel(new BorderLayout());
 		contentPane.setBorder(TipUtil.getToolTipBorder());
-		
+
 		listener = new Listener();
 		addWindowFocusListener(listener);
 		parent.addComponentListener(listener);
-		
+
 		field = createTextField();
 		contentPane.add(field, BorderLayout.NORTH);
-		
+
 		this.tree = tree;
 		tweakTreeBorder(this.tree);
 		tree.setSorted(true);
@@ -98,13 +98,13 @@ public class GoToMemberWindow extends JWindow {
 		sp.setBorder(null);
 		sp.setViewportBorder(BorderFactory.createEmptyBorder());
 		contentPane.add(sp);
-		
+
 		Color bg = TipUtil.getToolTipBackground();
 		setBackground(bg);
 		field.setBackground(bg);
 		tree.setBackground(bg);
 		((DefaultTreeCellRenderer) tree.getCellRenderer()).setBackgroundNonSelectionColor(bg);
-		
+
 		// Give apps a chance to decorate us with drop shadows, etc.
 		setContentPane(contentPane);
 		PopupWindowDecorator decorator = PopupWindowDecorator.get();
@@ -112,7 +112,7 @@ public class GoToMemberWindow extends JWindow {
 		if (decorator != null) {
 			decorator.decorate(this);
 		}
-		
+
 		applyComponentOrientation(o);
 		pack();
 		JRootPane pane = getRootPane();
@@ -120,15 +120,15 @@ public class GoToMemberWindow extends JWindow {
 		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "EscapePressed");
 		ActionMap am = pane.getActionMap();
 		am.put("EscapePressed", new AbstractAction() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
 		});
-		
+
 	}
-	
+
 	/**
 	 * Creates the text field allowing the user to enter filter text.
 	 *
@@ -143,7 +143,7 @@ public class GoToMemberWindow extends JWindow {
 		field.getDocument().addDocumentListener(listener);
 		return field;
 	}
-	
+
 	@Override
 	public void dispose() {
 		listener.uninstall();
@@ -153,10 +153,10 @@ public class GoToMemberWindow extends JWindow {
 		// component is focused and this action is executed twice.
 		textArea.requestFocusInWindow();
 	}
-	
+
 	/**
-	 * Ensures the tree has a very small empty border at the top, to make things look a little
-	 * nicer.
+	 * Ensures the tree has a very small empty border at the top, to make things
+	 * look a little nicer.
 	 *
 	 * @param tree The tree whose border should be examined.
 	 */
@@ -170,53 +170,54 @@ public class GoToMemberWindow extends JWindow {
 			tree.setBorder(treeBorder);
 		}
 	}
-	
+
 	/**
 	 * Listens for events in this window.
 	 */
-	private class Listener extends MouseAdapter implements WindowFocusListener, ComponentListener, DocumentListener, ActionListener, KeyListener {
-		
+	private class Listener extends MouseAdapter
+			implements WindowFocusListener, ComponentListener, DocumentListener, ActionListener, KeyListener {
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (tree.gotoSelectedElement()) {
 				dispose();
 			}
 		}
-		
+
 		@Override
 		public void changedUpdate(DocumentEvent e) {
 			handleDocumentEvent(e);
 		}
-		
+
 		@Override
 		public void componentHidden(ComponentEvent e) {
 			dispose();
 		}
-		
+
 		@Override
 		public void componentMoved(ComponentEvent e) {
 			dispose();
 		}
-		
+
 		@Override
 		public void componentResized(ComponentEvent e) {
 			dispose();
 		}
-		
+
 		@Override
 		public void componentShown(ComponentEvent e) {
 		}
-		
+
 		private void handleDocumentEvent(DocumentEvent e) {
 			tree.filter(field.getText());
 			tree.selectFirstNodeMatchingFilter();
 		}
-		
+
 		@Override
 		public void insertUpdate(DocumentEvent e) {
 			handleDocumentEvent(e);
 		}
-		
+
 		@Override
 		public void keyPressed(KeyEvent e) {
 			switch (e.getKeyCode()) {
@@ -228,15 +229,15 @@ public class GoToMemberWindow extends JWindow {
 				break;
 			}
 		}
-		
+
 		@Override
 		public void keyReleased(KeyEvent e) {
 		}
-		
+
 		@Override
 		public void keyTyped(KeyEvent e) {
 		}
-		
+
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 2) {
@@ -244,51 +245,51 @@ public class GoToMemberWindow extends JWindow {
 				dispose();
 			}
 		}
-		
+
 		@Override
 		public void removeUpdate(DocumentEvent e) {
 			handleDocumentEvent(e);
 		}
-		
+
 		public void uninstall() {
 			field.removeActionListener(this);
 			field.getDocument().removeDocumentListener(this);
 			tree.removeMouseListener(this);
 			removeWindowFocusListener(this);
 		}
-		
+
 		@Override
 		public void windowGainedFocus(WindowEvent e) {
 		}
-		
+
 		@Override
 		public void windowLostFocus(WindowEvent e) {
 			dispose();
 		}
-		
+
 	}
-	
+
 	/**
 	 * The border for the filtering text field.
 	 */
 	private static class TextFieldBorder implements Border {
-		
+
 		@Override
 		public Insets getBorderInsets(Component c) {
 			return new Insets(2, 5, 3, 5);
 		}
-		
+
 		@Override
 		public boolean isBorderOpaque() {
 			return false;
 		}
-		
+
 		@Override
 		public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
 			g.setColor(UIManager.getColor("controlDkShadow"));
 			g.drawLine(x, y + h - 1, x + w - 1, y + h - 1);
 		}
-		
+
 	}
-	
+
 }

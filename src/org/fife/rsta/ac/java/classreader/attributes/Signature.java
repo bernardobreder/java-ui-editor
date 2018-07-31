@@ -14,8 +14,8 @@ import org.fife.rsta.ac.java.classreader.ClassFile;
 import org.fife.rsta.ac.java.classreader.MethodInfo;
 
 /**
- * The Signature attribute is an optional fixed-length attribute in the attribute table of the
- * ClassFile, field_info and method_info structures.
+ * The Signature attribute is an optional fixed-length attribute in the
+ * attribute table of the ClassFile, field_info and method_info structures.
  * <p>
  * WARNING: This code is a complete mess.
  *
@@ -23,25 +23,25 @@ import org.fife.rsta.ac.java.classreader.MethodInfo;
  * @version 1.0
  */
 public class Signature extends AttributeInfo {
-	
+
 	private String signature;
-	
+
 	public Signature(ClassFile cf, String signature) {
 		super(cf);
 		this.signature = signature;
 	}
-	
+
 	public List<String> getClassParamTypes() {
-		
+
 		List<String> types = null;
-		
+
 		if (signature != null && signature.startsWith("<")) {
-			
+
 			types = new ArrayList<String>(1); // Usually a small number
 			int afterMatchingGT = skipLtGt(signature, 1);
-			
+
 			// We're assuming we don't come across corrupt signatures...
-			
+
 			String temp = signature.substring(1, afterMatchingGT - 1);
 			int offs = 0;
 			int colon = temp.indexOf(':', offs);
@@ -66,16 +66,16 @@ public class Signature extends AttributeInfo {
 				}
 			}
 		}
-		
+
 		return types;
-		
+
 	}
-	
+
 	private int skipLtGt(String str, int start) {
-		
+
 		int ltCount = 1;
 		int offs = start;
-		
+
 		while (offs < str.length() && ltCount > 0) {
 			char ch = str.charAt(offs++);
 			switch (ch) {
@@ -87,20 +87,20 @@ public class Signature extends AttributeInfo {
 				break;
 			}
 		}
-		
+
 		return offs;
-		
+
 	}
-	
+
 	public List<String> getMethodParamTypes(MethodInfo mi, ClassFile cf, boolean qualified) {
-		
+
 		List<String> paramTypeList = null;
 		String signature = this.signature; // Since we modify it
-		
+
 		if (signature != null) {
-			
+
 			paramTypeList = new ArrayList<String>();
-			
+
 			// Handle "<...>", which essentially defines extra type args
 			Map<String, String> additionalTypeArgs = null;
 			if (signature.charAt(0) == '<') {
@@ -109,15 +109,16 @@ public class Signature extends AttributeInfo {
 				additionalTypeArgs = parseAdditionalTypeArgs(typeParams);
 				signature = signature.substring(afterMatchingGT);
 			}
-			
+
 			if (signature.charAt(0) == '(') {
-				
+
 				int rparen = signature.indexOf(')', 1);
 				String paramDescriptors = signature.substring(1, rparen);
 				ParamDescriptorResult res = new ParamDescriptorResult();
-				
+
 				while (paramDescriptors.length() > 0) {
-					parseParamDescriptor(paramDescriptors, cf, additionalTypeArgs, mi, "Error parsing method signature for ", res, qualified);
+					parseParamDescriptor(paramDescriptors, cf, additionalTypeArgs, mi,
+							"Error parsing method signature for ", res, qualified);
 					paramTypeList.add(res.type);
 					if (paramDescriptors.length() > res.pos) {
 						paramDescriptors = paramDescriptors.substring(res.pos);
@@ -125,26 +126,26 @@ public class Signature extends AttributeInfo {
 						break;
 					}
 				}
-				
+
 			}
-			
+
 			else {
 				System.out.println("TODO: Unhandled method signature for " + mi.getName() + ": " + signature);
 			}
-			
+
 		}
-		
+
 		return paramTypeList;
-		
+
 	}
-	
+
 	public String getMethodReturnType(MethodInfo mi, ClassFile cf, boolean qualified) {
-		
+
 		String signature = this.signature; // Since we modify it
 		String sig = null;
-		
+
 		if (signature != null) {
-			
+
 			// Handle "<...>", which essentially defines extra type args
 			Map<String, String> additionalTypeArgs = null;
 			if (signature.charAt(0) == '<') {
@@ -153,40 +154,43 @@ public class Signature extends AttributeInfo {
 				additionalTypeArgs = parseAdditionalTypeArgs(typeParams);
 				signature = signature.substring(afterMatchingGT);
 			}
-			
+
 			if (signature.charAt(0) == '(') {
 				int rparen = signature.indexOf(')', 1);
 				if (rparen > -1 && rparen < signature.length() - 3) { // Should always be true
 					String afterRParen = signature.substring(rparen + 1);
 					ParamDescriptorResult res = new ParamDescriptorResult();
-					parseParamDescriptor(afterRParen, cf, additionalTypeArgs, mi, "Can't parse return type from method sig for ", res, qualified);
+					parseParamDescriptor(afterRParen, cf, additionalTypeArgs, mi,
+							"Can't parse return type from method sig for ", res, qualified);
 					sig = res.type;
 				}
 			}
-			
+
 			else {
 				System.out.println("TODO: Unhandled method signature for " + mi.getName() + ": " + signature);
 			}
-			
+
 		}
-		
+
 		return sig;
-		
+
 	}
-	
+
 	public String getSignature() {
 		return signature;
 	}
-	
+
 	/**
 	 * Returns the type argument specified for a given type parameter.
 	 *
-	 * @param typeVar The type parameter name.
-	 * @param cf The class file with generic methods.
-	 * @param additionalTypeArgs Additional type arguments for a method (such as for "
-	 *            <code>&lt;T&gt; T[] toArray(T[] a)</code>", where the " <code>T</code>" type
-	 *            parameter is the type of an argument passed to it).
-	 * @return The type argument, or <code>null</code> if the given type parameter isn't defined.
+	 * @param typeVar            The type parameter name.
+	 * @param cf                 The class file with generic methods.
+	 * @param additionalTypeArgs Additional type arguments for a method (such as for
+	 *                           " <code>&lt;T&gt; T[] toArray(T[] a)</code>", where
+	 *                           the " <code>T</code>" type parameter is the type of
+	 *                           an argument passed to it).
+	 * @return The type argument, or <code>null</code> if the given type parameter
+	 *         isn't defined.
 	 */
 	private String getTypeArgument(String typeVar, ClassFile cf, Map<String, String> additionalTypeArgs) {
 		String type = cf.getTypeArgument(typeVar);
@@ -196,13 +200,13 @@ public class Signature extends AttributeInfo {
 		}
 		return type;
 	}
-	
+
 	private Map<String, String> parseAdditionalTypeArgs(String typeParams) {
-		
+
 		Map<String, String> additionalTypeArgs = new HashMap<String, String>();
 		int offs = 0;
 		int colon = typeParams.indexOf(':', offs);
-		
+
 		while (offs < typeParams.length()) {
 			String param = typeParams.substring(offs, colon);
 			int semicolon = typeParams.indexOf(';', offs + 1);
@@ -219,13 +223,14 @@ public class Signature extends AttributeInfo {
 			}
 			colon = typeParams.indexOf(':', offs);
 		}
-		
+
 		return additionalTypeArgs;
-		
+
 	}
-	
-	private ParamDescriptorResult parseParamDescriptor(String str, ClassFile cf, Map<String, String> additionalTypeArgs, MethodInfo mi, String errorDesc, ParamDescriptorResult res, boolean qualified) {
-		
+
+	private ParamDescriptorResult parseParamDescriptor(String str, ClassFile cf, Map<String, String> additionalTypeArgs,
+			MethodInfo mi, String errorDesc, ParamDescriptorResult res, boolean qualified) {
+
 		// Can't do lastIndexOf() as there may be > 1 array parameter
 		// in the descriptors.
 		// int braceCount = str.lastIndexOf('[') + 1;
@@ -236,9 +241,9 @@ public class Signature extends AttributeInfo {
 		int pos = braceCount;
 		String type = null;
 		boolean extendingGenericType = false;
-		
+
 		switch (str.charAt(pos)) {
-		
+
 		// BaseType
 		case 'B':
 			type = "byte";
@@ -272,7 +277,7 @@ public class Signature extends AttributeInfo {
 			type = "boolean";
 			pos++;
 			break;
-		
+
 		// ObjectType
 		case 'L':
 			int semicolon = str.indexOf(';', pos + 1);
@@ -295,14 +300,15 @@ public class Signature extends AttributeInfo {
 					List<String> paramTypeList = new ArrayList<String>();
 					// Recursively parse type parameters of this parameter
 					while (paramDescriptors.length() > 0) {
-						parseParamDescriptor(paramDescriptors, cf, additionalTypeArgs, mi, "Error parsing method signature for ", res2, qualified);
+						parseParamDescriptor(paramDescriptors, cf, additionalTypeArgs, mi,
+								"Error parsing method signature for ", res2, qualified);
 						paramTypeList.add(res2.type);
 						if (paramDescriptors.length() > res2.pos) {
 							paramDescriptors = paramDescriptors.substring(res2.pos);
 						} else {
 							break;
 						}
-						
+
 					}
 					StringBuilder sb = new StringBuilder(type).append('<');
 					for (int i = 0; i < paramTypeList.size(); i++) {
@@ -323,12 +329,12 @@ public class Signature extends AttributeInfo {
 				pos += semicolon + 1;
 			}
 			break;
-		
+
 		case '+': // "super extends T"
 			extendingGenericType = true;
 			pos++;
 			// Fall through
-			
+
 		case 'T': // Generic type
 			semicolon = str.indexOf(';', pos + 1);
 			String typeVar = str.substring(pos + 1, semicolon);
@@ -340,46 +346,46 @@ public class Signature extends AttributeInfo {
 			}
 			pos = semicolon + 1;
 			break;
-		
+
 		case '*':
 			type = "?";
 			pos++;
 			break;
-		
+
 		// Invalid method descriptor
 		default:
 			String temp = "INVALID_TYPE_" + str;
 			type = temp;
 			pos += str.length();
 			break;
-		
+
 		}
-		
+
 		for (int i = 0; i < braceCount; i++) {
 			type += "[]";
 		}
-		
+
 		return res.set(type, pos);
-		
+
 	}
-	
+
 	@Override
 	public String toString() {
 		return "[Signature: signature=" + getSignature() + "]";
 	}
-	
+
 	private static class ParamDescriptorResult {
-		
+
 		public String type;
-		
+
 		public int pos;
-		
+
 		public ParamDescriptorResult set(String type, int pos) {
 			this.type = type;
 			this.pos = pos;
 			return this;
 		}
-		
+
 	}
-	
+
 }

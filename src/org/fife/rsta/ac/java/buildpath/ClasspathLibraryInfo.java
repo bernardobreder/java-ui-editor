@@ -19,18 +19,21 @@ import org.fife.rsta.ac.java.Util;
 import org.fife.rsta.ac.java.classreader.ClassFile;
 
 /**
- * Information about specific classes on the current application's classpath to add to the
- * "build path." This type of container is useful if your application ships with specific classes
- * you want included in code completion, but you don't want to add the entire jar to the build path.
+ * Information about specific classes on the current application's classpath to
+ * add to the "build path." This type of container is useful if your application
+ * ships with specific classes you want included in code completion, but you
+ * don't want to add the entire jar to the build path.
  * <p>
- * Since there is no real way to determine all classes in a package via reflection, you must
- * explicitly enumerate all classes that are on the classpath that you want on the build path. To
- * make this easier, you can use the {@link ClassEnumerationReader} class to read a list of classes
- * from a plain text file or other resource.
+ * Since there is no real way to determine all classes in a package via
+ * reflection, you must explicitly enumerate all classes that are on the
+ * classpath that you want on the build path. To make this easier, you can use
+ * the {@link ClassEnumerationReader} class to read a list of classes from a
+ * plain text file or other resource.
  * <p>
- * If you're delivering the corresponding .java source files also on the classpath (i.e. you have a
- * library "hard-coded" to be on the build path), you can set the source location to be a
- * <code>ClasspathSourceLocation</code> to get the source located automatically.
+ * If you're delivering the corresponding .java source files also on the
+ * classpath (i.e. you have a library "hard-coded" to be on the build path), you
+ * can set the source location to be a <code>ClasspathSourceLocation</code> to
+ * get the source located automatically.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -39,42 +42,43 @@ import org.fife.rsta.ac.java.classreader.ClassFile;
  * @see ClasspathSourceLocation
  */
 public class ClasspathLibraryInfo extends LibraryInfo {
-	
+
 	/**
-	 * Mapping of class names to <code>ClassFile</code>s. This information is cached even though
-	 * it's also cached at the <code>JarReader</code> level because the class definitions are
-	 * effectively immutable since they're on the classpath. This allows you to theoretically share
-	 * a single <code>ClasspathLibraryInfo</code> across several different jar managers.
+	 * Mapping of class names to <code>ClassFile</code>s. This information is cached
+	 * even though it's also cached at the <code>JarReader</code> level because the
+	 * class definitions are effectively immutable since they're on the classpath.
+	 * This allows you to theoretically share a single
+	 * <code>ClasspathLibraryInfo</code> across several different jar managers.
 	 */
 	private Map<String, ClassFile> classNameToClassFile;
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param classes A list of fully-qualified class names for classes you want added to the build
-	 *            path.
+	 * @param classes A list of fully-qualified class names for classes you want
+	 *                added to the build path.
 	 */
 	public ClasspathLibraryInfo(String[] classes) {
 		this(Arrays.asList(classes), null);
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param classes A list of fully-qualified class names for classes you want added to the build
-	 *            path.
+	 * @param classes A list of fully-qualified class names for classes you want
+	 *                added to the build path.
 	 */
 	public ClasspathLibraryInfo(List<String> classes) {
 		this(classes, null);
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param classes A list of fully-qualified class names for classes you want added to the build
-	 *            path.
-	 * @param sourceLoc The location of the source files for the classes given. This may be
-	 *            <code>null</code>.
+	 * @param classes   A list of fully-qualified class names for classes you want
+	 *                  added to the build path.
+	 * @param sourceLoc The location of the source files for the classes given. This
+	 *                  may be <code>null</code>.
 	 */
 	public ClasspathLibraryInfo(List<String> classes, SourceLocation sourceLoc) {
 		setSourceLocation(sourceLoc);
@@ -88,25 +92,25 @@ public class ClasspathLibraryInfo extends LibraryInfo {
 			classNameToClassFile.put(entryName, null);
 		}
 	}
-	
+
 	@Override
 	public void bulkClassFileCreationEnd() {
 		// Do nothing
 	}
-	
+
 	@Override
 	public void bulkClassFileCreationStart() {
 		// Do nothing
 	}
-	
+
 	@Override
 	public int compareTo(Object o) {
-		
+
 		if (o == this) {
 			return 0;
 		}
 		int res = -1;
-		
+
 		if (o instanceof ClasspathLibraryInfo) {
 			ClasspathLibraryInfo other = (ClasspathLibraryInfo) o;
 			res = classNameToClassFile.size() - other.classNameToClassFile.size();
@@ -119,16 +123,16 @@ public class ClasspathLibraryInfo extends LibraryInfo {
 				}
 			}
 		}
-		
+
 		return res;
-		
+
 	}
-	
+
 	@Override
 	public ClassFile createClassFile(String entryName) throws IOException {
 		return createClassFileBulk(entryName);
 	}
-	
+
 	@Override
 	public ClassFile createClassFileBulk(String entryName) throws IOException {
 		// NOTE: entryName always ends in ".class", so our map must account
@@ -143,11 +147,11 @@ public class ClasspathLibraryInfo extends LibraryInfo {
 		}
 		return cf;
 	}
-	
+
 	private ClassFile createClassFileImpl(String res) throws IOException {
-		
+
 		ClassFile cf = null;
-		
+
 		InputStream in = getClass().getClassLoader().getResourceAsStream(res);
 		if (in != null) {
 			DataInputStream din = null;
@@ -159,11 +163,11 @@ public class ClasspathLibraryInfo extends LibraryInfo {
 				in.close(); // DIS and BIS just delegate the close to the child
 			}
 		}
-		
+
 		return cf;
-		
+
 	}
-	
+
 	@Override
 	public TreeMap createPackageMap() throws IOException {
 		TreeMap packageMap = new TreeMap();
@@ -187,10 +191,10 @@ public class ClasspathLibraryInfo extends LibraryInfo {
 		}
 		return packageMap;
 	}
-	
+
 	/**
-	 * Since stuff on the current classpath never changes (we don't support hotswapping), this
-	 * method always returns <code>0</code>.
+	 * Since stuff on the current classpath never changes (we don't support
+	 * hotswapping), this method always returns <code>0</code>.
 	 *
 	 * @return <code>0</code> always.
 	 */
@@ -198,15 +202,15 @@ public class ClasspathLibraryInfo extends LibraryInfo {
 	public long getLastModified() {
 		return 0;
 	}
-	
+
 	@Override
 	public String getLocationAsString() {
 		return null;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return classNameToClassFile.hashCode();
 	}
-	
+
 }

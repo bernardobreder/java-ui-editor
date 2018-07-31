@@ -26,15 +26,18 @@ import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
 /**
  * Parses Java code in an <tt>RSyntaxTextArea</tt>.
  * <p>
- * Like all RSTA <tt>Parser</tt>s, a <tt>JavaParser</tt> instance is notified when the RSTA's text
- * content changes. After a small delay, it will parse the content as Java code, building an AST and
- * looking for any errors. When parsing is complete, a property change event of type
- * {@link #PROPERTY_COMPILATION_UNIT} is fired. Listeners can check the new value of the property
- * for the {@link CompilationUnit} built that represents the source code in the text area. Note that
- * the <tt>CompilationUnit</tt> may be incomplete if there were parsing/syntax errors (it will
- * usually be complete "up to" the error in the content).
+ * Like all RSTA <tt>Parser</tt>s, a <tt>JavaParser</tt> instance is notified
+ * when the RSTA's text content changes. After a small delay, it will parse the
+ * content as Java code, building an AST and looking for any errors. When
+ * parsing is complete, a property change event of type
+ * {@link #PROPERTY_COMPILATION_UNIT} is fired. Listeners can check the new
+ * value of the property for the {@link CompilationUnit} built that represents
+ * the source code in the text area. Note that the <tt>CompilationUnit</tt> may
+ * be incomplete if there were parsing/syntax errors (it will usually be
+ * complete "up to" the error in the content).
  * <p>
- * This parser cannot be shared amongst multiple instances of <tt>RSyntaxTextArea</tt>.
+ * This parser cannot be shared amongst multiple instances of
+ * <tt>RSyntaxTextArea</tt>.
  * <p>
  * Please keep in mind that this class is a work-in-progress!
  *
@@ -42,19 +45,20 @@ import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
  * @version 0.5
  */
 public class CParser extends AbstractParser {
-	
+
 	/**
-	 * The property change event that's fired when the document is re-parsed. Applications can
-	 * listen for this property change and update themselves accordingly.
+	 * The property change event that's fired when the document is re-parsed.
+	 * Applications can listen for this property change and update themselves
+	 * accordingly.
 	 */
 	public static final String PROPERTY_COMPILATION_UNIT = "CompilationUnit";
-	
+
 	private CompilationUnit unit;
-	
+
 	private PropertyChangeSupport support;
-	
+
 	private DefaultParseResult result;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -64,17 +68,17 @@ public class CParser extends AbstractParser {
 		support = new PropertyChangeSupport(this);
 		result = new DefaultParseResult(this);
 	}
-	
+
 	/**
 	 * Returns the compilation unit from the last time the text area was parsed.
 	 *
-	 * @return The compilation unit, or <code>null</code> if it hasn't yet been parsed or an
-	 *         unexpected error occurred while parsing.
+	 * @return The compilation unit, or <code>null</code> if it hasn't yet been
+	 *         parsed or an unexpected error occurred while parsing.
 	 */
 	public CompilationUnit getCompilationUnit() {
 		return unit;
 	}
-	
+
 	/**
 	 * @param doc
 	 * @param notice
@@ -86,7 +90,7 @@ public class CParser extends AbstractParser {
 		int offs = elem.getStartOffset() + notice.getColumn();
 		return offs >= elem.getEndOffset() ? -1 : offs;
 	}
-	
+
 	/**
 	 * @param prop
 	 * @param l
@@ -94,7 +98,7 @@ public class CParser extends AbstractParser {
 	public void addPropertyChangeListener(String prop, PropertyChangeListener l) {
 		support.addPropertyChangeListener(prop, l);
 	}
-	
+
 	/**
 	 * @param prop
 	 * @param l
@@ -102,7 +106,7 @@ public class CParser extends AbstractParser {
 	public void removePropertyChangeListener(String prop, PropertyChangeListener l) {
 		support.removePropertyChangeListener(prop, l);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -134,9 +138,9 @@ public class CParser extends AbstractParser {
 		}
 		support.firePropertyChange(PROPERTY_COMPILATION_UNIT, null, unit);
 		return result;
-		
+
 	}
-	
+
 	/**
 	 * @param file
 	 * @param scanner
@@ -157,5 +161,5 @@ public class CParser extends AbstractParser {
 		token = scanner.next();
 		return unit;
 	}
-	
+
 }

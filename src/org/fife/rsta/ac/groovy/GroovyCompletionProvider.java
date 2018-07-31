@@ -11,13 +11,14 @@ import org.fife.ui.autocomplete.DefaultCompletionProvider;
 import org.fife.ui.autocomplete.LanguageAwareCompletionProvider;
 
 /**
- * A completion provider for Groovy. This is a work in progress and is not recommended for real use.
+ * A completion provider for Groovy. This is a work in progress and is not
+ * recommended for real use.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class GroovyCompletionProvider extends LanguageAwareCompletionProvider {
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -26,7 +27,7 @@ public class GroovyCompletionProvider extends LanguageAwareCompletionProvider {
 		setStringCompletionProvider(createStringCompletionProvider());
 		setCommentCompletionProvider(createCommentCompletionProvider());
 	}
-	
+
 	/**
 	 * Adds shorthand completions to the code completion provider.
 	 *
@@ -34,7 +35,7 @@ public class GroovyCompletionProvider extends LanguageAwareCompletionProvider {
 	 */
 	protected void addShorthandCompletions(DefaultCompletionProvider codeCP) {
 	}
-	
+
 	/**
 	 * Returns the provider to use when editing code.
 	 *
@@ -47,7 +48,7 @@ public class GroovyCompletionProvider extends LanguageAwareCompletionProvider {
 		CompletionProvider cp = new GroovySourceCompletionProvider();
 		return cp;
 	}
-	
+
 	/**
 	 * Returns the provider to use when in a comment.
 	 *
@@ -61,7 +62,7 @@ public class GroovyCompletionProvider extends LanguageAwareCompletionProvider {
 		cp.addCompletion(new BasicCompletion(cp, "FIXME:", "A bug that needs to be fixed"));
 		return cp;
 	}
-	
+
 	/**
 	 * Returns the completion provider to use when the caret is in a string.
 	 *
@@ -79,5 +80,5 @@ public class GroovyCompletionProvider extends LanguageAwareCompletionProvider {
 		cp.addCompletion(new BasicCompletion(cp, "\\n", "Newline", "Prints a newline"));
 		return cp;
 	}
-	
+
 }

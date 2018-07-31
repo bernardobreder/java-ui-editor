@@ -19,8 +19,9 @@ import javax.swing.text.View;
 import org.fife.ui.rtextarea.ChangeableHighlightPainter;
 
 /**
- * Highlight painter that paints a squiggly underline underneath text, similar to what popular IDE's
- * such as Visual Studio and Eclipse do to indicate errors, warnings, etc.
+ * Highlight painter that paints a squiggly underline underneath text, similar
+ * to what popular IDE's such as Visual Studio and Eclipse do to indicate
+ * errors, warnings, etc.
  * <p>
  * This class must be used as a <code>LayerPainter</code>.
  *
@@ -28,9 +29,9 @@ import org.fife.ui.rtextarea.ChangeableHighlightPainter;
  * @version 1.0
  */
 public class SquiggleUnderlineHighlightPainter extends ChangeableHighlightPainter {
-	
+
 	private static final int AMT = 2;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -40,23 +41,24 @@ public class SquiggleUnderlineHighlightPainter extends ChangeableHighlightPainte
 		super(color);
 		setPaint(color);
 	}
-	
+
 	/**
 	 * Paints a portion of a highlight.
 	 *
-	 * @param g the graphics context
-	 * @param offs0 the starting model offset >= 0
-	 * @param offs1 the ending model offset >= offs1
-	 * @param bounds the bounding box of the view, which is not necessarily the region to paint.
-	 * @param c the editor
-	 * @param view View painting for
+	 * @param g      the graphics context
+	 * @param offs0  the starting model offset >= 0
+	 * @param offs1  the ending model offset >= offs1
+	 * @param bounds the bounding box of the view, which is not necessarily the
+	 *               region to paint.
+	 * @param c      the editor
+	 * @param view   View painting for
 	 * @return region drawing occurred in
 	 */
 	@Override
 	public Shape paintLayer(Graphics g, int offs0, int offs1, Shape bounds, JTextComponent c, View view) {
-		
+
 		g.setColor((Color) getPaint());
-		
+
 		if (offs0 == view.getStartOffset() && offs1 == view.getEndOffset()) {
 			// Contained in view, can just use bounds.
 			Rectangle alloc;
@@ -68,7 +70,7 @@ public class SquiggleUnderlineHighlightPainter extends ChangeableHighlightPainte
 			paintSquiggle(g, alloc);
 			return alloc;
 		}
-		
+
 		// Otherwise, should only render part of View.
 		try {
 			// --- determine locations ---
@@ -79,12 +81,12 @@ public class SquiggleUnderlineHighlightPainter extends ChangeableHighlightPainte
 		} catch (BadLocationException e) {
 			e.printStackTrace(); // can't render
 		}
-		
+
 		// Only if exception
 		return null;
-		
+
 	}
-	
+
 	/**
 	 * Paints a squiggle underneath text in the specified rectangle.
 	 *
@@ -102,5 +104,5 @@ public class SquiggleUnderlineHighlightPainter extends ChangeableHighlightPainte
 			x += AMT;
 		}
 	}
-	
+
 }

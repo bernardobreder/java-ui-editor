@@ -25,14 +25,14 @@ import org.fife.rsta.ac.java.rjc.lexer.Scanner;
  * @version 1.0
  */
 public class NormalClassDeclaration extends AbstractTypeDeclarationNode {
-	
+
 	// --- "NormalClassDeclaration" fields ---
 	private List<TypeParameter> typeParams;
-	
+
 	private Type extendedType;
-	
+
 	private List<Type> implementedList;
-	
+
 	public NormalClassDeclaration(Scanner s, int offs, String className) {
 		super(className, s.createOffset(offs), s.createOffset(offs + className.length()));
 		implementedList = new ArrayList<Type>(0); // Usually not many
@@ -41,29 +41,29 @@ public class NormalClassDeclaration extends AbstractTypeDeclarationNode {
 		// super class declared.
 		extendedType = new Type("java.lang.Object");
 	}
-	
+
 	public void addImplemented(Type implemented) {
 		implementedList.add(implemented);
 	}
-	
+
 	public Type getExtendedType() {
 		return extendedType;
 	}
-	
+
 	public int getImplementedCount() {
 		return implementedList.size();
 	}
-	
+
 	public Iterator<Type> getImplementedIterator() {
 		return implementedList.iterator();
 	}
-	
+
 	/**
 	 * Gets the method in this class that contains a given offset.
 	 *
 	 * @param offs The offset.
-	 * @return The method containing the offset, or <code>null</code> if no method in this class
-	 *         contains the offset.
+	 * @return The method containing the offset, or <code>null</code> if no method
+	 *         in this class contains the offset.
 	 */
 	public Method getMethodContainingOffset(int offs) {
 		for (Iterator<Method> i = getMethodIterator(); i.hasNext();) {
@@ -74,19 +74,19 @@ public class NormalClassDeclaration extends AbstractTypeDeclarationNode {
 		}
 		return null;
 	}
-	
+
 	public List<TypeParameter> getTypeParameters() {
 		return typeParams;
 	}
-	
+
 	@Override
 	public String getTypeString() {
 		return "class";
 	}
-	
+
 	/**
-	 * Returns whether a <code>Type</code> and a type name are type compatible. This method
-	 * currently is a sham!
+	 * Returns whether a <code>Type</code> and a type name are type compatible. This
+	 * method currently is a sham!
 	 *
 	 * @param type
 	 * @param typeName
@@ -94,9 +94,9 @@ public class NormalClassDeclaration extends AbstractTypeDeclarationNode {
 	 */
 	// TODO: Get me working! Probably need better parameters passed in!!!
 	private boolean isTypeCompatible(Type type, String typeName) {
-		
+
 		String typeName2 = type.getName(false);
-		
+
 		// Remove generics info for now
 		// TODO: Handle messy generics cases
 		int lt = typeName2.indexOf('<');
@@ -111,17 +111,17 @@ public class NormalClassDeclaration extends AbstractTypeDeclarationNode {
 				typeName2 += arrayDepth;
 			}
 		}
-		
+
 		return typeName2.equalsIgnoreCase(typeName);
-		
+
 	}
-	
+
 	public void setExtendedType(Type type) {
 		extendedType = type;
 	}
-	
+
 	public void setTypeParameters(List<TypeParameter> typeParams) {
 		this.typeParams = typeParams;
 	}
-	
+
 }

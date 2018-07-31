@@ -11,24 +11,25 @@ import org.fife.rsta.ac.java.classreader.constantpool.ConstantClassInfo;
 import org.fife.rsta.ac.java.classreader.constantpool.ConstantPoolInfo;
 
 /**
- * Implementation of the "<code>Exceptions</code>" attribute found in {@link MethodInfo}s.
+ * Implementation of the "<code>Exceptions</code>" attribute found in
+ * {@link MethodInfo}s.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class Exceptions extends AttributeInfo {
-	
+
 	/**
 	 * The method this attribute is describing.
 	 */
 	private MethodInfo mi;
-	
+
 	/**
-	 * Indices into the constant pool of {@link ConstantClassInfo}s, each representing a class type
-	 * that this method is declared to throw.
+	 * Indices into the constant pool of {@link ConstantClassInfo}s, each
+	 * representing a class type that this method is declared to throw.
 	 */
 	private int[] exceptionIndexTable;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -38,7 +39,7 @@ public class Exceptions extends AttributeInfo {
 		super(mi.getClassFile());
 		this.exceptionIndexTable = exceptionIndexTable;
 	}
-	
+
 	/**
 	 * Returns the fully-qualified name of the specified exception.
 	 *
@@ -53,7 +54,7 @@ public class Exceptions extends AttributeInfo {
 		String name = cf.getUtf8ValueFromConstantPool(nameIndex);
 		return name.replace('/', '.');
 	}
-	
+
 	/**
 	 * Returns the number of exceptions this attribute knows about.
 	 *
@@ -62,7 +63,7 @@ public class Exceptions extends AttributeInfo {
 	public int getExceptionCount() {
 		return exceptionIndexTable == null ? 0 : exceptionIndexTable.length;
 	}
-	
+
 	/**
 	 * Returns information about the method this attribute is describing.
 	 *
@@ -71,5 +72,5 @@ public class Exceptions extends AttributeInfo {
 	public MethodInfo getMethodInfo() {
 		return mi;
 	}
-	
+
 }

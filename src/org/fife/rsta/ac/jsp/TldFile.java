@@ -33,21 +33,21 @@ import org.w3c.dom.Text;
  * @version 1.0
  */
 public class TldFile {
-	
+
 	private JspCompletionProvider provider;
-	
+
 	private File jar;
-	
+
 	private List<TldElement> tldElems;
-	
+
 	public TldFile(JspCompletionProvider provider, File jar) throws IOException {
 		this.provider = provider;
 		this.jar = jar;
 		tldElems = loadTldElems();
 	}
-	
+
 	public List<Parameter> getAttributesForTag(String tagName) {
-		
+
 		for (TldElement elem : tldElems) {
 			if (elem.getName().equals(tagName)) {
 				return elem.getAttributes();
@@ -55,7 +55,7 @@ public class TldFile {
 		}
 		return null;
 	}
-	
+
 	private String getChildText(Node elem) {
 		StringBuilder sb = new StringBuilder();
 		NodeList children = elem.getChildNodes();
@@ -67,20 +67,20 @@ public class TldFile {
 		}
 		return sb.toString();
 	}
-	
+
 	public TldElement getElement(int index) {
 		return tldElems.get(index);
 	}
-	
+
 	public int getElementCount() {
 		return tldElems.size();
 	}
-	
+
 	private List<TldElement> loadTldElems() throws IOException {
-		
+
 		JarFile jar = new JarFile(this.jar);
 		List<TldElement> elems = null;
-		
+
 		Enumeration<JarEntry> entries = jar.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry entry = entries.nextElement();
@@ -94,16 +94,16 @@ public class TldFile {
 				in.close();
 			}
 		}
-		
+
 		jar.close();
 		return elems;
-		
+
 	}
-	
+
 	private List<TldElement> parseTld(InputStream in) throws IOException {
-		
+
 		List<TldElement> tldElems = new ArrayList<TldElement>();
-		
+
 		BufferedInputStream bin = new BufferedInputStream(in);
 		// BufferedReader r = new BufferedReader(new InputStreamReader(bin));
 		// String line = null;
@@ -112,7 +112,7 @@ public class TldFile {
 		// }
 		// r.close();
 		// System.exit(0);
-		
+
 		Document doc = null;
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		try {
@@ -122,14 +122,14 @@ public class TldFile {
 			throw new IOException(e.getMessage());
 		}
 		Element root = doc.getDocumentElement(); // taglib
-		
+
 		NodeList nl = root.getElementsByTagName("uri");
 		if (nl.getLength() != 1) {
 			throw new IOException("Expected 1 'uri' tag; found: " + nl.getLength());
 		}
 		// String uri = getChildText(nl.item(0));;
 		// System.out.println("URI: " + uri);
-		
+
 		nl = root.getElementsByTagName("tag");
 		for (int i = 0; i < nl.getLength(); i++) {
 			Element elem = (Element) nl.item(i);
@@ -143,7 +143,8 @@ public class TldFile {
 				Element attrElem = (Element) attrNl.item(j);
 				name = getChildText(attrElem.getElementsByTagName("name").item(0));
 				desc = getChildText(attrElem.getElementsByTagName("description").item(0));
-				boolean required = Boolean.valueOf(getChildText(attrElem.getElementsByTagName("required").item(0))).booleanValue();
+				boolean required = Boolean.valueOf(getChildText(attrElem.getElementsByTagName("required").item(0)))
+						.booleanValue();
 				boolean rtexprValue = false;// Boolean.valueOf(getChildText(attrElem.getElementsByTagName("rtexprValue").item(0))).booleanValue();
 				TldAttributeParam param = new TldAttributeParam(null, name, required, rtexprValue);
 				param.setDescription(desc);
@@ -151,9 +152,9 @@ public class TldFile {
 			}
 			tldElem.setAttributes(attrs);
 		}
-		
+
 		return tldElems;
-		
+
 	}
-	
+
 }

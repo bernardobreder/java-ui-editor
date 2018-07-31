@@ -14,8 +14,8 @@ import javax.swing.text.JTextComponent;
 import org.fife.rsta.ui.UIUtil;
 
 /**
- * The combo box used for entering text to "find" and "replace" in both the Find/Replace dialogs as
- * well as tool bars.
+ * The combo box used for entering text to "find" and "replace" in both the
+ * Find/Replace dialogs as well as tool bars.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -23,13 +23,14 @@ import org.fife.rsta.ui.UIUtil;
 // NOTE: This class is public to facilitate applications creating other
 // subclasses, such as a FindInFilesDialog.
 public class SearchComboBox extends RegexAwareComboBox {
-	
+
 	private FindToolBar toolBar;
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param replace Whether this combo box is for "replace" text (as opposed to "find" text).
+	 * @param replace Whether this combo box is for "replace" text (as opposed to
+	 *                "find" text).
 	 */
 	public SearchComboBox(FindToolBar toolBar, boolean replace) {
 		super(replace);
@@ -37,16 +38,16 @@ public class SearchComboBox extends RegexAwareComboBox {
 		UIUtil.fixComboOrientation(this);
 		updateTextFieldKeyMap();
 	}
-	
+
 	/**
-	 * Overridden to always select the newly-added item. If the item is already in the list of
-	 * choices, it is moved to the top before being selected.
+	 * Overridden to always select the newly-added item. If the item is already in
+	 * the list of choices, it is moved to the top before being selected.
 	 *
 	 * @param item The item to add.
 	 */
 	@Override
 	public void addItem(Object item) {
-		
+
 		// If they just searched for an item that's already in the list
 		// other than the first, move it to the first position.
 		int curIndex = getIndexOf(item);
@@ -56,11 +57,11 @@ public class SearchComboBox extends RegexAwareComboBox {
 			removeItem(item);
 			insertItemAt(item, 0);
 		}
-		
+
 		// Always leave with the new item selected
 		setSelectedIndex(0);
 	}
-	
+
 	private int getIndexOf(Object item) {
 		for (int i = 0; i < dataModel.getSize(); i++) {
 			if (dataModel.getElementAt(i).equals(item)) {
@@ -69,7 +70,7 @@ public class SearchComboBox extends RegexAwareComboBox {
 		}
 		return -1;
 	}
-	
+
 	/**
 	 * Returns the text in the text field of the combo box.
 	 *
@@ -80,22 +81,23 @@ public class SearchComboBox extends RegexAwareComboBox {
 		return comp.getText();
 		// return (String)getSelectedItem();
 	}
-	
+
 	/**
 	 * Returns the <code>Strings</code> contained in this combo box.
 	 *
-	 * @return A <code>java.util.Vector</code> of strings found in this combo box. If that combo box
-	 *         is empty, than a zero-length <code>Vector</code> is returned.
+	 * @return A <code>java.util.Vector</code> of strings found in this combo box.
+	 *         If that combo box is empty, than a zero-length <code>Vector</code> is
+	 *         returned.
 	 */
 	public Vector<String> getSearchStrings() {
-		
+
 		// First, ensure that the item in the editor component is indeed in the
 		// combo box.
 		int selectedIndex = getSelectedIndex();
 		if (selectedIndex == -1) {
 			addItem(getSelectedString());
 		}
-		
+
 		// If they just searched for an item that's already in the list other
 		// than the first, move it to the first position.
 		else if (selectedIndex > 0) {
@@ -104,17 +106,17 @@ public class SearchComboBox extends RegexAwareComboBox {
 			insertItemAt(item, 0);
 			setSelectedIndex(0);
 		}
-		
+
 		int itemCount = getItemCount();
 		Vector<String> vector = new Vector<String>(itemCount);
 		for (int i = 0; i < itemCount; i++) {
 			vector.add((String) getItemAt(i));
 		}
-		
+
 		return vector;
-		
+
 	}
-	
+
 	/**
 	 * Updates the input map of the text field inside of this search combo.
 	 */
@@ -125,7 +127,7 @@ public class SearchComboBox extends RegexAwareComboBox {
 		InputMap im = comp.getInputMap();
 		im.put(KeyStroke.getKeyStroke("ctrl H"), "none");
 	}
-	
+
 	@Override
 	public void updateUI() {
 		super.updateUI();
@@ -134,5 +136,5 @@ public class SearchComboBox extends RegexAwareComboBox {
 		}
 		updateTextFieldKeyMap();
 	}
-	
+
 }

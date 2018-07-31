@@ -14,37 +14,37 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Token;
 
 /**
- * A fold parser for LaTeX documents. This is likely incomplete and/or not quite right; feedback is
- * appreciated.
+ * A fold parser for LaTeX documents. This is likely incomplete and/or not quite
+ * right; feedback is appreciated.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class LatexFoldParser implements FoldParser {
-	
+
 	private static final char[] BEGIN = "\\begin".toCharArray();
-	
+
 	private static final char[] END = "\\end".toCharArray();
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Fold> getFolds(RSyntaxTextArea textArea) {
-		
+
 		List<Fold> folds = new ArrayList<Fold>();
 		Stack<String> expectedStack = new Stack<String>();
-		
+
 		Fold currentFold = null;
 		int lineCount = textArea.getLineCount();
-		
+
 		try {
-			
+
 			for (int line = 0; line < lineCount; line++) {
-				
+
 				Token t = textArea.getTokenListForLine(line);
 				while (t != null && t.isPaintable()) {
-					
+
 					if (t.is(Token.RESERVED_WORD, BEGIN)) {
 						Token temp = t.getNextToken();
 						if (temp != null && temp.isLeftCurly()) {
@@ -61,7 +61,7 @@ public class LatexFoldParser implements FoldParser {
 							}
 						}
 					}
-					
+
 					else if (t.is(Token.RESERVED_WORD, END) && currentFold != null && !expectedStack.isEmpty()) {
 						Token temp = t.getNextToken();
 						if (temp != null && temp.isLeftCurly()) {
@@ -84,19 +84,19 @@ public class LatexFoldParser implements FoldParser {
 							}
 						}
 					}
-					
+
 					t = t.getNextToken();
-					
+
 				}
-				
+
 			}
-			
+
 		} catch (BadLocationException ble) {
 			ble.printStackTrace(); // Never happens
 		}
-		
+
 		return folds;
-		
+
 	}
-	
+
 }

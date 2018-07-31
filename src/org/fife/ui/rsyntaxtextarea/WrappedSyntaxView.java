@@ -41,47 +41,48 @@ import org.fife.ui.rtextarea.Gutter;
  * @version 0.2
  */
 public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView {
-	
+
 	boolean widthChanging;
-	
+
 	int tabBase;
-	
+
 	int tabSize;
-	
+
 	/**
 	 * This is reused to keep from allocating/deallocating.
 	 */
 	private Segment s, drawSeg;
-	
+
 	/**
 	 * Another variable initialized once to keep from allocating/deallocating.
 	 */
 	private Rectangle tempRect;
-	
+
 	/**
 	 * Cached for each paint() call so each drawView() call has access to it.
 	 */
 	private RSyntaxTextArea host;
-	
+
 	private FontMetrics metrics;
-	
+
 	private TokenImpl tempToken;
-	
+
 	private TokenImpl lineCountTempToken;
-	
+
 	// /**
 	// * The end-of-line marker.
 	// */
 	// private static final char[] eolMarker = { '.' };
-	
+
 	/**
-	 * The width of this view cannot be below this amount, as if the width is ever 0 (really a bug),
-	 * we'll go into an infinite loop.
+	 * The width of this view cannot be below this amount, as if the width is ever 0
+	 * (really a bug), we'll go into an infinite loop.
 	 */
 	private static final int MIN_WIDTH = 20;
-	
+
 	/**
-	 * Creates a new WrappedSyntaxView. Lines will be wrapped on character boundaries.
+	 * Creates a new WrappedSyntaxView. Lines will be wrapped on character
+	 * boundaries.
 	 *
 	 * @param elem the element underlying the view
 	 */
@@ -93,11 +94,12 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		tempRect = new Rectangle();
 		lineCountTempToken = new TokenImpl();
 	}
-	
+
 	/**
-	 * This is called by the nested wrapped line views to determine the break location. This can be
-	 * reimplemented to alter the breaking behavior. It will either break at word or character
-	 * boundaries depending upon the break argument given at construction.
+	 * This is called by the nested wrapped line views to determine the break
+	 * location. This can be reimplemented to alter the breaking behavior. It will
+	 * either break at word or character boundaries depending upon the break
+	 * argument given at construction.
 	 */
 	protected int calculateBreakPosition(int p0, Token tokenList, float x0) {
 		// System.err.println("------ beginning calculateBreakPosition() --------");
@@ -139,11 +141,11 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		}
 		// System.err.println("... ... whole line fits; returning p==" + p);
 		// System.err.println("------ ending calculateBreakPosition() --------");
-		
+
 		// return p;
 		return p + 1;
 	}
-	
+
 	// private int getBreakLocation(Token t, FontMetrics fm, int x0, int x,
 	// TabExpander e) {
 	// Segment s = new Segment();
@@ -152,10 +154,10 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 	// s.count = t.textCount;
 	// return t.offset + Utilities.getBreakLocation(s, fm, x0, x, e, t.offset);
 	// }
-	
+
 	/**
-	 * Gives notification from the document that attributes were changed in a location that this
-	 * view is responsible for.
+	 * Gives notification from the document that attributes were changed in a
+	 * location that this view is responsible for.
 	 *
 	 * @param e the change information from the associated document
 	 * @param a the current allocation of the view
@@ -166,11 +168,12 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 	public void changedUpdate(DocumentEvent e, Shape a, ViewFactory f) {
 		updateChildren(e, a);
 	}
-	
+
 	/**
-	 * Sets the allocation rectangle for a given line's view, but sets the y value to the passed-in
-	 * value. This should be used instead of {@link #childAllocation(int, Rectangle)} since it
-	 * allows you to account for hidden lines in collapsed fold regions.
+	 * Sets the allocation rectangle for a given line's view, but sets the y value
+	 * to the passed-in value. This should be used instead of
+	 * {@link #childAllocation(int, Rectangle)} since it allows you to account for
+	 * hidden lines in collapsed fold regions.
 	 *
 	 * @param line
 	 * @param y
@@ -181,7 +184,7 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		alloc.y += y;
 		alloc.width = getSpan(X_AXIS, line);
 		alloc.height = getSpan(Y_AXIS, line);
-		
+
 		// FIXME: This is required due to a bug that I can't track down. The
 		// top margin is being added twice somewhere in wrapped views, so we
 		// have to adjust for it here.
@@ -189,38 +192,39 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		if (margin != null) {
 			alloc.y -= margin.top;
 		}
-		
+
 	}
-	
+
 	/**
-	 * Draws a single view (i.e., a line of text for a wrapped view), wrapping the text onto
-	 * multiple lines if necessary.
+	 * Draws a single view (i.e., a line of text for a wrapped view), wrapping the
+	 * text onto multiple lines if necessary.
 	 *
-	 * @param painter The painter to use to render tokens.
-	 * @param g The graphics context in which to paint.
-	 * @param r The rectangle in which to paint.
-	 * @param view The <code>View</code> to paint.
+	 * @param painter    The painter to use to render tokens.
+	 * @param g          The graphics context in which to paint.
+	 * @param r          The rectangle in which to paint.
+	 * @param view       The <code>View</code> to paint.
 	 * @param fontHeight The height of the font being used.
-	 * @param y The y-coordinate at which to begin painting.
+	 * @param y          The y-coordinate at which to begin painting.
 	 */
 	protected void drawView(TokenPainter painter, Graphics2D g, Rectangle r, View view, int fontHeight, int y) {
-		
+
 		float x = r.x;
-		
+
 		LayeredHighlighter h = (LayeredHighlighter) host.getHighlighter();
-		
+
 		RSyntaxDocument document = (RSyntaxDocument) getDocument();
 		Element map = getElement();
-		
+
 		int p0 = view.getStartOffset();
 		int lineNumber = map.getElementIndex(p0);
 		int p1 = view.getEndOffset();// - 1;
-		
+
 		setSegment(p0, p1 - 1, document, drawSeg);
-		// System.err.println("drawSeg=='" + drawSeg + "' (p0/p1==" + p0 + "/" + p1 + ")");
+		// System.err.println("drawSeg=='" + drawSeg + "' (p0/p1==" + p0 + "/" + p1 +
+		// ")");
 		int start = p0 - drawSeg.offset;
 		Token token = document.getTokenListForLine(lineNumber);
-		
+
 		// If this line is an empty line, then the token list is simply a
 		// null token. In this case, the line highlight will be skipped in
 		// the loop below, so unfortunately we must manually do it here.
@@ -228,20 +232,20 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 			h.paintLayeredHighlights(g, p0, p1, r, host, this);
 			return;
 		}
-		
+
 		// Loop through all tokens in this view and paint them!
 		while (token != null && token.isPaintable()) {
-			
+
 			int p = calculateBreakPosition(p0, token, x);
 			x = r.x;
-			
+
 			h.paintLayeredHighlights(g, p0, p, r, host, this);
-			
+
 			while (token != null && token.isPaintable() && token.getEndOffset() - 1 < p) {// <=p) {
 				x = painter.paint(token, g, x, y, host, this);
 				token = token.getNextToken();
 			}
-			
+
 			if (token != null && token.isPaintable() && token.getOffset() < p) {
 				int tokenOffset = token.getOffset();
 				tempToken.set(drawSeg.array, tokenOffset - start, p - 1 - start, tokenOffset, token.getType());
@@ -251,12 +255,12 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 				tempToken.makeStartAt(p);
 				token = new TokenImpl(tempToken);
 			}
-			
+
 			p0 = (p == p0) ? p1 : p;
 			y += fontHeight;
-			
+
 		} // End of while (token!=null && token.isPaintable()).
-		
+
 		// NOTE: We should re-use code from Token (paintBackground()) here,
 		// but don't because I'm just too lazy.
 		if (host.getEOLMarkersVisible()) {
@@ -264,42 +268,44 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 			g.setFont(host.getFontForTokenType(Token.WHITESPACE));
 			g.drawString("\u00B6", x, y - fontHeight);
 		}
-		
+
 	}
-	
+
 	/**
-	 * Draws a single view (i.e., a line of text for a wrapped view), wrapping the text onto
-	 * multiple lines if necessary. Any selected text is rendered with the editor's "selected text"
-	 * color.
+	 * Draws a single view (i.e., a line of text for a wrapped view), wrapping the
+	 * text onto multiple lines if necessary. Any selected text is rendered with the
+	 * editor's "selected text" color.
 	 *
-	 * @param painter The painter to use to render tokens.
-	 * @param g The graphics context in which to paint.
-	 * @param r The rectangle in which to paint.
-	 * @param view The <code>View</code> to paint.
+	 * @param painter    The painter to use to render tokens.
+	 * @param g          The graphics context in which to paint.
+	 * @param r          The rectangle in which to paint.
+	 * @param view       The <code>View</code> to paint.
 	 * @param fontHeight The height of the font being used.
-	 * @param y The y-coordinate at which to begin painting.
-	 * @param selStart The start of the selection.
-	 * @param selEnd The end of the selection.
+	 * @param y          The y-coordinate at which to begin painting.
+	 * @param selStart   The start of the selection.
+	 * @param selEnd     The end of the selection.
 	 */
-	protected void drawViewWithSelection(TokenPainter painter, Graphics2D g, Rectangle r, View view, int fontHeight, int y, int selStart, int selEnd) {
-		
+	protected void drawViewWithSelection(TokenPainter painter, Graphics2D g, Rectangle r, View view, int fontHeight,
+			int y, int selStart, int selEnd) {
+
 		float x = r.x;
 		boolean useSTC = host.getUseSelectedTextColor();
-		
+
 		LayeredHighlighter h = (LayeredHighlighter) host.getHighlighter();
-		
+
 		RSyntaxDocument document = (RSyntaxDocument) getDocument();
 		Element map = getElement();
-		
+
 		int p0 = view.getStartOffset();
 		int lineNumber = map.getElementIndex(p0);
 		int p1 = view.getEndOffset();// - 1;
-		
+
 		setSegment(p0, p1 - 1, document, drawSeg);
-		// System.err.println("drawSeg=='" + drawSeg + "' (p0/p1==" + p0 + "/" + p1 + ")");
+		// System.err.println("drawSeg=='" + drawSeg + "' (p0/p1==" + p0 + "/" + p1 +
+		// ")");
 		int start = p0 - drawSeg.offset;
 		Token token = document.getTokenListForLine(lineNumber);
-		
+
 		// If this line is an empty line, then the token list is simply a
 		// null token. In this case, the line highlight will be skipped in
 		// the loop below, so unfortunately we must manually do it here.
@@ -307,20 +313,20 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 			h.paintLayeredHighlights(g, p0, p1, r, host, this);
 			return;
 		}
-		
+
 		// Loop through all tokens in this view and paint them!
 		while (token != null && token.isPaintable()) {
-			
+
 			int p = calculateBreakPosition(p0, token, x);
 			x = r.x;
-			
+
 			h.paintLayeredHighlights(g, p0, p, r, host, this);
-			
+
 			while (token != null && token.isPaintable() && token.getEndOffset() - 1 < p) {// <=p) {
-			
+
 				// Selection starts in this token
 				if (token.containsPosition(selStart)) {
-					
+
 					if (selStart > token.getOffset()) {
 						tempToken.copyFrom(token);
 						tempToken.textCount = selStart - tempToken.getOffset();
@@ -331,7 +337,7 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 						// different tokens for else statement below
 						token = new TokenImpl(tempToken);
 					}
-					
+
 					int selCount = Math.min(token.length(), selEnd - token.getOffset());
 					if (selCount == token.length()) {
 						x = painter.paintSelected(token, g, x, y, host, this, useSTC);
@@ -344,9 +350,9 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 						token = tempToken;
 						x = painter.paint(token, g, x, y, host, this);
 					}
-					
+
 				}
-				
+
 				// Selection ends in this token
 				else if (token.containsPosition(selEnd)) {
 					tempToken.copyFrom(token);
@@ -357,32 +363,33 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 					token = tempToken;
 					x = painter.paint(token, g, x, y, host, this);
 				}
-				
+
 				// This token is entirely selected
 				else if (token.getOffset() >= selStart && token.getEndOffset() <= selEnd) {
 					x = painter.paintSelected(token, g, x, y, host, this, useSTC);
 				}
-				
+
 				// This token is entirely unselected
 				else {
 					x = painter.paint(token, g, x, y, host, this);
 				}
-				
+
 				token = token.getNextToken();
-				
+
 			}
-			
+
 			// If there's a token that's going to be split onto the next line
 			if (token != null && token.isPaintable() && token.getOffset() < p) {
-				
+
 				int tokenOffset = token.getOffset();
 				Token orig = token;
-				token = new TokenImpl(drawSeg, tokenOffset - start, p - 1 - start, tokenOffset, token.getType(), token.getLanguageIndex());
+				token = new TokenImpl(drawSeg, tokenOffset - start, p - 1 - start, tokenOffset, token.getType(),
+						token.getLanguageIndex());
 				token.setLanguageIndex(token.getLanguageIndex());
-				
+
 				// Selection starts in this token
 				if (token.containsPosition(selStart)) {
-					
+
 					if (selStart > token.getOffset()) {
 						tempToken.copyFrom(token);
 						tempToken.textCount = selStart - tempToken.getOffset();
@@ -393,7 +400,7 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 						// different tokens for else statement below
 						token = new TokenImpl(tempToken);
 					}
-					
+
 					int selCount = Math.min(token.length(), selEnd - token.getOffset());
 					if (selCount == token.length()) {
 						x = painter.paintSelected(token, g, x, y, host, this, useSTC);
@@ -406,9 +413,9 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 						token = tempToken;
 						x = painter.paint(token, g, x, y, host, this);
 					}
-					
+
 				}
-				
+
 				// Selection ends in this token
 				else if (token.containsPosition(selEnd)) {
 					tempToken.copyFrom(token);
@@ -419,27 +426,27 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 					token = tempToken;
 					x = painter.paint(token, g, x, y, host, this);
 				}
-				
+
 				// This token is entirely selected
 				else if (token.getOffset() >= selStart && token.getEndOffset() <= selEnd) {
 					x = painter.paintSelected(token, g, x, y, host, this, useSTC);
 				}
-				
+
 				// This token is entirely unselected
 				else {
 					x = painter.paint(token, g, x, y, host, this);
 				}
-				
+
 				token = new TokenImpl(orig);
 				((TokenImpl) token).makeStartAt(p);
-				
+
 			}
-			
+
 			p0 = (p == p0) ? p1 : p;
 			y += fontHeight;
-			
+
 		} // End of while (token!=null && token.isPaintable()).
-		
+
 		// NOTE: We should re-use code from Token (paintBackground()) here,
 		// but don't because I'm just too lazy.
 		if (host.getEOLMarkersVisible()) {
@@ -447,18 +454,18 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 			g.setFont(host.getFontForTokenType(Token.WHITESPACE));
 			g.drawString("\u00B6", x, y - fontHeight);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Fetches the allocation for the given child view.
 	 * <p>
 	 * Overridden to account for code folding.
 	 *
 	 * @param index The index of the child, >= 0 && < getViewCount().
-	 * @param a The allocation to this view
-	 * @return The allocation to the child; or <code>null</code> if <code>a</code> is
-	 *         <code>null</code>; or <code>null</code> if the layout is invalid
+	 * @param a     The allocation to this view
+	 * @return The allocation to the child; or <code>null</code> if <code>a</code>
+	 *         is <code>null</code>; or <code>null</code> if the layout is invalid
 	 */
 	@Override
 	public Shape getChildAllocation(int index, Shape a) {
@@ -475,23 +482,23 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Fetches the allocation for the given child view to render into.
 	 * <p>
 	 * Overridden to account for lines hidden by collapsed folded regions.
 	 *
 	 * @param line The index of the child, >= 0 && < getViewCount()
-	 * @param a The allocation to this view
+	 * @param a    The allocation to this view
 	 * @return The allocation to the child
 	 */
 	public Shape getChildAllocationImpl(int line, Shape a) {
-		
+
 		Rectangle alloc = getInsideAllocation(a);
 		host = (RSyntaxTextArea) getContainer();
 		FoldManager fm = host.getFoldManager();
 		int y = alloc.y;
-		
+
 		// TODO: Make cached getOffset() calls for Y_AXIS valid even for
 		// folding, to speed this up!
 		for (int i = 0; i < line; i++) {
@@ -501,21 +508,22 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 				i += fold.getCollapsedLineCount();
 			}
 		}
-		
+
 		childAllocation2(line, y, alloc);
 		return alloc;
-		
+
 	}
-	
+
 	/**
-	 * Determines the maximum span for this view along an axis. This is implemented to provide the
-	 * superclass behavior after first making sure that the current font metrics are cached (for the
-	 * nested lines which use the metrics to determine the height of the potentially wrapped lines).
+	 * Determines the maximum span for this view along an axis. This is implemented
+	 * to provide the superclass behavior after first making sure that the current
+	 * font metrics are cached (for the nested lines which use the metrics to
+	 * determine the height of the potentially wrapped lines).
 	 *
 	 * @param axis may be either View.X_AXIS or View.Y_AXIS
-	 * @return the span the view would like to be rendered into. Typically the view is told to
-	 *         render into the span that is returned, although there is no guarantee. The parent may
-	 *         choose to resize or break the view.
+	 * @return the span the view would like to be rendered into. Typically the view
+	 *         is told to render into the span that is returned, although there is
+	 *         no guarantee. The parent may choose to resize or break the view.
 	 * @see View#getMaximumSpan
 	 */
 	@Override
@@ -527,16 +535,17 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		}
 		return span;
 	}
-	
+
 	/**
-	 * Determines the minimum span for this view along an axis. This is implemented to provide the
-	 * superclass behavior after first making sure that the current font metrics are cached (for the
-	 * nested lines which use the metrics to determine the height of the potentially wrapped lines).
+	 * Determines the minimum span for this view along an axis. This is implemented
+	 * to provide the superclass behavior after first making sure that the current
+	 * font metrics are cached (for the nested lines which use the metrics to
+	 * determine the height of the potentially wrapped lines).
 	 *
 	 * @param axis may be either View.X_AXIS or View.Y_AXIS
-	 * @return the span the view would like to be rendered into. Typically the view is told to
-	 *         render into the span that is returned, although there is no guarantee. The parent may
-	 *         choose to resize or break the view.
+	 * @return the span the view would like to be rendered into. Typically the view
+	 *         is told to render into the span that is returned, although there is
+	 *         no guarantee. The parent may choose to resize or break the view.
 	 * @see View#getMinimumSpan
 	 */
 	@Override
@@ -548,16 +557,17 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		}
 		return span;
 	}
-	
+
 	/**
-	 * Determines the preferred span for this view along an axis. This is implemented to provide the
-	 * superclass behavior after first making sure that the current font metrics are cached (for the
-	 * nested lines which use the metrics to determine the height of the potentially wrapped lines).
+	 * Determines the preferred span for this view along an axis. This is
+	 * implemented to provide the superclass behavior after first making sure that
+	 * the current font metrics are cached (for the nested lines which use the
+	 * metrics to determine the height of the potentially wrapped lines).
 	 *
 	 * @param axis may be either View.X_AXIS or View.Y_AXIS
-	 * @return the span the view would like to be rendered into. Typically the view is told to
-	 *         render into the span that is returned, although there is no guarantee. The parent may
-	 *         choose to resize or break the view.
+	 * @return the span the view would like to be rendered into. Typically the view
+	 *         is told to render into the span that is returned, although there is
+	 *         no guarantee. The parent may choose to resize or break the view.
 	 * @see View#getPreferredSpan
 	 */
 	@Override
@@ -584,7 +594,7 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		}
 		return span;
 	}
-	
+
 	/**
 	 * Returns the tab size set for the document, defaulting to 5.
 	 *
@@ -595,18 +605,18 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		int size = (i != null) ? i.intValue() : 5;
 		return size;
 	}
-	
+
 	/**
 	 * Overridden to allow for folded regions.
 	 */
 	@Override
 	protected View getViewAtPoint(int x, int y, Rectangle alloc) {
-		
+
 		int lineCount = getViewCount();
 		int curY = alloc.y + getOffset(Y_AXIS, 0); // Always at least 1 line
 		host = (RSyntaxTextArea) getContainer();
 		FoldManager fm = host.getFoldManager();
-		
+
 		for (int line = 1; line < lineCount; line++) {
 			int span = getSpan(Y_AXIS, line - 1);
 			if (y < curY + span) {
@@ -619,20 +629,21 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 				line += fold.getCollapsedLineCount();
 			}
 		}
-		
+
 		// Not found - return last line's view.
 		childAllocation2(lineCount - 1, curY, alloc);
 		return getView(lineCount - 1);
-		
+
 	}
-	
+
 	/**
-	 * Gives notification that something was inserted into the document in a location that this view
-	 * is responsible for. This is implemented to simply update the children.
+	 * Gives notification that something was inserted into the document in a
+	 * location that this view is responsible for. This is implemented to simply
+	 * update the children.
 	 *
 	 * @param changes The change information from the associated document.
-	 * @param a the current allocation of the view
-	 * @param f the factory to use to rebuild if the view has children
+	 * @param a       the current allocation of the view
+	 * @param f       the factory to use to rebuild if the view has children
 	 * @see View#insertUpdate
 	 */
 	@Override
@@ -645,12 +656,12 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 			v.insertUpdate(changes, alloc, f);
 		}
 	}
-	
+
 	/**
 	 * Loads all of the children to initialize the view. This is called by the
-	 * <code>setParent</code> method. Subclasses can re-implement this to initialize their child
-	 * views in a different manner. The default implementation creates a child view for each child
-	 * element.
+	 * <code>setParent</code> method. Subclasses can re-implement this to initialize
+	 * their child views in a different manner. The default implementation creates a
+	 * child view for each child element.
 	 *
 	 * @param f the view factory
 	 */
@@ -666,21 +677,21 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 			replace(0, 0, added);
 		}
 	}
-	
+
 	@Override
 	public Shape modelToView(int pos, Shape a, Position.Bias b) throws BadLocationException {
-		
+
 		if (!isAllocationValid()) {
 			Rectangle alloc = a.getBounds();
 			setSize(alloc.width, alloc.height);
 		}
-		
+
 		boolean isBackward = (b == Position.Bias.Backward);
 		int testPos = (isBackward) ? Math.max(0, pos - 1) : pos;
 		if (isBackward && testPos < getStartOffset()) {
 			return null;
 		}
-		
+
 		int vIndex = getViewIndexAtPosition(testPos);
 		if ((vIndex != -1) && (vIndex < getViewCount())) {
 			View v = getView(vIndex);
@@ -700,44 +711,51 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 				return retShape;
 			}
 		}
-		
+
 		throw new BadLocationException("Position not represented by view", pos);
-		
+
 	}
-	
+
 	/**
-	 * Provides a mapping, for a given region, from the document model coordinate space to the view
-	 * coordinate space. The specified region is created as a union of the first and last character
-	 * positions.
+	 * Provides a mapping, for a given region, from the document model coordinate
+	 * space to the view coordinate space. The specified region is created as a
+	 * union of the first and last character positions.
 	 * <p>
-	 * This is implemented to subtract the width of the second character, as this view's
-	 * <code>modelToView</code> actually returns the width of the character instead of "1" or "0"
-	 * like the View implementations in <code>javax.swing.text</code>. Thus, if we don't override
-	 * this method, the <code>View</code> implementation will return one character's width too much
-	 * for its consumers (implementations of <code>javax.swing.text.Highlighter</code>).
+	 * This is implemented to subtract the width of the second character, as this
+	 * view's <code>modelToView</code> actually returns the width of the character
+	 * instead of "1" or "0" like the View implementations in
+	 * <code>javax.swing.text</code>. Thus, if we don't override this method, the
+	 * <code>View</code> implementation will return one character's width too much
+	 * for its consumers (implementations of
+	 * <code>javax.swing.text.Highlighter</code>).
 	 *
 	 * @param p0 the position of the first character (>=0)
-	 * @param b0 The bias of the first character position, toward the previous character or the next
-	 *            character represented by the offset, in case the position is a boundary of two
-	 *            views; <code>b0</code> will have one of these values:
-	 *            <ul>
-	 *            <li> <code>Position.Bias.Forward</code> <li> <code> Position.Bias.Backward</code>
-	 *            </ul>
+	 * @param b0 The bias of the first character position, toward the previous
+	 *           character or the next character represented by the offset, in case
+	 *           the position is a boundary of two views; <code>b0</code> will have
+	 *           one of these values:
+	 *           <ul>
+	 *           <li><code>Position.Bias.Forward</code>
+	 *           <li><code> Position.Bias.Backward</code>
+	 *           </ul>
 	 * @param p1 the position of the last character (>=0)
-	 * @param b1 the bias for the second character position, defined one of the legal values shown
-	 *            above
-	 * @param a the area of the view, which encompasses the requested region
-	 * @return the bounding box which is a union of the region specified by the first and last
-	 *         character positions
-	 * @exception BadLocationException if the given position does not represent a valid location in
-	 *                the associated document
-	 * @exception IllegalArgumentException if <code>b0</code> or <code>b1</code> are not one of the
-	 *                legal <code>Position.Bias</code> values listed above
+	 * @param b1 the bias for the second character position, defined one of the
+	 *           legal values shown above
+	 * @param a  the area of the view, which encompasses the requested region
+	 * @return the bounding box which is a union of the region specified by the
+	 *         first and last character positions
+	 * @exception BadLocationException     if the given position does not represent
+	 *                                     a valid location in the associated
+	 *                                     document
+	 * @exception IllegalArgumentException if <code>b0</code> or <code>b1</code> are
+	 *                                     not one of the legal
+	 *                                     <code>Position.Bias</code> values listed
+	 *                                     above
 	 * @see View#viewToModel
 	 */
 	@Override
 	public Shape modelToView(int p0, Position.Bias b0, int p1, Position.Bias b1, Shape a) throws BadLocationException {
-		
+
 		Shape s0 = modelToView(p0, a, b0);
 		Shape s1;
 		if (p1 == getEndOffset()) {
@@ -762,7 +780,7 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 			r0.x = alloc.x;
 			r0.width = alloc.width;
 		}
-		
+
 		r0.add(r1);
 		// The next line is the only difference between this method and
 		// View's implementation. We're subtracting the width of the second
@@ -775,15 +793,17 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 			r0.width -= r1.width;
 		}
 		return r0;
-		
+
 	}
-	
+
 	/**
-	 * Returns the next tab stop position after a given reference position. This implementation does
-	 * not support things like centering so it ignores the tabOffset argument.
+	 * Returns the next tab stop position after a given reference position. This
+	 * implementation does not support things like centering so it ignores the
+	 * tabOffset argument.
 	 *
-	 * @param x the current position >= 0
-	 * @param tabOffset the position within the text stream that the tab occurred at >= 0.
+	 * @param x         the current position >= 0
+	 * @param tabOffset the position within the text stream that the tab occurred at
+	 *                  >= 0.
 	 * @return the tab stop, measured in points >= 0
 	 */
 	@Override
@@ -794,7 +814,7 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		int ntabs = ((int) x - tabBase) / tabSize;
 		return tabBase + ((ntabs + 1) * tabSize);
 	}
-	
+
 	/**
 	 * Paints the word-wrapped text.
 	 *
@@ -803,10 +823,10 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 	 */
 	@Override
 	public void paint(Graphics g, Shape a) {
-		
+
 		Rectangle alloc = (a instanceof Rectangle) ? (Rectangle) a : a.getBounds();
 		tabBase = alloc.x;
-		
+
 		Graphics2D g2d = (Graphics2D) g;
 		host = (RSyntaxTextArea) getContainer();
 		int ascent = host.getMaxAscent();
@@ -814,23 +834,23 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		FoldManager fm = host.getFoldManager();
 		TokenPainter painter = host.getTokenPainter();
 		Element root = getElement();
-		
+
 		// Whether token styles should always be painted, even in selections
 		int selStart = host.getSelectionStart();
 		int selEnd = host.getSelectionEnd();
-		
+
 		int n = getViewCount(); // Number of lines.
 		int x = alloc.x + getLeftInset();
 		tempRect.y = alloc.y + getTopInset();
 		Rectangle clip = g.getClipBounds();
 		for (int i = 0; i < n; i++) {
-			
+
 			tempRect.x = x + getOffset(X_AXIS, i);
 			// tempRect.y = y + getOffset(Y_AXIS, i);
 			tempRect.width = getSpan(X_AXIS, i);
 			tempRect.height = getSpan(Y_AXIS, i);
 			// System.err.println("For line " + i + ": tempRect==" + tempRect);
-			
+
 			if (tempRect.intersects(clip)) {
 				Element lineElement = root.getElement(i);
 				int startOffset = lineElement.getStartOffset();
@@ -843,9 +863,9 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 					drawViewWithSelection(painter, g2d, alloc, view, fontHeight, tempRect.y + ascent, selStart, selEnd);
 				}
 			}
-			
+
 			tempRect.y += tempRect.height;
-			
+
 			Fold possibleFold = fm.getFoldForLine(i);
 			if (possibleFold != null && possibleFold.isCollapsed()) {
 				i += possibleFold.getCollapsedLineCount();
@@ -856,59 +876,62 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 					g.drawLine(x, tempRect.y - 1, host.getWidth(), tempRect.y - 1);
 				}
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	/**
-	 * Gives notification that something was removed from the document in a location that this view
-	 * is responsible for. This is implemented to simply update the children.
+	 * Gives notification that something was removed from the document in a location
+	 * that this view is responsible for. This is implemented to simply update the
+	 * children.
 	 *
 	 * @param changes The change information from the associated document.
-	 * @param a the current allocation of the view
-	 * @param f the factory to use to rebuild if the view has children
+	 * @param a       the current allocation of the view
+	 * @param f       the factory to use to rebuild if the view has children
 	 * @see View#removeUpdate
 	 */
 	@Override
 	public void removeUpdate(DocumentEvent changes, Shape a, ViewFactory f) {
-		
+
 		updateChildren(changes, a);
-		
+
 		Rectangle alloc = ((a != null) && isAllocationValid()) ? getInsideAllocation(a) : null;
 		int pos = changes.getOffset();
 		View v = getViewAtPosition(pos, alloc);
 		if (v != null) {
 			v.removeUpdate(changes, alloc, f);
 		}
-		
+
 	}
-	
+
 	/**
-	 * Makes a <code>Segment</code> point to the text in our document between the given positions.
-	 * Note that the positions MUST be valid positions in the document.
+	 * Makes a <code>Segment</code> point to the text in our document between the
+	 * given positions. Note that the positions MUST be valid positions in the
+	 * document.
 	 *
-	 * @param p0 The first position in the document.
-	 * @param p1 The second position in the document.
+	 * @param p0       The first position in the document.
+	 * @param p1       The second position in the document.
 	 * @param document The document from which you want to get the text.
-	 * @param seg The segment in which to load the text.
+	 * @param seg      The segment in which to load the text.
 	 */
 	private void setSegment(int p0, int p1, Document document, Segment seg) {
 		try {
 			// System.err.println("... in setSharedSegment, p0/p1==" + p0 + "/" + p1);
 			document.getText(p0, p1 - p0, seg);
-			// System.err.println("... in setSharedSegment: s=='" + s + "'; line/numLines==" + line
+			// System.err.println("... in setSharedSegment: s=='" + s + "'; line/numLines=="
+			// + line
 			// + "/" + numLines);
 		} catch (BadLocationException ble) { // Never happens
 			ble.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * Sets the size of the view. This should cause layout of the view along the given axis, if it
-	 * has any layout duties.
+	 * Sets the size of the view. This should cause layout of the view along the
+	 * given axis, if it has any layout duties.
 	 *
-	 * @param width the width >= 0
+	 * @param width  the width >= 0
 	 * @param height the height >= 0
 	 */
 	@Override
@@ -923,15 +946,15 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		super.setSize(width, height);
 		widthChanging = false;
 	}
-	
+
 	/**
 	 * Update the child views in response to a document event.
 	 */
 	void updateChildren(DocumentEvent e, Shape a) {
-		
+
 		Element elem = getElement();
 		DocumentEvent.ElementChange ec = e.getChange(elem);
-		
+
 		// This occurs when syntax highlighting only changes on lines
 		// (i.e. beginning a multiline comment).
 		if (e.getType() == DocumentEvent.EventType.CHANGE) {
@@ -940,51 +963,51 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 			getContainer().repaint();
 			// damageLineRange(startLine,endLine, a, host);
 		}
-		
+
 		else if (ec != null) {
-			
+
 			// the structure of this element changed.
 			Element[] removedElems = ec.getChildrenRemoved();
 			Element[] addedElems = ec.getChildrenAdded();
 			View[] added = new View[addedElems.length];
-			
+
 			for (int i = 0; i < addedElems.length; i++) {
 				added[i] = new WrappedLine(addedElems[i]);
 			}
 			// System.err.println("Replacing " + removedElems.length +
 			// " children with " + addedElems.length);
 			replace(ec.getIndex(), removedElems.length, added);
-			
+
 			// should damge a little more intelligently.
 			if (a != null) {
 				preferenceChanged(null, true, true);
 				getContainer().repaint();
 			}
-			
+
 		}
-		
+
 		// update font metrics which may be used by the child views
 		updateMetrics();
-		
+
 	}
-	
+
 	final void updateMetrics() {
 		Component host = getContainer();
 		Font f = host.getFont();
 		metrics = host.getFontMetrics(f); // Metrics for the default font.
 		tabSize = getTabSize() * metrics.charWidth('m');
 	}
-	
+
 	@Override
 	public int viewToModel(float x, float y, Shape a, Position.Bias[] bias) {
-		
+
 		int offs = -1;
-		
+
 		if (!isAllocationValid()) {
 			Rectangle alloc = a.getBounds();
 			setSize(alloc.width, alloc.height);
 		}
-		
+
 		// Get the child view for the line at (x,y), and ask it for the
 		// specific offset.
 		Rectangle alloc = getInsideAllocation(a);
@@ -992,17 +1015,17 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		if (v != null) {
 			offs = v.viewToModel(x, y, alloc, bias);
 		}
-		
+
 		// Code folding may have hidden the last line. If so, return the last
 		// visible offset instead of the last offset.
 		if (host.isCodeFoldingEnabled() && v == getView(getViewCount() - 1) && offs == v.getEndOffset() - 1) {
 			offs = host.getLastVisibleOffset();
 		}
-		
+
 		return offs;
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -1011,7 +1034,7 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		return yForLineContaining(alloc, getElement().getElement(line).getStartOffset());
 		// return alloc.y + getOffset(Y_AXIS, line);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -1034,29 +1057,30 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		}
 		return -1;
 	}
-	
+
 	/**
-	 * Simple view of a line that wraps if it doesn't fit within the horizontal space allocated.
-	 * This class tries to be lightweight by carrying little state of it's own and sharing the state
-	 * of the outer class with it's siblings.
+	 * Simple view of a line that wraps if it doesn't fit within the horizontal
+	 * space allocated. This class tries to be lightweight by carrying little state
+	 * of it's own and sharing the state of the outer class with it's siblings.
 	 */
 	class WrappedLine extends View {
-		
+
 		int nlines;
-		
+
 		WrappedLine(Element elem) {
 			super(elem);
 		}
-		
+
 		/**
-		 * Calculate the number of lines that will be rendered by logical line when it is wrapped.
+		 * Calculate the number of lines that will be rendered by logical line when it
+		 * is wrapped.
 		 */
 		final int calculateLineCount() {
-			
+
 			int nlines = 0;
 			int startOffset = getStartOffset();
 			int p1 = getEndOffset();
-			
+
 			// Get the token list for this line so we don't have to keep
 			// recomputing it if this logical line spans multiple physical
 			// lines.
@@ -1066,16 +1090,17 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 			int line = map.getElementIndex(startOffset);
 			Token tokenList = doc.getTokenListForLine(line);
 			float x0 = 0;// FIXME: should be alloc.x!! alloc.x;//0;
-			
+
 			// System.err.println(">>> calculateLineCount: " + startOffset + "-" + p1);
 			for (int p0 = startOffset; p0 < p1;) {
 				// System.err.println("... ... " + p0 + ", " + p1);
 				nlines += 1;
-				TokenSubList subList = TokenUtils.getSubTokenList(tokenList, p0, WrappedSyntaxView.this, textArea, x0, lineCountTempToken);
+				TokenSubList subList = TokenUtils.getSubTokenList(tokenList, p0, WrappedSyntaxView.this, textArea, x0,
+						lineCountTempToken);
 				x0 = subList != null ? subList.x : x0;
 				tokenList = subList != null ? subList.tokenList : null;
 				int p = calculateBreakPosition(p0, tokenList, x0);
-				
+
 				// System.err.println("... ... ... break position p==" + p);
 				p0 = (p == p0) ? ++p : p; // this is the fix of #4410243
 				// we check on situation when
@@ -1087,19 +1112,19 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 			/*
 			 * int numLines = 0; try { numLines = textArea.getLineCount(); } catch
 			 * (BadLocationException ble) { ble.printStackTrace(); } System.err.println
-			 * (">>> >>> calculated number of lines for this view (line " + line + "/" + numLines +
-			 * ": " + nlines);
+			 * (">>> >>> calculated number of lines for this view (line " + line + "/" +
+			 * numLines + ": " + nlines);
 			 */
 			return nlines;
 		}
-		
+
 		/**
 		 * Determines the preferred span for this view along an axis.
 		 *
 		 * @param axis may be either X_AXIS or Y_AXIS
-		 * @return the span the view would like to be rendered into. Typically the view is told to
-		 *         render into the span that is returned, although there is no guarantee. The parent
-		 *         may choose to resize or break the view.
+		 * @return the span the view would like to be rendered into. Typically the view
+		 *         is told to render into the span that is returned, although there is
+		 *         no guarantee. The parent may choose to resize or break the view.
 		 * @see View#getPreferredSpan
 		 */
 		@Override
@@ -1123,10 +1148,11 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 				throw new IllegalArgumentException("Invalid axis: " + axis);
 			}
 		}
-		
+
 		/**
-		 * Renders using the given rendering surface and area on that surface. The view may need to
-		 * do layout and create child views to enable itself to render into the given allocation.
+		 * Renders using the given rendering surface and area on that surface. The view
+		 * may need to do layout and create child views to enable itself to render into
+		 * the given allocation.
 		 *
 		 * @param g the rendering surface to use
 		 * @param a the allocated region to render into
@@ -1136,20 +1162,20 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		public void paint(Graphics g, Shape a) {
 			// This is done by drawView() above.
 		}
-		
+
 		/**
-		 * Provides a mapping from the document model coordinate space to the coordinate space of
-		 * the view mapped to it.
+		 * Provides a mapping from the document model coordinate space to the coordinate
+		 * space of the view mapped to it.
 		 *
 		 * @param pos the position to convert
-		 * @param a the allocated region to render into
+		 * @param a   the allocated region to render into
 		 * @return the bounding box of the given position is returned
-		 * @exception BadLocationException if the given position does not represent a valid location
-		 *                in the associated document.
+		 * @exception BadLocationException if the given position does not represent a
+		 *                                 valid location in the associated document.
 		 */
 		@Override
 		public Shape modelToView(int pos, Shape a, Position.Bias b) throws BadLocationException {
-			
+
 			// System.err.println("--- begin modelToView ---");
 			Rectangle alloc = a.getBounds();
 			RSyntaxTextArea textArea = (RSyntaxTextArea) getContainer();
@@ -1158,7 +1184,7 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 			int p0 = getStartOffset();
 			int p1 = getEndOffset();
 			int testP = (b == Position.Bias.Forward) ? pos : Math.max(p0, pos - 1);
-			
+
 			// Get the token list for this line so we don't have to keep
 			// recomputing it if this logical line spans multiple physical
 			// lines.
@@ -1167,15 +1193,17 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 			int line = map.getElementIndex(p0);
 			Token tokenList = doc.getTokenListForLine(line);
 			float x0 = alloc.x;// 0;
-			
+
 			while (p0 < p1) {
-				TokenSubList subList = TokenUtils.getSubTokenList(tokenList, p0, WrappedSyntaxView.this, textArea, x0, lineCountTempToken);
+				TokenSubList subList = TokenUtils.getSubTokenList(tokenList, p0, WrappedSyntaxView.this, textArea, x0,
+						lineCountTempToken);
 				x0 = subList != null ? subList.x : x0;
 				tokenList = subList != null ? subList.tokenList : null;
 				int p = calculateBreakPosition(p0, tokenList, x0);
 				if ((pos >= p0) && (testP < p)) {// pos < p)) {
 					// it's in this line
-					alloc = RSyntaxUtilities.getLineWidthUpTo(textArea, s, p0, pos, WrappedSyntaxView.this, alloc, alloc.x);
+					alloc = RSyntaxUtilities.getLineWidthUpTo(textArea, s, p0, pos, WrappedSyntaxView.this, alloc,
+							alloc.x);
 					// System.err.println("--- end modelToView ---");
 					return alloc;
 				}
@@ -1183,38 +1211,40 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 				if (p == p1 - 1 && pos == p1 - 1) {
 					// Wants end.
 					if (pos > p0) {
-						alloc = RSyntaxUtilities.getLineWidthUpTo(textArea, s, p0, pos, WrappedSyntaxView.this, alloc, alloc.x);
+						alloc = RSyntaxUtilities.getLineWidthUpTo(textArea, s, p0, pos, WrappedSyntaxView.this, alloc,
+								alloc.x);
 					}
 					// System.err.println("--- end modelToView ---");
 					return alloc;
 				}
-				
+
 				p0 = (p == p0) ? p1 : p;
 				// System.err.println("... ... Incrementing y");
 				alloc.y += alloc.height;
-				
+
 			}
-			
+
 			throw new BadLocationException(null, pos);
-			
+
 		}
-		
+
 		/**
-		 * Provides a mapping from the view coordinate space to the logical coordinate space of the
-		 * model.
+		 * Provides a mapping from the view coordinate space to the logical coordinate
+		 * space of the model.
 		 *
 		 * @param fx the X coordinate
 		 * @param fy the Y coordinate
-		 * @param a the allocated region to render into
-		 * @return the location within the model that best represents the given point in the view
+		 * @param a  the allocated region to render into
+		 * @return the location within the model that best represents the given point in
+		 *         the view
 		 * @see View#viewToModel
 		 */
 		@Override
 		public int viewToModel(float fx, float fy, Shape a, Position.Bias[] bias) {
-			
+
 			// PENDING(prinz) implement bias properly
 			bias[0] = Position.Bias.Forward;
-			
+
 			Rectangle alloc = (Rectangle) a;
 			RSyntaxDocument doc = (RSyntaxDocument) getDocument();
 			int x = (int) fx;
@@ -1228,17 +1258,17 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 				// is assumed to be the end of the coverage for this view.
 				return getEndOffset() - 1;
 			} else {
-				
+
 				// positioned within the coverage of this view vertically,
 				// so we figure out which line the point corresponds to.
 				// if the line is greater than the number of lines
 				// contained, then simply use the last line as it represents
 				// the last possible place we can position to.
-				
+
 				RSyntaxTextArea textArea = (RSyntaxTextArea) getContainer();
 				alloc.height = textArea.getLineHeight();
 				int p1 = getEndOffset();
-				
+
 				// Get the token list for this line so we don't have to keep
 				// recomputing it if this logical line spans multiple
 				// physical lines.
@@ -1246,37 +1276,38 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 				int p0 = getStartOffset();
 				int line = map.getElementIndex(p0);
 				Token tlist = doc.getTokenListForLine(line);
-				
+
 				// Look at each physical line-chunk of this logical line.
 				while (p0 < p1) {
-					
+
 					// We can always use alloc.x since we always break
 					// lines so they start at the beginning of a physical
 					// line.
-					TokenSubList subList = TokenUtils.getSubTokenList(tlist, p0, WrappedSyntaxView.this, textArea, alloc.x, lineCountTempToken);
+					TokenSubList subList = TokenUtils.getSubTokenList(tlist, p0, WrappedSyntaxView.this, textArea,
+							alloc.x, lineCountTempToken);
 					tlist = subList != null ? subList.tokenList : null;
 					int p = calculateBreakPosition(p0, tlist, alloc.x);
-					
+
 					// If desired view position is in this physical chunk.
 					if ((y >= alloc.y) && (y < (alloc.y + alloc.height))) {
-						
+
 						// Point is to the left of the line
 						if (x < alloc.x) {
 							return p0;
 						}
-						
+
 						// Point is to the right of the line
 						else if (x > alloc.x + alloc.width) {
 							return p - 1;
 						}
-						
+
 						// Point is in this physical line!
 						else {
-							
+
 							// Start at alloc.x since this chunk starts
 							// at the beginning of a physical line.
 							int n = tlist.getListOffset(textArea, WrappedSyntaxView.this, alloc.x, x);
-							
+
 							// NOTE: We needed to add the max() with
 							// p0 as getTokenListForLine returns -1
 							// for empty lines (just a null token).
@@ -1284,22 +1315,22 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 							// FIXME: Have null tokens have their
 							// offset but a -1 length.
 							return Math.max(Math.min(n, p1 - 1), p0);
-							
+
 						} // End of else.
-						
+
 					} // End of if ((y>=alloc.y) && ...
-					
+
 					p0 = (p == p0) ? p1 : p;
 					alloc.y += alloc.height;
-					
+
 				} // End of while (p0<p1).
-				
+
 				return getEndOffset() - 1;
-				
+
 			} // End of else.
-			
+
 		}
-		
+
 		private void handleDocumentEvent(DocumentEvent e, Shape a, ViewFactory f) {
 			int n = calculateLineCount();
 			if (this.nlines != n) {
@@ -1321,17 +1352,17 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 				c.repaint(alloc.x, alloc.y, alloc.width, alloc.height);
 			}
 		}
-		
+
 		@Override
 		public void insertUpdate(DocumentEvent e, Shape a, ViewFactory f) {
 			handleDocumentEvent(e, a, f);
 		}
-		
+
 		@Override
 		public void removeUpdate(DocumentEvent e, Shape a, ViewFactory f) {
 			handleDocumentEvent(e, a, f);
 		}
-		
+
 	}
-	
+
 }

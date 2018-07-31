@@ -13,33 +13,34 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Token;
 
 /**
- * Returns non-whitespace, non-comment tokens from an {@link RSyntaxDocument}, one at a time. This
- * can be used by simplistic {@link LanguageSupport}s to "parse" for simple, easily-identifiable
- * tokens, such as curly braces and {@link Token#VARIABLE}s. For example, to identify code blocks
- * for languages structured like C and Java, you can use this class in conjunction with
- * {@link CodeBlock} and {@link VariableDeclaration} to create an easily-parsable model of your
- * source code.
+ * Returns non-whitespace, non-comment tokens from an {@link RSyntaxDocument},
+ * one at a time. This can be used by simplistic {@link LanguageSupport}s to
+ * "parse" for simple, easily-identifiable tokens, such as curly braces and
+ * {@link Token#VARIABLE}s. For example, to identify code blocks for languages
+ * structured like C and Java, you can use this class in conjunction with
+ * {@link CodeBlock} and {@link VariableDeclaration} to create an
+ * easily-parsable model of your source code.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class TokenScanner {
-	
+
 	private RSyntaxDocument doc;
-	
+
 	private Element root;
-	
+
 	private Token t;
-	
+
 	private int line;
-	
+
 	/**
 	 * @param textArea
 	 */
 	public TokenScanner(RSyntaxTextArea textArea) {
 		this((RSyntaxDocument) textArea.getDocument());
 	}
-	
+
 	/**
 	 * @param doc
 	 */
@@ -49,7 +50,7 @@ public class TokenScanner {
 		line = 0;
 		t = null;
 	}
-	
+
 	/**
 	 * Returns the document being parsed.
 	 *
@@ -58,11 +59,12 @@ public class TokenScanner {
 	public RSyntaxDocument getDocument() {
 		return doc;
 	}
-	
+
 	/**
 	 * Returns the next non-whitespace, non-comment token in the text area.
 	 *
-	 * @return The next token, or <code>null</code> if we are at the end of its document.
+	 * @return The next token, or <code>null</code> if we are at the end of its
+	 *         document.
 	 */
 	public Token next() {
 		Token next = nextRaw();
@@ -71,11 +73,12 @@ public class TokenScanner {
 		}
 		return next;
 	}
-	
+
 	/**
 	 * Returns the next token in the text area.
 	 *
-	 * @return The next token, or <code>null</code> if we are at the end of its document.
+	 * @return The next token, or <code>null</code> if we are at the end of its
+	 *         document.
 	 */
 	private Token nextRaw() {
 		if (t == null || !t.isPaintable()) {
@@ -91,5 +94,5 @@ public class TokenScanner {
 		t = t.getNextToken();
 		return next;
 	}
-	
+
 }

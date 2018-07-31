@@ -16,8 +16,9 @@ import org.fife.ui.autocomplete.LanguageAwareCompletionProvider;
 import org.fife.ui.autocomplete.ShorthandCompletion;
 
 /**
- * A completion provider for the C programming language. It provides code completion support and
- * parameter assistance for the C Standard Library. This information is read from an XML file.
+ * A completion provider for the C programming language. It provides code
+ * completion support and parameter assistance for the C Standard Library. This
+ * information is read from an XML file.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -104,8 +105,9 @@ public class CCompletionProvider extends LanguageAwareCompletionProvider {
 	}
 
 	/**
-	 * Called from {@link #createCodeCompletionProvider()} to actually load the completions from
-	 * XML. Subclasses that override that method will want to call this one.
+	 * Called from {@link #createCodeCompletionProvider()} to actually load the
+	 * completions from XML. Subclasses that override that method will want to call
+	 * this one.
 	 *
 	 * @param cp The code completion provider.
 	 */

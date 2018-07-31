@@ -35,15 +35,16 @@ import org.fife.ui.rsyntaxtextarea.parser.TaskTagParser.TaskNotice;
 import org.fife.ui.rtextarea.RTextArea;
 
 /**
- * A component to sit alongside an {@link RSyntaxTextArea} that displays colored markers for
- * locations of interest (parser errors, marked occurrences, etc.).
+ * A component to sit alongside an {@link RSyntaxTextArea} that displays colored
+ * markers for locations of interest (parser errors, marked occurrences, etc.).
  * <p>
- * <code>ErrorStrip</code>s display <code>ParserNotice</code>s from {@link Parser}s. Currently, the
- * only way to get lines flagged in this component is to register a <code>Parser</code> on an
- * RSyntaxTextArea and return <code>ParserNotice</code>s for each line to display an icon for. The
+ * <code>ErrorStrip</code>s display <code>ParserNotice</code>s from
+ * {@link Parser}s. Currently, the only way to get lines flagged in this
+ * component is to register a <code>Parser</code> on an RSyntaxTextArea and
+ * return <code>ParserNotice</code>s for each line to display an icon for. The
  * severity of each notice must be at least the threshold set by
- * {@link #setLevelThreshold(org.fife.ui.rsyntaxtextarea.parser.ParserNotice.Level)} to be displayed
- * in this error strip. The default threshold is
+ * {@link #setLevelThreshold(org.fife.ui.rsyntaxtextarea.parser.ParserNotice.Level)}
+ * to be displayed in this error strip. The default threshold is
  * {@link org.fife.ui.rsyntaxtextarea.parser.ParserNotice.Level#WARNING}.
  * <p>
  * An <code>ErrorStrip</code> can be added to a UI like so:
@@ -62,72 +63,76 @@ import org.fife.ui.rtextarea.RTextArea;
  * @version 0.5
  */
 /*
- * Possible improvements: 1. Handle marked occurrence changes & "mark all" changes separately from
- * parser changes. For each property change, call a method that removes the notices being reloaded
- * from the Markers (removing any Markers that are now "empty").
+ * Possible improvements: 1. Handle marked occurrence changes & "mark all"
+ * changes separately from parser changes. For each property change, call a
+ * method that removes the notices being reloaded from the Markers (removing any
+ * Markers that are now "empty").
  */
 public class ErrorStrip extends JComponent {
-	
+
 	/**
 	 * The text area.
 	 */
 	private RSyntaxTextArea textArea;
-	
+
 	/**
 	 * Listens for events in this component.
 	 */
 	private Listener listener;
-	
+
 	/**
-	 * Whether "marked occurrences" in the text area should be shown in this error strip.
+	 * Whether "marked occurrences" in the text area should be shown in this error
+	 * strip.
 	 */
 	private boolean showMarkedOccurrences;
-	
+
 	/**
-	 * Whether markers for "mark all" highlights should be shown in this error strip.
+	 * Whether markers for "mark all" highlights should be shown in this error
+	 * strip.
 	 */
 	private boolean showMarkAll;
-	
+
 	/**
-	 * Mapping of colors to brighter colors. This is kept to prevent unnecessary creation of the
-	 * same Colors over and over.
+	 * Mapping of colors to brighter colors. This is kept to prevent unnecessary
+	 * creation of the same Colors over and over.
 	 */
 	private Map<Color, Color> brighterColors;
-	
+
 	/**
-	 * Only notices of this severity (or worse) will be displayed in this error strip.
+	 * Only notices of this severity (or worse) will be displayed in this error
+	 * strip.
 	 */
 	private ParserNotice.Level levelThreshold;
-	
+
 	/**
 	 * Whether the caret marker's location should be rendered.
 	 */
 	private boolean followCaret;
-	
+
 	/**
 	 * The color to use for the caret marker.
 	 */
 	private Color caretMarkerColor;
-	
+
 	/**
 	 * Where we paint the caret marker.
 	 */
 	private int caretLineY;
-	
+
 	/**
 	 * The last location of the caret marker.
 	 */
 	private int lastLineY;
-	
+
 	/**
 	 * The preferred width of this component.
 	 */
 	private static final int PREFERRED_WIDTH = 14;
-	
+
 	private static final String MSG = "org.fife.ui.rsyntaxtextarea.ErrorStrip";
-	
+
 	private static final ResourceBundle msg = ResourceBundle.getBundle(MSG);
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -145,10 +150,10 @@ public class ErrorStrip extends JComponent {
 		setFollowCaret(true);
 		setCaretMarkerColor(Color.BLACK);
 	}
-	
+
 	/**
-	 * Overridden so we only start listening for parser notices when this component (and presumably
-	 * the text area) are visible.
+	 * Overridden so we only start listening for parser notices when this component
+	 * (and presumably the text area) are visible.
 	 */
 	@Override
 	public void addNotify() {
@@ -160,7 +165,7 @@ public class ErrorStrip extends JComponent {
 		textArea.addPropertyChangeListener(RSyntaxTextArea.MARK_ALL_OCCURRENCES_CHANGED_PROPERTY, listener);
 		refreshMarkers();
 	}
-	
+
 	/**
 	 * Manually manages layout since this component uses no layout manager.
 	 */
@@ -172,7 +177,7 @@ public class ErrorStrip extends JComponent {
 		}
 		listener.caretUpdate(null); // Force recalculation of caret line pos
 	}
-	
+
 	/**
 	 * Returns a "brighter" color.
 	 *
@@ -195,7 +200,7 @@ public class ErrorStrip extends JComponent {
 		}
 		return brighter;
 	}
-	
+
 	/**
 	 * returns the color to use when painting the caret marker.
 	 *
@@ -205,7 +210,7 @@ public class ErrorStrip extends JComponent {
 	public Color getCaretMarkerColor() {
 		return caretMarkerColor;
 	}
-	
+
 	/**
 	 * Returns whether the caret's position should be drawn.
 	 *
@@ -215,7 +220,7 @@ public class ErrorStrip extends JComponent {
 	public boolean getFollowCaret() {
 		return followCaret;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -224,10 +229,11 @@ public class ErrorStrip extends JComponent {
 		int height = textArea.getPreferredScrollableViewportSize().height;
 		return new Dimension(PREFERRED_WIDTH, height);
 	}
-	
+
 	/**
-	 * Returns the minimum severity a parser notice must be for it to be displayed in this error
-	 * strip. This will be one of the constants defined in the <code>ParserNotice</code> class.
+	 * Returns the minimum severity a parser notice must be for it to be displayed
+	 * in this error strip. This will be one of the constants defined in the
+	 * <code>ParserNotice</code> class.
 	 *
 	 * @return The minimum severity.
 	 * @see #setLevelThreshold(org.fife.ui.rsyntaxtextarea.parser.ParserNotice.Level)
@@ -235,7 +241,7 @@ public class ErrorStrip extends JComponent {
 	public ParserNotice.Level getLevelThreshold() {
 		return levelThreshold;
 	}
-	
+
 	/**
 	 * Returns whether "mark all" highlights are shown in this error strip.
 	 *
@@ -245,7 +251,7 @@ public class ErrorStrip extends JComponent {
 	public boolean getShowMarkAll() {
 		return showMarkAll;
 	}
-	
+
 	/**
 	 * Returns whether marked occurrences are shown in this error strip.
 	 *
@@ -255,7 +261,7 @@ public class ErrorStrip extends JComponent {
 	public boolean getShowMarkedOccurrences() {
 		return showMarkedOccurrences;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -269,9 +275,10 @@ public class ErrorStrip extends JComponent {
 		}
 		return text;
 	}
-	
+
 	/**
-	 * Returns the y-offset in this component corresponding to a line in the text component.
+	 * Returns the y-offset in this component corresponding to a line in the text
+	 * component.
 	 *
 	 * @param line The line.
 	 * @return The y-offset.
@@ -282,7 +289,7 @@ public class ErrorStrip extends JComponent {
 		float lineCount = textArea.getLineCount();
 		return (int) (((line - 1) / (lineCount - 1)) * h) - 2;
 	}
-	
+
 	/**
 	 * Overridden to (possibly) draw the caret's position.
 	 *
@@ -296,7 +303,7 @@ public class ErrorStrip extends JComponent {
 			g.fillRect(0, caretLineY, getWidth(), 2);
 		}
 	}
-	
+
 	/**
 	 * Returns a possibly brighter component for a color.
 	 *
@@ -309,15 +316,15 @@ public class ErrorStrip extends JComponent {
 		}
 		return i;
 	}
-	
+
 	/**
 	 * Refreshes the markers displayed in this error strip.
 	 */
 	private void refreshMarkers() {
-		
+
 		removeAll(); // listener is removed in Marker.removeNotify()
 		Map<Integer, Marker> markerMap = new HashMap<Integer, Marker>();
-		
+
 		List<ParserNotice> notices = textArea.getParserNotices();
 		for (ParserNotice notice : notices) {
 			if (notice.getLevel().isEqualToOrWorseThan(levelThreshold) || (notice instanceof TaskNotice)) {
@@ -333,29 +340,29 @@ public class ErrorStrip extends JComponent {
 				}
 			}
 		}
-		
+
 		if (getShowMarkedOccurrences() && textArea.getMarkOccurrences()) {
 			List<DocumentRange> occurrences = textArea.getMarkedOccurrences();
 			addMarkersForRanges(occurrences, markerMap, textArea.getMarkOccurrencesColor());
 		}
-		
+
 		if (getShowMarkAll() /* && textArea.getMarkAll() */) {
 			Color markAllColor = textArea.getMarkAllHighlightColor();
 			List<DocumentRange> ranges = textArea.getMarkAllHighlightRanges();
 			addMarkersForRanges(ranges, markerMap, markAllColor);
 		}
-		
+
 		revalidate();
 		repaint();
-		
+
 	}
-	
+
 	/**
 	 * Adds markers for a list of ranges in the document.
 	 *
-	 * @param ranges The list of ranges in the document.
+	 * @param ranges    The list of ranges in the document.
 	 * @param markerMap A mapping from line number to <code>Marker</code>.
-	 * @param color The color to use for the markers.
+	 * @param color     The color to use for the markers.
 	 */
 	private void addMarkersForRanges(List<DocumentRange> ranges, Map<Integer, Marker> markerMap, Color color) {
 		for (DocumentRange range : ranges) {
@@ -380,7 +387,7 @@ public class ErrorStrip extends JComponent {
 			}
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -393,7 +400,7 @@ public class ErrorStrip extends JComponent {
 		textArea.removePropertyChangeListener(RSyntaxTextArea.MARKED_OCCURRENCES_CHANGED_PROPERTY, listener);
 		textArea.removePropertyChangeListener(RSyntaxTextArea.MARK_ALL_OCCURRENCES_CHANGED_PROPERTY, listener);
 	}
-	
+
 	/**
 	 * Sets the color to use when painting the caret marker.
 	 *
@@ -406,7 +413,7 @@ public class ErrorStrip extends JComponent {
 			listener.caretUpdate(null); // Force repaint
 		}
 	}
-	
+
 	/**
 	 * Toggles whether the caret's current location should be drawn.
 	 *
@@ -424,11 +431,12 @@ public class ErrorStrip extends JComponent {
 			listener.caretUpdate(null); // Possibly repaint
 		}
 	}
-	
+
 	/**
-	 * Sets the minimum severity a parser notice must be for it to be displayed in this error strip.
-	 * This should be one of the constants defined in the <code>ParserNotice</code> class. The
-	 * default value is {@link org.fife.ui.rsyntaxtextarea.parser.ParserNotice.Level#WARNING}.
+	 * Sets the minimum severity a parser notice must be for it to be displayed in
+	 * this error strip. This should be one of the constants defined in the
+	 * <code>ParserNotice</code> class. The default value is
+	 * {@link org.fife.ui.rsyntaxtextarea.parser.ParserNotice.Level#WARNING}.
 	 *
 	 * @param level The new severity threshold.
 	 * @see #getLevelThreshold()
@@ -440,7 +448,7 @@ public class ErrorStrip extends JComponent {
 			refreshMarkers();
 		}
 	}
-	
+
 	/**
 	 * Sets whether "mark all" highlights are shown in this error strip.
 	 *
@@ -455,7 +463,7 @@ public class ErrorStrip extends JComponent {
 			}
 		}
 	}
-	
+
 	/**
 	 * Sets whether marked occurrences are shown in this error strip.
 	 *
@@ -470,9 +478,10 @@ public class ErrorStrip extends JComponent {
 			}
 		}
 	}
-	
+
 	/**
-	 * Returns the line in the text area corresponding to a y-offset in this component.
+	 * Returns the line in the text area corresponding to a y-offset in this
+	 * component.
 	 *
 	 * @param y The y-offset.
 	 * @return The line.
@@ -487,14 +496,14 @@ public class ErrorStrip extends JComponent {
 		}
 		return line;
 	}
-	
+
 	/**
 	 * Listens for events in the error strip and its markers.
 	 */
 	private class Listener extends MouseAdapter implements PropertyChangeListener, CaretListener {
-		
+
 		private Rectangle visibleRect = new Rectangle();
-		
+
 		@Override
 		public void caretUpdate(CaretEvent e) {
 			if (getFollowCaret()) {
@@ -509,16 +518,16 @@ public class ErrorStrip extends JComponent {
 				}
 			}
 		}
-		
+
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			
+
 			Component source = (Component) e.getSource();
 			if (source instanceof Marker) {
 				((Marker) source).mouseClicked(e);
 				return;
 			}
-			
+
 			int line = yToLine(e.getY());
 			if (line > -1) {
 				try {
@@ -528,27 +537,27 @@ public class ErrorStrip extends JComponent {
 					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 				}
 			}
-			
+
 		}
-		
+
 		@Override
 		public void propertyChange(PropertyChangeEvent e) {
-			
+
 			String propName = e.getPropertyName();
-			
+
 			// If they change whether marked occurrences are visible in editor
 			if (RSyntaxTextArea.MARK_OCCURRENCES_PROPERTY.equals(propName)) {
 				if (getShowMarkedOccurrences()) {
 					refreshMarkers();
 				}
 			}
-			
+
 			// If parser notices changed.
 			// TODO: Don't update "mark all/occurrences" markers.
 			else if (RSyntaxTextArea.PARSER_NOTICES_PROPERTY.equals(propName)) {
 				refreshMarkers();
 			}
-			
+
 			// If marked occurrences changed.
 			// TODO: Only update "mark occurrences" markers, not all of them.
 			else if (RSyntaxTextArea.MARKED_OCCURRENCES_CHANGED_PROPERTY.equals(propName)) {
@@ -556,7 +565,7 @@ public class ErrorStrip extends JComponent {
 					refreshMarkers();
 				}
 			}
-			
+
 			// If "mark all" occurrences changed.
 			// TODO: Only update "mark all" markers, not all of them.
 			else if (RTextArea.MARK_ALL_OCCURRENCES_CHANGED_PROPERTY.equals(propName)) {
@@ -564,35 +573,35 @@ public class ErrorStrip extends JComponent {
 					refreshMarkers();
 				}
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	/**
 	 * A notice that wraps a "marked occurrence."
 	 */
 	private class MarkedOccurrenceNotice implements ParserNotice {
-		
+
 		private DocumentRange range;
-		
+
 		private Color color;
-		
+
 		public MarkedOccurrenceNotice(DocumentRange range, Color color) {
 			this.range = range;
 			this.color = color;
 		}
-		
+
 		@Override
 		public int compareTo(ParserNotice other) {
 			return 0; // Value doesn't matter
 		}
-		
+
 		@Override
 		public boolean containsPosition(int pos) {
 			return pos >= range.getStartOffset() && pos < range.getEndOffset();
 		}
-		
+
 		@Override
 		public boolean equals(Object o) {
 			// FindBugs - Define equals() when defining compareTo()
@@ -601,12 +610,12 @@ public class ErrorStrip extends JComponent {
 			}
 			return compareTo((ParserNotice) o) == 0;
 		}
-		
+
 		@Override
 		public Color getColor() {
 			return color;
 		}
-		
+
 		/**
 		 * {@inheritDoc}
 		 */
@@ -614,17 +623,17 @@ public class ErrorStrip extends JComponent {
 		public boolean getKnowsOffsetAndLength() {
 			return true;
 		}
-		
+
 		@Override
 		public int getLength() {
 			return range.getEndOffset() - range.getStartOffset();
 		}
-		
+
 		@Override
 		public Level getLevel() {
 			return Level.INFO; // Won't matter
 		}
-		
+
 		@Override
 		public int getLine() {
 			try {
@@ -633,7 +642,7 @@ public class ErrorStrip extends JComponent {
 				return 0;
 			}
 		}
-		
+
 		@Override
 		public String getMessage() {
 			String text = null;
@@ -646,41 +655,41 @@ public class ErrorStrip extends JComponent {
 			}
 			return text;
 		}
-		
+
 		@Override
 		public int getOffset() {
 			return range.getStartOffset();
 		}
-		
+
 		@Override
 		public Parser getParser() {
 			return null;
 		}
-		
+
 		@Override
 		public boolean getShowInEditor() {
 			return false; // Value doesn't matter
 		}
-		
+
 		@Override
 		public String getToolTipText() {
 			return null;
 		}
-		
+
 		@Override
 		public int hashCode() { // FindBugs, since we override equals()
 			return 0; // Value doesn't matter for us.
 		}
-		
+
 	}
-	
+
 	/**
 	 * A "marker" in this error strip, representing one or more notices.
 	 */
 	private class Marker extends JComponent {
-		
+
 		private List<ParserNotice> notices;
-		
+
 		public Marker(ParserNotice notice) {
 			notices = new ArrayList<ParserNotice>(1); // Usually just 1
 			addNotice(notice);
@@ -688,11 +697,11 @@ public class ErrorStrip extends JComponent {
 			setSize(getPreferredSize());
 			ToolTipManager.sharedInstance().registerComponent(this);
 		}
-		
+
 		public void addNotice(ParserNotice notice) {
 			notices.add(notice);
 		}
-		
+
 		public boolean containsMarkedOccurence() {
 			boolean result = false;
 			for (int i = 0; i < notices.size(); i++) {
@@ -703,7 +712,7 @@ public class ErrorStrip extends JComponent {
 			}
 			return result;
 		}
-		
+
 		public Color getColor() {
 			// Return the color for the highest-level parser.
 			Color c = null;
@@ -716,18 +725,18 @@ public class ErrorStrip extends JComponent {
 			}
 			return c;
 		}
-		
+
 		@Override
 		public Dimension getPreferredSize() {
 			int w = PREFERRED_WIDTH - 4; // 2-pixel empty border
 			return new Dimension(w, 5);
 		}
-		
+
 		@Override
 		public String getToolTipText() {
-			
+
 			String text = null;
-			
+
 			if (notices.size() == 1) {
 				text = notices.get(0).getMessage();
 			} else { // > 1
@@ -742,11 +751,11 @@ public class ErrorStrip extends JComponent {
 				}
 				text = sb.toString();
 			}
-			
+
 			return text;
-			
+
 		}
-		
+
 		protected void mouseClicked(MouseEvent e) {
 			ParserNotice pn = notices.get(0);
 			int offs = pn.getOffset();
@@ -764,43 +773,43 @@ public class ErrorStrip extends JComponent {
 				}
 			}
 		}
-		
+
 		@Override
 		protected void paintComponent(Graphics g) {
-			
+
 			// TODO: Give "priorities" and always pick color of a notice with
 			// highest priority (e.g. parsing errors will usually be red).
-			
+
 			Color borderColor = getColor();
 			if (borderColor == null) {
 				borderColor = Color.DARK_GRAY;
 			}
 			Color fillColor = getBrighterColor(borderColor);
-			
+
 			int w = getWidth();
 			int h = getHeight();
-			
+
 			g.setColor(fillColor);
 			g.fillRect(0, 0, w, h);
-			
+
 			g.setColor(borderColor);
 			g.drawRect(0, 0, w - 1, h - 1);
-			
+
 		}
-		
+
 		@Override
 		public void removeNotify() {
 			super.removeNotify();
 			ToolTipManager.sharedInstance().unregisterComponent(this);
 			removeMouseListener(listener);
 		}
-		
+
 		public void updateLocation() {
 			int line = notices.get(0).getLine();
 			int y = lineToY(line);
 			setLocation(2, y);
 		}
-		
+
 	}
-	
+
 }

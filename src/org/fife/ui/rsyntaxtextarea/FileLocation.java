@@ -12,14 +12,14 @@ import java.io.OutputStream;
 import java.net.URL;
 
 /**
- * Holds the location of a local or remote file. This provides a common way to read, write, and
- * check properties of both local and remote files.
+ * Holds the location of a local or remote file. This provides a common way to
+ * read, write, and check properties of both local and remote files.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public abstract class FileLocation {
-	
+
 	/**
 	 * Creates a {@link FileLocation} instance for the specified local file.
 	 *
@@ -29,7 +29,7 @@ public abstract class FileLocation {
 	public static FileLocation create(String fileFullPath) {
 		return new FileFileLocation(new File(fileFullPath));
 	}
-	
+
 	/**
 	 * Creates a {@link FileLocation} instance for the specified local file.
 	 *
@@ -39,7 +39,7 @@ public abstract class FileLocation {
 	public static FileLocation create(File file) {
 		return new FileFileLocation(file);
 	}
-	
+
 	/**
 	 * Creates a {@link FileLocation} instance for the specified file.
 	 *
@@ -52,24 +52,25 @@ public abstract class FileLocation {
 		}
 		return new URLFileLocation(url);
 	}
-	
+
 	/**
-	 * Returns the last time this file was modified, or {@link TextEditorPane#LAST_MODIFIED_UNKNOWN}
-	 * if this value cannot be computed (such as for a remote file).
+	 * Returns the last time this file was modified, or
+	 * {@link TextEditorPane#LAST_MODIFIED_UNKNOWN} if this value cannot be computed
+	 * (such as for a remote file).
 	 *
 	 * @return The last time this file was modified.
 	 */
 	protected abstract long getActualLastModified();
-	
+
 	/**
-	 * Returns the full path to the file. This will be stripped of sensitive information such as
-	 * passwords for remote files.
+	 * Returns the full path to the file. This will be stripped of sensitive
+	 * information such as passwords for remote files.
 	 *
 	 * @return The full path to the file.
 	 * @see #getFileName()
 	 */
 	public abstract String getFileFullPath();
-	
+
 	/**
 	 * Returns the name of the file.
 	 *
@@ -77,15 +78,16 @@ public abstract class FileLocation {
 	 * @see #getFileFullPath()
 	 */
 	public abstract String getFileName();
-	
+
 	/**
 	 * Opens an input stream for reading from this file.
 	 *
 	 * @return The input stream.
-	 * @throws IOException If the file does not exist, or some other IO error occurs.
+	 * @throws IOException If the file does not exist, or some other IO error
+	 *                     occurs.
 	 */
 	protected abstract InputStream getInputStream() throws IOException;
-	
+
 	/**
 	 * Opens an output stream for writing this file.
 	 *
@@ -93,7 +95,7 @@ public abstract class FileLocation {
 	 * @throws IOException If an IO error occurs.
 	 */
 	protected abstract OutputStream getOutputStream() throws IOException;
-	
+
 	/**
 	 * Returns whether this file location is a local file.
 	 *
@@ -101,7 +103,7 @@ public abstract class FileLocation {
 	 * @see #isLocalAndExists()
 	 */
 	public abstract boolean isLocal();
-	
+
 	/**
 	 * Returns whether this file location is a local file that already exists.
 	 *
@@ -109,7 +111,7 @@ public abstract class FileLocation {
 	 * @see #isLocal()
 	 */
 	public abstract boolean isLocalAndExists();
-	
+
 	/**
 	 * Returns whether this file location is a remote location.
 	 *
@@ -118,5 +120,5 @@ public abstract class FileLocation {
 	public boolean isRemote() {
 		return !isLocal();
 	}
-	
+
 }

@@ -50,36 +50,37 @@ import org.xml.sax.SAXException;
  * @version 1.0
  */
 class PropertyValueCompletionProvider extends CompletionProviderBase {
-	
+
 	private List<Completion> htmlTagCompletions;
-	
+
 	private List<Completion> propertyCompletions;
-	
+
 	private Map<String, List<Completion>> valueCompletions;
-	
+
 	private Map<String, List<CompletionGenerator>> valueCompletionGenerators;
-	
+
 	private Segment seg = new Segment();
-	
+
 	private AbstractCompletionProvider.CaseInsensitiveComparator comparator;
-	
+
 	/**
-	 * If we're going to display value completions for a property, this is the property to do it
-	 * for.
+	 * If we're going to display value completions for a property, this is the
+	 * property to do it for.
 	 */
 	private String currentProperty;
-	
+
 	/**
 	 * The most common vendor prefixes. We ignore these.
 	 */
 	private static final Pattern VENDOR_PREFIXES = Pattern.compile("^\\-(?:ms|moz|o|xv|webkit|khtml|apple)\\-");
-	
-	private final Completion INHERIT_COMPLETION = new BasicCssCompletion(this, "inherit", "css_propertyvalue_identifier");
-	
+
+	private final Completion INHERIT_COMPLETION = new BasicCssCompletion(this, "inherit",
+			"css_propertyvalue_identifier");
+
 	public PropertyValueCompletionProvider() {
-		
+
 		setAutoActivationRules(true, "@: ");
-		
+
 		try {
 			this.valueCompletions = new HashMap<String, List<Completion>>();
 			this.valueCompletionGenerators = new HashMap<String, List<CompletionGenerator>>();
@@ -88,11 +89,11 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 		} catch (IOException ioe) { // Never happens
 			throw new RuntimeException(ioe);
 		}
-		
+
 		comparator = new AbstractCompletionProvider.CaseInsensitiveComparator();
-		
+
 	}
-	
+
 	private void addAtRuleCompletions(List<Completion> completions) {
 		completions.add(new BasicCssCompletion(this, "@charset", "charset_rule"));
 		completions.add(new BasicCssCompletion(this, "@import", "link_rule"));
@@ -104,12 +105,12 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 		completions.add(new BasicCssCompletion(this, "@supports", "charset_rule"));
 		completions.add(new BasicCssCompletion(this, "@document", "charset_rule"));
 	}
-	
+
 	@Override
 	public String getAlreadyEnteredText(JTextComponent comp) {
-		
+
 		Document doc = comp.getDocument();
-		
+
 		int dot = comp.getCaretPosition();
 		Element root = doc.getDefaultRootElement();
 		int index = root.getElementIndex(dot);
@@ -122,23 +123,23 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 			ble.printStackTrace();
 			return EMPTY_STRING;
 		}
-		
+
 		int segEnd = seg.offset + len;
 		start = segEnd - 1;
 		while (start >= seg.offset && isValidChar(seg.array[start])) {
 			start--;
 		}
 		start++;
-		
+
 		len = segEnd - start;
 		if (len == 0) {
 			return EMPTY_STRING;
 		}
-		
+
 		String text = new String(seg.array, start, len);
 		return removeVendorPrefix(text);
 	}
-	
+
 	private static final String removeVendorPrefix(String text) {
 		if (text.length() > 0 && text.charAt(0) == '-') {
 			Matcher m = VENDOR_PREFIXES.matcher(text);
@@ -148,25 +149,25 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 		}
 		return text;
 	}
-	
+
 	@Override
 	public List<Completion> getCompletionsAt(JTextComponent comp, Point p) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public List<ParameterizedCompletion> getParameterizedCompletions(JTextComponent tc) {
 		return null;
 	}
-	
+
 	public int getLexerState(RSyntaxTextArea textArea, int line) {
-		
+
 		int dot = textArea.getCaretPosition();
 		int state = 0; // 0==selector, 1==property, 2==value
 		boolean somethingFound = false;
 		currentProperty = null;
-		
+
 		while (line >= 0 && !somethingFound) {
 			Token t = textArea.getTokenListForLine(line--);
 			while (t != null && t.isPaintable() && !t.containsPosition(dot)) {
@@ -174,7 +175,8 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 					state = 1;
 					currentProperty = removeVendorPrefix(t.getLexeme());
 					somethingFound = true;
-				} else if (t.getType() == Token.ANNOTATION || t.getType() == Token.FUNCTION || t.getType() == Token.LITERAL_NUMBER_DECIMAL_INT) {
+				} else if (t.getType() == Token.ANNOTATION || t.getType() == Token.FUNCTION
+						|| t.getType() == Token.LITERAL_NUMBER_DECIMAL_INT) {
 					state = 2;
 					somethingFound = true;
 				} else if (t.isLeftCurly()) {
@@ -195,24 +197,24 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 				t = t.getNextToken();
 			}
 		}
-		
+
 		return state;
-		
+
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	protected List<Completion> getCompletionsImpl(JTextComponent comp) {
-		
+
 		List<Completion> retVal = new ArrayList<Completion>();
 		String text = getAlreadyEnteredText(comp);
-		
+
 		if (text != null) {
-			
+
 			// Our completion choices depend on where we are in the CSS
 			RSyntaxTextArea textArea = (RSyntaxTextArea) comp;
 			int lexerState = getLexerState(textArea, textArea.getCaretLineNumber());
-			
+
 			List<Completion> choices = new ArrayList<Completion>();
 			switch (lexerState) {
 			case 0:
@@ -260,7 +262,7 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 					pos--;
 				}
 			}
-			
+
 			while (index < choices.size()) {
 				Completion c = choices.get(index);
 				if (Util.startsWithIgnoreCase(c.getInputText(), text)) {
@@ -270,21 +272,21 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 					break;
 				}
 			}
-			
+
 		}
-		
+
 		return retVal;
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean isAutoActivateOkay(JTextComponent tc) {
-		
+
 		boolean ok = super.isAutoActivateOkay(tc);
-		
+
 		// In our constructor, we set up auto-activation of the completion
 		// popup to occur on space chars. This extra check makes it a little
 		// more sane, by only letting space auto-activate completion choices
@@ -300,11 +302,11 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 				ble.printStackTrace(); // Never happens
 			}
 		}
-		
+
 		return ok;
-		
+
 	}
-	
+
 	public boolean isValidChar(char ch) {
 		switch (ch) {
 		case '-':
@@ -316,24 +318,24 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 		}
 		return Character.isLetterOrDigit(ch);
 	}
-	
+
 	private List<Completion> loadHtmlTagCompletions() throws IOException {
-		
+
 		// TODO: Share/grab this list directly from HtmlCompletionProvider?
 		List<Completion> completions = new ArrayList<Completion>();
 		completions = loadFromXML("data/html.xml");
-		
+
 		addAtRuleCompletions(completions);
-		
+
 		Collections.sort(completions);
 		return completions;
-		
+
 	}
-	
+
 	private void loadPropertyCompletions() throws IOException {
-		
+
 		propertyCompletions = new ArrayList<Completion>();
-		
+
 		BufferedReader r = null;
 		ClassLoader cl = getClass().getClassLoader();
 		InputStream in = cl.getResourceAsStream("data/css_properties.txt");
@@ -352,26 +354,27 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 		} finally {
 			r.close();
 		}
-		
+
 		Collections.sort(propertyCompletions);
-		
+
 	}
-	
+
 	/**
 	 * Loads completions from an XML input stream. The XML should validate against
 	 * <code>CompletionXml.dtd</code>.
 	 *
 	 * @param in The input stream to read from.
-	 * @param cl The class loader to use when loading any extra classes defined in the XML, such as
-	 *            custom {@link FunctionCompletion}s. This may be <code>null</code> if the default
-	 *            is to be used, or if no custom completions are defined in the XML.
+	 * @param cl The class loader to use when loading any extra classes defined in
+	 *           the XML, such as custom {@link FunctionCompletion}s. This may be
+	 *           <code>null</code> if the default is to be used, or if no custom
+	 *           completions are defined in the XML.
 	 * @throws IOException If an IO error occurs.
 	 */
 	private List<Completion> loadFromXML(InputStream in, ClassLoader cl) throws IOException {
-		
+
 		// long start = System.currentTimeMillis();
 		List<Completion> completions = null;
-		
+
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setValidating(true);
 		CompletionXMLParser handler = new CompletionXMLParser(this, cl);
@@ -390,10 +393,10 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 			// System.out.println("XML loaded in: " + time + "ms");
 			bin.close();
 		}
-		
+
 		return completions;
 	}
-	
+
 	/**
 	 * Loads completions from an XML file. The XML should validate against
 	 * <code>CompletionXml.dtd</code>.
@@ -419,11 +422,12 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 			bin.close();
 		}
 	}
-	
+
 	/**
 	 * Adds a completion generator for a specific property.
 	 */
-	private static final void add(Map<String, List<CompletionGenerator>> generatorMap, String prop, CompletionGenerator generator) {
+	private static final void add(Map<String, List<CompletionGenerator>> generatorMap, String prop,
+			CompletionGenerator generator) {
 		List<CompletionGenerator> generators = generatorMap.get(prop);
 		if (generators == null) {
 			generators = new ArrayList<CompletionGenerator>();
@@ -431,19 +435,19 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 		}
 		generators.add(generator);
 	}
-	
+
 	private void parsePropertyValueCompletionLine(String line) throws IOException {
-		
+
 		String[] tokens = line.split("\\s+");
 		String prop = tokens[0];
 		String icon = tokens.length > 1 ? tokens[1] : null;
 		propertyCompletions.add(new PropertyCompletion(this, prop, icon));
-		
+
 		if (tokens.length > 2) {
-			
+
 			List<Completion> completions = new ArrayList<Completion>();
 			completions.add(INHERIT_COMPLETION);
-			
+
 			// Format: display gifname [ none inline block ]
 			if (tokens[2].equals("[") && tokens[tokens.length - 1].equals("]")) {
 				for (int i = 3; i < tokens.length - 1; i++) {
@@ -467,10 +471,10 @@ class PropertyValueCompletionProvider extends CompletionProviderBase {
 					}
 				}
 			}
-			
+
 			valueCompletions.put(prop, completions);
 		}
-		
+
 	}
-	
+
 }

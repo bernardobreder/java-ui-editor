@@ -21,35 +21,38 @@ import org.fife.ui.autocomplete.Completion;
 import org.fife.ui.autocomplete.CompletionProvider;
 
 /**
- * Reads entries from a source of class files, such as a jar or a "bin/" directory. This class acts
- * as an intermediary between a raw <code>LibraryInfo</code> and the higher level Java completion
- * classes. It caches information about classes and refreshes that cache when appropriate.
+ * Reads entries from a source of class files, such as a jar or a "bin/"
+ * directory. This class acts as an intermediary between a raw
+ * <code>LibraryInfo</code> and the higher level Java completion classes. It
+ * caches information about classes and refreshes that cache when appropriate.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 class JarReader {
-	
+
 	/**
 	 * Information about the jar or directory we're reading classes from.
 	 */
 	private LibraryInfo info;
-	
+
 	/**
-	 * This is essentially a tree model of all classes in the jar or directory. It's a recursive
-	 * mapping of <code>String</code>s to either <code>Map</code> s or {@link ClassFile}s (which are
-	 * lazily created and may be <code>null</code>). At each level of the nested map, the string key
-	 * is a package name iff its corresponding value is a <code>Map</code>. Examine that
-	 * <code>Map</code>'s contents to explore the contents of that package. If the corresponding
-	 * value is a <code>ClassFile</code>, then the string key's value is the name of that class.
-	 * Finally, if the corresponding value is <code>null</code>, then the string key's value is the
-	 * name of a class, but its contents have not yet been loaded for use by the code completion
-	 * library (<code>ClassFile</code>s are lazily loaded to conserve memory).
+	 * This is essentially a tree model of all classes in the jar or directory. It's
+	 * a recursive mapping of <code>String</code>s to either <code>Map</code> s or
+	 * {@link ClassFile}s (which are lazily created and may be <code>null</code>).
+	 * At each level of the nested map, the string key is a package name iff its
+	 * corresponding value is a <code>Map</code>. Examine that <code>Map</code>'s
+	 * contents to explore the contents of that package. If the corresponding value
+	 * is a <code>ClassFile</code>, then the string key's value is the name of that
+	 * class. Finally, if the corresponding value is <code>null</code>, then the
+	 * string key's value is the name of a class, but its contents have not yet been
+	 * loaded for use by the code completion library (<code>ClassFile</code>s are
+	 * lazily loaded to conserve memory).
 	 */
 	private TreeMap packageMap;
-	
+
 	private long lastModified;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -61,19 +64,20 @@ class JarReader {
 		packageMap = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 		loadCompletions();
 	}
-	
+
 	/**
 	 * Gets the completions in this jar that match a given string.
 	 *
 	 * @param provider The parent completion provider.
-	 * @param pkgNames The text to match, split into tokens around the ' <code>.</code>' character.
-	 *            This should be (the start of) a fully-qualified class, interface, or enum name.
-	 * @param addTo The list to add completion choices to.
+	 * @param pkgNames The text to match, split into tokens around the '
+	 *                 <code>.</code>' character. This should be (the start of) a
+	 *                 fully-qualified class, interface, or enum name.
+	 * @param addTo    The list to add completion choices to.
 	 */
 	public void addCompletions(CompletionProvider provider, String[] pkgNames, Set<Completion> addTo) {
-		
+
 		checkLastModified();
-		
+
 		TreeMap map = packageMap;
 		for (int i = 0; i < pkgNames.length - 1; i++) {
 			Object obj = map.get(pkgNames[i]);
@@ -83,17 +87,17 @@ class JarReader {
 				return;
 			}
 		}
-		
+
 		String fromKey = pkgNames[pkgNames.length - 1];
 		String toKey = fromKey + '{'; // Ascii char > largest valid class char
 		SortedMap sm = map.subMap(fromKey, toKey);
-		
+
 		for (Iterator i = sm.keySet().iterator(); i.hasNext();) {
-			
+
 			Object obj = i.next();
 			// System.out.println(obj + " - " + sm.get(obj));
 			Object value = sm.get(obj);
-			
+
 			// See if this is a class, and we already have the ClassFile
 			if (value instanceof ClassFile) {
 				ClassFile cf = (ClassFile) value;
@@ -102,7 +106,7 @@ class JarReader {
 					addTo.add(new ClassCompletion(provider, cf));
 				}
 			}
-			
+
 			// If a ClassFile isn't cached, it's either a class that hasn't
 			// had its ClassFile cached yet, or a package.
 			else {
@@ -125,15 +129,15 @@ class JarReader {
 					addTo.add(new PackageNameCompletion(provider, text, fromKey));
 				}
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	/**
-	 * Checks whether the jar or class file directory has been modified since the last use of this
-	 * reader. If it has, then any cached <code>ClassFile</code>s are cleared, in case any classes
-	 * have been updated.
+	 * Checks whether the jar or class file directory has been modified since the
+	 * last use of this reader. If it has, then any cached <code>ClassFile</code>s
+	 * are cleared, in case any classes have been updated.
 	 */
 	private void checkLastModified() {
 		long newLastModified = info.getLastModified();
@@ -144,7 +148,7 @@ class JarReader {
 			lastModified = newLastModified;
 		}
 	}
-	
+
 	/**
 	 * Removes all <code>ClassFile</code>s from a map.
 	 *
@@ -152,9 +156,9 @@ class JarReader {
 	 * @return The number of class file entries removed.
 	 */
 	private int clearClassFiles(Map map) {
-		
+
 		int clearedCount = 0;
-		
+
 		for (Iterator i = map.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry) i.next();
 			Object value = entry.getValue();
@@ -165,15 +169,15 @@ class JarReader {
 				clearedCount += clearClassFiles((Map) value);
 			}
 		}
-		
+
 		return clearedCount;
-		
+
 	}
-	
+
 	public boolean containsClass(String className) {
-		
+
 		String[] items = className.split("\\.");
-		
+
 		TreeMap m = packageMap;
 		for (int i = 0; i < items.length - 1; i++) {
 			// "value" can be a ClassFile "too early" here if className
@@ -185,15 +189,15 @@ class JarReader {
 			}
 			m = (TreeMap) value;
 		}
-		
+
 		return m.containsKey(items[items.length - 1]);
-		
+
 	}
-	
+
 	public boolean containsPackage(String pkgName) {
-		
+
 		String[] items = Util.splitOnChar(pkgName, '.');
-		
+
 		TreeMap m = packageMap;
 		for (int i = 0; i < items.length; i++) {
 			// "value" can be a ClassFile "too early" here if className
@@ -205,13 +209,13 @@ class JarReader {
 			}
 			m = (TreeMap) value;
 		}
-		
+
 		return true;
-		
+
 	}
-	
+
 	public ClassFile getClassEntry(String[] items) {
-		
+
 		SortedMap map = packageMap;
 		for (int i = 0; i < items.length - 1; i++) {
 			if (map.containsKey(items[i])) {
@@ -224,7 +228,7 @@ class JarReader {
 				return null;
 			}
 		}
-		
+
 		String className = items[items.length - 1];
 		if (map.containsKey(className)) {
 			Object value = map.get(className);
@@ -248,15 +252,15 @@ class JarReader {
 				}
 			}
 		}
-		
+
 		return null;
-		
+
 	}
-	
+
 	public void getClassesInPackage(List<ClassFile> addTo, String[] pkgs, boolean inPkg) {
-		
+
 		SortedMap map = packageMap;
-		
+
 		for (int i = 0; i < pkgs.length; i++) {
 			if (map.containsKey(pkgs[i])) {
 				Object value = map.get(pkgs[i]);
@@ -269,16 +273,16 @@ class JarReader {
 				return;
 			}
 		}
-		
+
 		// We can't modify map during our iteration, so we save any
 		// newly-created ClassFiles.
 		Map newClassFiles = null;
-		
+
 		try {
-			
+
 			info.bulkClassFileCreationStart();
 			try {
-				
+
 				for (Iterator i = map.entrySet().iterator(); i.hasNext();) {
 					Map.Entry entry = (Map.Entry) i.next();
 					Object value = entry.getValue();
@@ -299,29 +303,30 @@ class JarReader {
 						possiblyAddTo(addTo, (ClassFile) value, inPkg);
 					}
 				}
-				
+
 			} finally {
 				info.bulkClassFileCreationEnd();
 			}
-			
+
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
-		
+
 		if (newClassFiles != null) {
 			map.putAll(newClassFiles);
 		}
-		
+
 	}
-	
+
 	/**
-	 * Looks through all classes in this jar or directory, trying to find any whose unqualified
-	 * names start with a given prefix.
+	 * Looks through all classes in this jar or directory, trying to find any whose
+	 * unqualified names start with a given prefix.
 	 *
-	 * @param prefix The prefix of the class names. Case is ignored on this parameter.
-	 * @return A list of {@link ClassFile}s representing classes in this jar or directory whose
-	 *         unqualified names start with the prefix. This will never be <code>null</code>, but
-	 *         may of course be empty.
+	 * @param prefix The prefix of the class names. Case is ignored on this
+	 *               parameter.
+	 * @return A list of {@link ClassFile}s representing classes in this jar or
+	 *         directory whose unqualified names start with the prefix. This will
+	 *         never be <code>null</code>, but may of course be empty.
 	 */
 	public List<ClassFile> getClassesWithNamesStartingWith(String prefix) {
 		List<ClassFile> res = new ArrayList<ClassFile>();
@@ -329,31 +334,33 @@ class JarReader {
 		getClassesWithNamesStartingWithImpl(prefix, packageMap, currentPkg, res);
 		return res;
 	}
-	
+
 	/**
-	 * Method used to recursively scan our package map for classes whose names start with a given
-	 * prefix, ignoring case.
+	 * Method used to recursively scan our package map for classes whose names start
+	 * with a given prefix, ignoring case.
 	 *
-	 * @param prefix The prefix that the unqualified class names must match (ignoring case).
-	 * @param map A piece of our package map.
-	 * @param currentPkg The package that <code>map</code> belongs to (i.e. all levels of packages
-	 *            scanned before this one), separated by ' <code>/</code>'.
-	 * @param addTo The list to add any matching <code>ClassFile</code>s to.
+	 * @param prefix     The prefix that the unqualified class names must match
+	 *                   (ignoring case).
+	 * @param map        A piece of our package map.
+	 * @param currentPkg The package that <code>map</code> belongs to (i.e. all
+	 *                   levels of packages scanned before this one), separated by '
+	 *                   <code>/</code>'.
+	 * @param addTo      The list to add any matching <code>ClassFile</code>s to.
 	 */
 	private void getClassesWithNamesStartingWithImpl(String prefix, Map map, String currentPkg, List<ClassFile> addTo) {
-		
+
 		final int prefixLen = prefix.length();
-		
+
 		// Loop through the map's entries, which are String keys mapping to
 		// one of a Map (if the key is a package name), a ClassFile (if the
 		// key is a class name), or null (if the key is a class name, but the
 		// corresponding ClassFile has not been loaded yet).
 		for (Iterator i = map.entrySet().iterator(); i.hasNext();) {
-			
+
 			Map.Entry entry = (Map.Entry) i.next();
 			String key = (String) entry.getKey();
 			Object value = entry.getValue();
-			
+
 			if (value instanceof Map) {
 				getClassesWithNamesStartingWithImpl(prefix, (Map) value, currentPkg + key + "/", addTo);
 			} else { // value is either a ClassFile or null
@@ -376,37 +383,37 @@ class JarReader {
 					}
 				}
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	/**
 	 * Returns the physical file on disk.
 	 * <p>
-	 * Modifying the returned object will <em>not</em> have any effect on code completion; e.g.
-	 * changing the source location will not have any effect.
+	 * Modifying the returned object will <em>not</em> have any effect on code
+	 * completion; e.g. changing the source location will not have any effect.
 	 *
 	 * @return The info.
 	 */
 	public LibraryInfo getLibraryInfo() {
 		return (LibraryInfo) info.clone();
 	}
-	
+
 	private void loadCompletions() throws IOException {
 		packageMap = info.createPackageMap();
 		lastModified = info.getLastModified();
 	}
-	
+
 	private void possiblyAddTo(Collection<ClassFile> addTo, ClassFile cf, boolean inPkg) {
 		if (inPkg || org.fife.rsta.ac.java.classreader.Util.isPublic(cf.getAccessFlags())) {
 			addTo.add(cf);
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return "[JarReader: " + getLibraryInfo() + "]";
 	}
-	
+
 }

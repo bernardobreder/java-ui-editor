@@ -12,11 +12,11 @@ package org.fife.rsta.ac.java.classreader.constantpool;
  * @version 1.0
  */
 public class ConstantFieldrefInfo extends ConstantPoolInfo {
-	
+
 	private int classIndex;
-	
+
 	private int nameAndTypeIndex;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -28,15 +28,15 @@ public class ConstantFieldrefInfo extends ConstantPoolInfo {
 		this.classIndex = classIndex;
 		this.nameAndTypeIndex = nameAndTypeIndex;
 	}
-	
+
 	public int getClassIndex() {
 		return classIndex;
 	}
-	
+
 	public int getNameAndTypeIndex() {
 		return nameAndTypeIndex;
 	}
-	
+
 	/**
 	 * Returns a string representation of this object. Useful for debugging.
 	 *
@@ -44,7 +44,8 @@ public class ConstantFieldrefInfo extends ConstantPoolInfo {
 	 */
 	@Override
 	public String toString() {
-		return "[ConstantFieldrefInfo: " + "classIndex=" + getClassIndex() + "; nameAndTypeIndex=" + getNameAndTypeIndex() + "]";
+		return "[ConstantFieldrefInfo: " + "classIndex=" + getClassIndex() + "; nameAndTypeIndex="
+				+ getNameAndTypeIndex() + "]";
 	}
-	
+
 }

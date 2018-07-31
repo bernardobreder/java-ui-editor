@@ -16,22 +16,22 @@ import org.fife.ui.autocomplete.ParameterizedCompletion.Parameter;
  * @version 1.0
  */
 public class AttributeCompletion extends AbstractCompletion {
-	
+
 	private Parameter param;
-	
+
 	public AttributeCompletion(CompletionProvider provider, Parameter param) {
 		super(provider);
 		this.param = param;
 	}
-	
+
 	@Override
 	public String getSummary() {
 		return param.getDescription();
 	}
-	
+
 	@Override
 	public String getReplacementText() {
 		return param.getName();
 	}
-	
+
 }

@@ -16,15 +16,15 @@ import org.fife.ui.autocomplete.Util;
  * @version 1.0
  */
 class LocalVarTreeNode extends JavaTreeNode {
-	
+
 	private String text;
-	
+
 	public LocalVarTreeNode(LocalVariable var) {
-		
+
 		super(var);
 		setIcon(IconFactory.get().getIcon(IconFactory.LOCAL_VARIABLE_ICON));
 		setSortPriority(PRIORITY_LOCAL_VAR);
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html>");
 		sb.append(var.getName());
@@ -33,11 +33,11 @@ class LocalVarTreeNode extends JavaTreeNode {
 		MemberTreeNode.appendType(var.getType(), sb);
 		text = sb.toString();
 	}
-	
+
 	@Override
 	public String getText(boolean selected) {
 		// Strip out HTML tags
 		return selected ? Util.stripHtml(text).replaceAll("&lt;", "<").replaceAll("&gt;", ">") : text;
 	}
-	
+
 }

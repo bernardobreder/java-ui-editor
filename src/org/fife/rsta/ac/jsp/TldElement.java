@@ -14,10 +14,10 @@ import org.fife.ui.autocomplete.MarkupTagCompletion;
  * @version 1.0
  */
 class TldElement extends MarkupTagCompletion {
-	
+
 	public TldElement(JspCompletionProvider provider, String name, String desc) {
 		super(provider, name);
 		setDescription(desc);
 	}
-	
+
 }

@@ -16,13 +16,13 @@ import org.fife.ui.autocomplete.Completion;
  * @version 1.0
  */
 public interface JavaSourceCompletion extends Completion {
-	
+
 	/**
 	 * Force subclasses to override equals(). TODO: Remove me
 	 */
 	@Override
 	public boolean equals(Object obj);
-	
+
 	/**
 	 * Used by {@link JavaCellRenderer} to render this completion choice.
 	 *
@@ -32,5 +32,5 @@ public interface JavaSourceCompletion extends Completion {
 	 * @param selected
 	 */
 	public void rendererText(Graphics g, int x, int y, boolean selected);
-	
+
 }

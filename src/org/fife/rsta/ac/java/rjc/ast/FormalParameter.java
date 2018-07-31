@@ -18,22 +18,22 @@ import org.fife.rsta.ac.java.rjc.lexer.Scanner;
  * @version 1.0
  */
 /*
- * FormalParameter: ['final'] [Annotations] Type VariableDeclaratorId VariableDeclaratorId:
- * Identifier { "[" "]" }
+ * FormalParameter: ['final'] [Annotations] Type VariableDeclaratorId
+ * VariableDeclaratorId: Identifier { "[" "]" }
  */
 public class FormalParameter extends LocalVariable {
-	
+
 	private List<Annotation> annotations;
-	
+
 	public FormalParameter(Scanner s, boolean isFinal, Type type, int offs, String name, List<Annotation> annotations) {
 		super(s, isFinal, type, offs, name);
 		this.annotations = annotations;
 	}
-	
+
 	public int getAnnotationCount() {
 		return annotations == null ? 0 : annotations.size();
 	}
-	
+
 	/**
 	 * Overridden to return "<code>getType() getName()</code>".
 	 *
@@ -43,5 +43,5 @@ public class FormalParameter extends LocalVariable {
 	public String toString() {
 		return getType() + " " + getName();
 	}
-	
+
 }

@@ -18,29 +18,29 @@ import org.fife.ui.autocomplete.CompletionProvider;
  * @version 1.0
  */
 public abstract class AbstractJavaSourceCompletion extends BasicCompletion implements JavaSourceCompletion {
-	
+
 	public AbstractJavaSourceCompletion(CompletionProvider provider, String replacementText) {
 		super(provider, replacementText);
 	}
-	
+
 	/**
-	 * Overridden to ensure that two completions don't just have the same text value (ignoring
-	 * case), but that they're of the same "type" of <code>Completion</code> as well, so, for
-	 * example, a completion for the "String" class won't clash with a completion for a "string"
-	 * LocalVar.
+	 * Overridden to ensure that two completions don't just have the same text value
+	 * (ignoring case), but that they're of the same "type" of
+	 * <code>Completion</code> as well, so, for example, a completion for the
+	 * "String" class won't clash with a completion for a "string" LocalVar.
 	 *
 	 * @param c2 Another completion instance.
 	 * @return How this completion compares to the other one.
 	 */
 	@Override
 	public int compareTo(Completion c2) {
-		
+
 		int rc = -1;
-		
+
 		if (c2 == this) {
 			rc = 0;
 		}
-		
+
 		else if (c2 != null) {
 			rc = toString().compareToIgnoreCase(c2.toString());
 			if (rc == 0) { // Same text value
@@ -51,11 +51,11 @@ public abstract class AbstractJavaSourceCompletion extends BasicCompletion imple
 				rc = clazz1.compareTo(clazz2);
 			}
 		}
-		
+
 		return rc;
-		
+
 	}
-	
+
 	@Override
 	public String getAlreadyEntered(JTextComponent comp) {
 		String temp = getProvider().getAlreadyEnteredText(comp);
@@ -65,5 +65,5 @@ public abstract class AbstractJavaSourceCompletion extends BasicCompletion imple
 		}
 		return temp;
 	}
-	
+
 }

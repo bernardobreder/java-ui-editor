@@ -9,27 +9,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A block of code. This can be used to implement <em>very</em> simple parsing for languages that
- * have some concept of code blocks, such as C, Perl, Java, etc. Currently, using
- * <code>CodeBlock</code>s provides a means of remembering where variables are defined, as well as
- * their scopes.
+ * A block of code. This can be used to implement <em>very</em> simple parsing
+ * for languages that have some concept of code blocks, such as C, Perl, Java,
+ * etc. Currently, using <code>CodeBlock</code>s provides a means of remembering
+ * where variables are defined, as well as their scopes.
  *
  * @author Robert Futrell
  * @version 1.0
  * @see VariableDeclaration
  */
 public class CodeBlock {
-	
+
 	private int start;
-	
+
 	private int end;
-	
+
 	private CodeBlock parent;
-	
+
 	private List<CodeBlock> children;
-	
+
 	private List<VariableDeclaration> varDecs;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -39,7 +39,7 @@ public class CodeBlock {
 		this.start = start;
 		end = Integer.MAX_VALUE;
 	}
-	
+
 	/**
 	 * Creates and returns a child (nested) code block.
 	 *
@@ -55,7 +55,7 @@ public class CodeBlock {
 		children.add(child);
 		return child;
 	}
-	
+
 	/**
 	 * Adds a variable declaration.
 	 *
@@ -67,7 +67,7 @@ public class CodeBlock {
 		}
 		varDecs.add(varDec);
 	}
-	
+
 	/**
 	 * Returns whether this code block contains a given offset.
 	 *
@@ -77,7 +77,7 @@ public class CodeBlock {
 	public boolean contains(int offset) {
 		return offset >= start && offset < end;
 	}
-	
+
 	/**
 	 * Returns a child code block.
 	 *
@@ -88,7 +88,7 @@ public class CodeBlock {
 	public CodeBlock getChildCodeBlock(int index) {
 		return children.get(index);
 	}
-	
+
 	/**
 	 * Returns the number of child code blocks.
 	 *
@@ -98,14 +98,15 @@ public class CodeBlock {
 	public int getChildCodeBlockCount() {
 		return children == null ? 0 : children.size();
 	}
-	
+
 	/**
-	 * Returns the deepest code block nested under this one (or this one itself) containing a given
-	 * offset.
+	 * Returns the deepest code block nested under this one (or this one itself)
+	 * containing a given offset.
 	 *
 	 * @param offs The offset to look for.
-	 * @return The deepest-nested code block containing the offset, or <code>null</code> if this
-	 *         code block and none of its children contain the offset.
+	 * @return The deepest-nested code block containing the offset, or
+	 *         <code>null</code> if this code block and none of its children contain
+	 *         the offset.
 	 */
 	public CodeBlock getDeepestCodeBlockContaining(int offs) {
 		if (!contains(offs)) {
@@ -119,7 +120,7 @@ public class CodeBlock {
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Returns the end offset of this code block.
 	 *
@@ -130,7 +131,7 @@ public class CodeBlock {
 	public int getEndOffset() {
 		return end;
 	}
-	
+
 	/**
 	 * Returns the parent code block.
 	 *
@@ -139,7 +140,7 @@ public class CodeBlock {
 	public CodeBlock getParent() {
 		return parent;
 	}
-	
+
 	/**
 	 * Returns the start offset of this code block.
 	 *
@@ -149,7 +150,7 @@ public class CodeBlock {
 	public int getStartOffset() {
 		return start;
 	}
-	
+
 	/**
 	 * Returns a variable declaration.
 	 *
@@ -160,7 +161,7 @@ public class CodeBlock {
 	public VariableDeclaration getVariableDeclaration(int index) {
 		return varDecs.get(index);
 	}
-	
+
 	/**
 	 * Returns the number of variable declarations in this code block.
 	 *
@@ -170,19 +171,19 @@ public class CodeBlock {
 	public int getVariableDeclarationCount() {
 		return varDecs == null ? 0 : varDecs.size();
 	}
-	
+
 	/**
-	 * Returns all local variables declared before a given offset, both in this code block and in
-	 * all parent blocks.
+	 * Returns all local variables declared before a given offset, both in this code
+	 * block and in all parent blocks.
 	 *
 	 * @param offs The offset.
-	 * @return The {@link VariableDeclaration}s, or an empty list of none were declared before the
-	 *         offset.
+	 * @return The {@link VariableDeclaration}s, or an empty list of none were
+	 *         declared before the offset.
 	 */
 	public List<VariableDeclaration> getVariableDeclarationsBefore(int offs) {
-		
+
 		List<VariableDeclaration> vars = new ArrayList<VariableDeclaration>();
-		
+
 		int varCount = getVariableDeclarationCount();
 		for (int i = 0; i < varCount; i++) {
 			VariableDeclaration localVar = getVariableDeclaration(i);
@@ -192,15 +193,15 @@ public class CodeBlock {
 				break;
 			}
 		}
-		
+
 		if (parent != null) {
 			vars.addAll(parent.getVariableDeclarationsBefore(offs));
 		}
-		
+
 		return vars;
-		
+
 	}
-	
+
 	/**
 	 * Sets the end offset of this code block.
 	 *
@@ -210,5 +211,5 @@ public class CodeBlock {
 	public void setEndOffset(int end) {
 		this.end = end;
 	}
-	
+
 }

@@ -27,13 +27,13 @@ import org.fife.rsta.ac.java.rjc.ast.CompilationUnit;
  * @version 1.0
  */
 public class Util {
-	
+
 	/**
-	 * Optional leading text for doc comment lines (except the first line) that should be removed if
-	 * it exists.
+	 * Optional leading text for doc comment lines (except the first line) that
+	 * should be removed if it exists.
 	 */
 	static final Pattern DOC_COMMENT_LINE_HEADER = Pattern.compile("\\s*\\n\\s*\\*");// ^\\s*\\*\\s*[/]?");
-	
+
 	/**
 	 * Pattern matching a link in a "@link" tag. This should match the following:
 	 * <ul>
@@ -47,28 +47,30 @@ public class Util {
 	 * <li>fully.qualified.ClassName#method(params)</li>
 	 * </ul>
 	 */
-	static final Pattern LINK_TAG_MEMBER_PATTERN = Pattern.compile("(?:\\w+\\.)*\\w+(?:#\\w+(?:\\([^\\)]*\\))?)?|" + "#\\w+(?:\\([^\\)]*\\))?");
-	
+	static final Pattern LINK_TAG_MEMBER_PATTERN = Pattern
+			.compile("(?:\\w+\\.)*\\w+(?:#\\w+(?:\\([^\\)]*\\))?)?|" + "#\\w+(?:\\([^\\)]*\\))?");
+
 	/**
-	 * A cache of the last {@link CompilationUnit} read from some attached source on disk. This is
-	 * cached because, in some scenarios, the method
-	 * {@link #getCompilationUnitFromDisk(File, ClassFile)} will be called for the same class many
-	 * times in a row (such as to get method parameter info for all methods in a single class).
+	 * A cache of the last {@link CompilationUnit} read from some attached source on
+	 * disk. This is cached because, in some scenarios, the method
+	 * {@link #getCompilationUnitFromDisk(File, ClassFile)} will be called for the
+	 * same class many times in a row (such as to get method parameter info for all
+	 * methods in a single class).
 	 */
 	private static CompilationUnit lastCUFromDisk;
-	
+
 	private static SourceLocation lastCUFileParam;
-	
+
 	private static ClassFile lastCUClassFileParam;
-	
+
 	/**
 	 * Private constructor to prevent instantiation.
 	 */
 	private Util() {
 	}
-	
+
 	private static final void appendDocCommentTail(StringBuilder sb, StringBuilder tail) {
-		
+
 		StringBuilder params = null;
 		StringBuilder returns = null;
 		StringBuilder throwsItems = null;
@@ -78,11 +80,12 @@ public class Util {
 		StringBuilder author = null;
 		StringBuilder version = null;
 		StringBuilder unknowns = null;
-		boolean inParams = false, inThrows = false, inReturns = false, inSeeAlso = false, inSince = false, inAuthor = false, inVersion = false, inUnknowns = false;
-		
+		boolean inParams = false, inThrows = false, inReturns = false, inSeeAlso = false, inSince = false,
+				inAuthor = false, inVersion = false, inUnknowns = false;
+
 		String[] st = tail.toString().split("[ \t\r\n\f]+");
 		String token = null;
-		
+
 		int i = 0;
 		while (i < st.length && (token = st[i++]) != null) {
 			if ("@param".equals(token) && i < st.length) {
@@ -226,9 +229,9 @@ public class Util {
 				unknowns.append(token).append(' ');
 			}
 		}
-		
+
 		sb.append("<p>");
-		
+
 		if (params != null) {
 			sb.append(params).append("</p>");
 		}
@@ -259,28 +262,29 @@ public class Util {
 		if (unknowns != null) {
 			sb.append(unknowns).append("</p>");
 		}
-		
+
 	}
-	
+
 	/**
-	 * Appends HTML representing a "link" or "linkplain" Javadoc element to a string buffer.
+	 * Appends HTML representing a "link" or "linkplain" Javadoc element to a string
+	 * buffer.
 	 *
-	 * @param appendTo The buffer to append to.
+	 * @param appendTo    The buffer to append to.
 	 * @param linkContent The content of a "link" or "linkplain" item.
 	 */
 	private static final void appendLinkTagText(StringBuilder appendTo, String linkContent) {
 		appendTo.append("<a href='");
 		linkContent = linkContent.trim(); // If "@link" and text on different lines
 		Matcher m = LINK_TAG_MEMBER_PATTERN.matcher(linkContent);
-		
+
 		if (m.find() && m.start() == 0) {
-			
+
 			// System.out.println("Match!!! - '" + m.group(0));
 			String match = m.group(0); // Prevents recalculation
 			String link = match;
 			// TODO: If this starts with '#', "link" must be prepended with
 			// class name.
-			
+
 			String text = null;
 			// No link "text" after the link location - just use link location
 			if (match.length() == linkContent.length()) {
@@ -306,26 +310,26 @@ public class Util {
 					text = linkContent.substring(offs);
 				}
 			}
-			
+
 			// No "better" text for link found - just use match.
 			if (text == null) {
 				text = linkContent;// .substring(match.length());
 			}
-			
+
 			// Replace the '#' sign, if any.
 			text = fixLinkText(text);
-			
+
 			appendTo./* append("link://"). */append(link).append("'>").append(text);
-			
+
 		} else { // Malformed link tag
 			System.out.println("Unmatched linkContent: " + linkContent);
 			appendTo.append("'>").append(linkContent);
 		}
-		
+
 		appendTo.append("</a>");
-		
+
 	}
-	
+
 	/**
 	 * Converts a Java documentation comment to HTML.
 	 *
@@ -338,26 +342,27 @@ public class Util {
 	 * @return An HTML version of the comment.
 	 */
 	public static final String docCommentToHtml(String dc) {
-		
+
 		if (dc == null) {
 			return null;
 		}
 		if (dc.endsWith("*/")) {
 			dc = dc.substring(0, dc.length() - 2);
 		}
-		
+
 		// First, strip the line transitions. These always seem to be stripped
 		// first from Javadoc, even when in between <pre> and </pre> tags.
 		Matcher m = DOC_COMMENT_LINE_HEADER.matcher(dc);
 		dc = m.replaceAll("\n");
-		
-		StringBuilder html = new StringBuilder("<html><style> .indented { margin-top: 0px; padding-left: 30pt; } </style><body>");
+
+		StringBuilder html = new StringBuilder(
+				"<html><style> .indented { margin-top: 0px; padding-left: 30pt; } </style><body>");
 		StringBuilder tailBuf = null;
-		
+
 		BufferedReader r = new BufferedReader(new StringReader(dc));
-		
+
 		try {
-			
+
 			// Handle the first line (guaranteed to be at least 1 line).
 			String line = r.readLine().substring(3);
 			line = possiblyStripDocCommentTail(line);
@@ -370,7 +375,7 @@ public class Util {
 			}
 			boolean inPreBlock = isInPreBlock(line, false);
 			html.append(inPreBlock ? '\n' : ' ');
-			
+
 			// Read all subsequent lines.
 			while ((line = r.readLine()) != null) {
 				line = possiblyStripDocCommentTail(line);
@@ -384,22 +389,22 @@ public class Util {
 					inPreBlock = isInPreBlock(line, inPreBlock);
 					html.append(inPreBlock ? '\n' : ' ');
 				}
-				
+
 			}
-			
+
 		} catch (IOException ioe) { // Never happens
 			ioe.printStackTrace();
 		}
-		
+
 		html = fixDocComment(html); // Fix stuff like "{@code}"
 		if (tailBuf != null) {
 			appendDocCommentTail(html, fixDocComment(tailBuf));
 		}
-		
+
 		return html.toString();
-		
+
 	}
-	
+
 	public static String forXML(String aText) {
 		final StringBuilder result = new StringBuilder();
 		final StringCharacterIterator iterator = new StringCharacterIterator(aText);
@@ -424,64 +429,64 @@ public class Util {
 		}
 		return result.toString();
 	}
-	
+
 	private static final StringBuilder fixDocComment(StringBuilder text) {
-		
+
 		// Nothing to do.
 		int index = text.indexOf("{@");
 		if (index == -1) {
 			return text;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
 		int textOffs = 0;
-		
+
 		do {
-			
+
 			int closingBrace = indexOf('}', text, index + 2);
 			if (closingBrace > -1) { // Should practically always be true
-			
+
 				sb.append(text, textOffs, index);
 				String content = text.substring(index + 2, closingBrace);
 				index = textOffs = closingBrace + 1;
-				
+
 				if (content.startsWith("code ")) {
 					sb.append("<code>").append(forXML(content.substring(5))).append("</code>");
 				}
-				
+
 				else if (content.startsWith("link ")) {
 					sb.append("<code>");
 					appendLinkTagText(sb, content.substring(5));
 					sb.append("</code>");
 				}
-				
+
 				else if (content.startsWith("linkplain ")) {
 					appendLinkTagText(sb, content.substring(10));
 				}
-				
+
 				else if (content.startsWith("literal ")) {
 					// TODO: Should escape HTML-breaking chars, such as '>'.
 					sb.append(content.substring(8));
 				}
-				
+
 				else { // Unhandled Javadoc tag
 					sb.append("<code>").append(content).append("</code>");
 				}
-				
+
 			} else {
 				break; // Unclosed javadoc tag - just bail
 			}
-			
+
 		} while ((index = text.indexOf("{@", index)) > -1);
-		
+
 		if (textOffs < text.length()) {
 			sb.append(text.substring(textOffs));
 		}
-		
+
 		return sb;
-		
+
 	}
-	
+
 	/**
 	 * Tidies up a link's display text for use in a &lt;a&gt; tag.
 	 *
@@ -494,28 +499,31 @@ public class Util {
 		}
 		return text.replace('#', '.');
 	}
-	
+
 	/**
-	 * Used by {@link MemberCompletion.Data} implementations to get an AST from a source file in a
-	 * {@link SourceLocation}. Classes should prefer this method over calling into the location
-	 * directly since this method caches the most recent result for performance.
+	 * Used by {@link MemberCompletion.Data} implementations to get an AST from a
+	 * source file in a {@link SourceLocation}. Classes should prefer this method
+	 * over calling into the location directly since this method caches the most
+	 * recent result for performance.
 	 *
 	 * @param loc A directory or zip/jar file.
-	 * @param cf The {@link ClassFile} representing the source grab from the location.
-	 * @return The compilation unit, or <code>null</code> if it is not found or an IO error occurs.
+	 * @param cf  The {@link ClassFile} representing the source grab from the
+	 *            location.
+	 * @return The compilation unit, or <code>null</code> if it is not found or an
+	 *         IO error occurs.
 	 */
 	public static CompilationUnit getCompilationUnitFromDisk(SourceLocation loc, ClassFile cf) {
-		
+
 		// Cached value?
 		if (loc == lastCUFileParam && cf == lastCUClassFileParam) {
 			// System.out.println("Returning cached CompilationUnit");
 			return lastCUFromDisk;
 		}
-		
+
 		lastCUFileParam = loc;
 		lastCUClassFileParam = cf;
 		CompilationUnit cu = null;
-		
+
 		if (loc != null) {
 			try {
 				cu = loc.getCompilationUnit(cf);
@@ -523,12 +531,12 @@ public class Util {
 				ioe.printStackTrace();
 			}
 		}
-		
+
 		lastCUFromDisk = cu;
 		return cu;
-		
+
 	}
-	
+
 	/**
 	 * Returns the "unqualified" version of a (possibly) fully-qualified class name.
 	 *
@@ -542,15 +550,17 @@ public class Util {
 		}
 		return clazz;
 	}
-	
+
 	/**
-	 * Returns the next location of a single character in a character sequence. This method is here
-	 * because <tt>StringBuilder</tt> doesn't get this method added to it until Java 1.5.
+	 * Returns the next location of a single character in a character sequence. This
+	 * method is here because <tt>StringBuilder</tt> doesn't get this method added
+	 * to it until Java 1.5.
 	 *
-	 * @param ch The character to look for.
-	 * @param sb The character sequence.
+	 * @param ch   The character to look for.
+	 * @param sb   The character sequence.
 	 * @param offs The offset at which to start looking.
-	 * @return The next location of the character, or <tt>-1</tt> if it is not found.
+	 * @return The next location of the character, or <tt>-1</tt> if it is not
+	 *         found.
 	 */
 	private static final int indexOf(char ch, CharSequence sb, int offs) {
 		while (offs < sb.length()) {
@@ -561,10 +571,10 @@ public class Util {
 		}
 		return -1;
 	}
-	
+
 	/**
-	 * Returns whether the specified string is "fully qualified," that is, whether it contains a '
-	 * <code>.</code>' character.
+	 * Returns whether the specified string is "fully qualified," that is, whether
+	 * it contains a ' <code>.</code>' character.
 	 *
 	 * @param str The string to check.
 	 * @return Whether the string is fully qualified.
@@ -573,11 +583,11 @@ public class Util {
 	public static final boolean isFullyQualified(String str) {
 		return str.indexOf('.') > -1;
 	}
-	
+
 	/**
 	 * Returns whether this line ends in the middle of a pre-block.
 	 *
-	 * @param line The line's contents.
+	 * @param line      The line's contents.
 	 * @param prevValue Whether this line started in a pre-block.
 	 * @return Whether the line ends in a pre-block.
 	 */
@@ -596,7 +606,7 @@ public class Util {
 		}
 		return prevValue;
 	}
-	
+
 	/**
 	 * Removes the tail end of a documentation comment from a string, if it exists.
 	 *
@@ -609,17 +619,18 @@ public class Util {
 		}
 		return str;
 	}
-	
+
 	/**
-	 * A faster way to split on a single char than String#split(), since we'll be doing this in a
-	 * tight loop possibly thousands of times (rt.jar). This is also fundamentally different than
-	 * {@link String#split(String)}), in the case where <code>str</code> ends with <code>ch</code> -
-	 * this method will return an empty item at the end of the returned array, while String#split()
-	 * will not.
+	 * A faster way to split on a single char than String#split(), since we'll be
+	 * doing this in a tight loop possibly thousands of times (rt.jar). This is also
+	 * fundamentally different than {@link String#split(String)}), in the case where
+	 * <code>str</code> ends with <code>ch</code> - this method will return an empty
+	 * item at the end of the returned array, while String#split() will not.
 	 *
 	 * @param str The string to split.
-	 * @param ch The char to split on.
-	 * @return The string, split on the character (e.g. '<tt>/</tt>' or ' <tt>.</tt>').
+	 * @param ch  The char to split on.
+	 * @return The string, split on the character (e.g. '<tt>/</tt>' or '
+	 *         <tt>.</tt>').
 	 */
 	public static final String[] splitOnChar(String str, int ch) {
 		List<String> list = new ArrayList<String>(3);
@@ -635,5 +646,5 @@ public class Util {
 		String[] array = new String[list.size()];
 		return list.toArray(array);
 	}
-	
+
 }

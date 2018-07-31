@@ -19,18 +19,18 @@ import javax.swing.ImageIcon;
  * @version 1.0
  */
 class IconFactory {
-	
+
 	private static IconFactory INSTANCE;
-	
+
 	private Map<String, Icon> iconMap;
-	
+
 	/**
 	 * Private constructor to prevent instantiation.
 	 */
 	private IconFactory() {
 		iconMap = new HashMap<String, Icon>();
 	}
-	
+
 	/**
 	 * Returns the singleton instance of this class.
 	 *
@@ -42,7 +42,7 @@ class IconFactory {
 		}
 		return INSTANCE;
 	}
-	
+
 	/**
 	 * Returns the icon requested.
 	 *
@@ -57,7 +57,7 @@ class IconFactory {
 		}
 		return icon;
 	}
-	
+
 	/**
 	 * Loads an icon by file name.
 	 *
@@ -74,5 +74,5 @@ class IconFactory {
 		}
 		return new ImageIcon(res);
 	}
-	
+
 }

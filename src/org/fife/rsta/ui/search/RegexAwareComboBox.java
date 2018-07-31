@@ -23,25 +23,26 @@ import org.fife.ui.autocomplete.DefaultCompletionProvider;
  * @version 1.0
  */
 public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssistable {
-	
+
 	private boolean enabled;
-	
+
 	private boolean replace;
-	
+
 	private AutoCompletion ac;
-	
+
 	private RegexAwareProvider provider;
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param replace Whether this is a "replace" combo box (as opposed to a "find" combo box). This
-	 *            dictates what auto-complete choices the user is offered.
+	 * @param replace Whether this is a "replace" combo box (as opposed to a "find"
+	 *                combo box). This dictates what auto-complete choices the user
+	 *                is offered.
 	 */
 	public RegexAwareComboBox(boolean replace) {
 		this(new RComboBoxModel(), 200, replace);
 	}
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -50,7 +51,7 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 		setEditable(true);
 		this.replace = replace;
 	}
-	
+
 	/**
 	 * Adds the completion choices for regexes in a "find" text field.
 	 *
@@ -58,16 +59,16 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 	 * @see #addReplaceFieldCompletions(RegexAwareProvider)
 	 */
 	private void addFindFieldCompletions(RegexAwareProvider p) {
-		
+
 		// Characters
 		p.addCompletion(new RegexCompletion(p, "\\\\", "\\\\", "\\\\ - Backslash"));
 		p.addCompletion(new RegexCompletion(p, "\\t", "\\t", "\\t - Tab"));
 		p.addCompletion(new RegexCompletion(p, "\\n", "\\n", "\\n - Newline"));
-		
+
 		// Character classes
 		p.addCompletion(new RegexCompletion(p, "[", "[", "[abc] - Any of a, b, or c"));
 		p.addCompletion(new RegexCompletion(p, "[^", "[^", "[^abc] - Any character except a, b, or c"));
-		
+
 		// Predefined character classes
 		p.addCompletion(new RegexCompletion(p, ".", ".", ". - Any character"));
 		p.addCompletion(new RegexCompletion(p, "\\d", "\\d", "\\d - A digit"));
@@ -76,13 +77,13 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 		p.addCompletion(new RegexCompletion(p, "\\S", "\\S", "\\S - Not a whitespace"));
 		p.addCompletion(new RegexCompletion(p, "\\w", "\\w", "\\w - An alphanumeric (word character)"));
 		p.addCompletion(new RegexCompletion(p, "\\W", "\\W", "\\W - Not an alphanumeric"));
-		
+
 		// Boundary matchers
 		p.addCompletion(new RegexCompletion(p, "^", "^", "^ - Line Start"));
 		p.addCompletion(new RegexCompletion(p, "$", "$", "$ - Line End"));
 		p.addCompletion(new RegexCompletion(p, "\\b", "\b", "\\b - Word beginning or end"));
 		p.addCompletion(new RegexCompletion(p, "\\B", "\\B", "\\B - Not a word beginning or end"));
-		
+
 		// Greedy, reluctant and possessive quantifiers
 		p.addCompletion(new RegexCompletion(p, "?", "?", "X? - Greedy match, 0 or 1 times"));
 		p.addCompletion(new RegexCompletion(p, "*", "*", "X* - Greedy match, 0 or more times"));
@@ -96,16 +97,16 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 		p.addCompletion(new RegexCompletion(p, "?+", "?+", "X?+ - Possessive match, 0 or 1 times"));
 		p.addCompletion(new RegexCompletion(p, "*+", "*+", "X*+ - Possessive match, 0 or more times"));
 		p.addCompletion(new RegexCompletion(p, "++", "++", "X++ - Possessive match, 0 or more times"));
-		
+
 		// Back references
 		p.addCompletion(new RegexCompletion(p, "\\i", "\\i", "\\i - Match of the capturing group i"));
-		
+
 		// Capturing groups
 		p.addCompletion(new RegexCompletion(p, "(", "(", "(Expr) - Mark Expr as capturing group"));
 		p.addCompletion(new RegexCompletion(p, "(?:", "(?:", "(?:Expr) - Non-capturing group"));
-		
+
 	}
-	
+
 	/**
 	 * Adds the completion choices for regexes in a "replace with" text field.
 	 *
@@ -118,7 +119,7 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 		p.addCompletion(new RegexCompletion(p, "\\t", "\\t", "\\t - Tab"));
 		p.addCompletion(new RegexCompletion(p, "\\n", "\\n", "\\n - Newline"));
 	}
-	
+
 	/**
 	 * Lazily creates the AutoCompletion instance this combo box uses.
 	 *
@@ -130,7 +131,7 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 		}
 		return ac;
 	}
-	
+
 	/**
 	 * Creates the shared completion provider instance.
 	 *
@@ -147,7 +148,7 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 		}
 		return provider;
 	}
-	
+
 	/**
 	 * Hides any auto-complete windows that are visible.
 	 *
@@ -156,7 +157,7 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 	public boolean hideAutoCompletePopups() {
 		return ac == null ? false : ac.hideChildWindows();
 	}
-	
+
 	/**
 	 * Returns whether regex auto-complete is enabled.
 	 *
@@ -166,10 +167,10 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 	public boolean isAutoCompleteEnabled() {
 		return enabled;
 	}
-	
+
 	/**
-	 * Toggles whether regex auto-complete is enabled. This method will fire a property change event
-	 * of type {@link ContentAssistable#ASSISTANCE_IMAGE}.
+	 * Toggles whether regex auto-complete is enabled. This method will fire a
+	 * property change event of type {@link ContentAssistable#ASSISTANCE_IMAGE}.
 	 *
 	 * @param enabled Whether regex auto complete should be enabled.
 	 * @see #isAutoCompleteEnabled()
@@ -195,12 +196,12 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 			}
 		}
 	}
-	
+
 	/**
 	 * A completion provider for regular expressions.
 	 */
 	private static class RegexAwareProvider extends DefaultCompletionProvider {
-		
+
 		@Override
 		protected boolean isValidChar(char ch) {
 			switch (ch) {
@@ -220,27 +221,28 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 				return false;
 			}
 		}
-		
+
 	}
-	
+
 	private static class RegexCompletion extends BasicCompletion {
-		
+
 		private String inputText;
-		
+
 		/**
 		 * Constructor.
 		 *
-		 * @param provider The parent completion provider.
-		 * @param inputText The text the user must input.
+		 * @param provider        The parent completion provider.
+		 * @param inputText       The text the user must input.
 		 * @param replacementText The text to replace.
-		 * @param shortDesc A short description of the completion. This will be displayed in the
-		 *            completion list.
+		 * @param shortDesc       A short description of the completion. This will be
+		 *                        displayed in the completion list.
 		 */
-		public RegexCompletion(CompletionProvider provider, String inputText, String replacementText, String shortDesc) {
+		public RegexCompletion(CompletionProvider provider, String inputText, String replacementText,
+				String shortDesc) {
 			super(provider, replacementText, shortDesc);
 			this.inputText = inputText;
 		}
-		
+
 		/**
 		 * {@inheritDoc}
 		 */
@@ -248,7 +250,7 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 		public String getInputText() {
 			return inputText;
 		}
-		
+
 		/**
 		 * {@inheritDoc}
 		 */
@@ -256,7 +258,7 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 		public String toString() {
 			return getShortDescription();
 		}
-		
+
 	}
-	
+
 }

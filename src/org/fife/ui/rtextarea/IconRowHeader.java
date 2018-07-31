@@ -31,14 +31,15 @@ import javax.swing.text.View;
 import org.fife.ui.rsyntaxtextarea.FoldingAwareIconRowHeader;
 
 /**
- * Renders icons in the {@link Gutter}. This can be used to visually mark lines containing syntax
- * errors, lines with breakpoints set on them, etc.
+ * Renders icons in the {@link Gutter}. This can be used to visually mark lines
+ * containing syntax errors, lines with breakpoints set on them, etc.
  * <p>
- * This component has built-in support for displaying icons representing "bookmarks;" that is, lines
- * a user can cycle through via F2 and Shift+F2. Bookmarked lines are toggled via Ctrl+F2, or by
- * clicking in the icon area at the line to bookmark. In order to enable bookmarking, you must first
- * assign an icon to represent a bookmarked line, then actually enable the feature. This is actually
- * done on the parent {@link Gutter} component:
+ * This component has built-in support for displaying icons representing
+ * "bookmarks;" that is, lines a user can cycle through via F2 and Shift+F2.
+ * Bookmarked lines are toggled via Ctrl+F2, or by clicking in the icon area at
+ * the line to bookmark. In order to enable bookmarking, you must first assign
+ * an icon to represent a bookmarked line, then actually enable the feature.
+ * This is actually done on the parent {@link Gutter} component:
  * <p>
  *
  * <pre>
@@ -52,58 +53,61 @@ import org.fife.ui.rsyntaxtextarea.FoldingAwareIconRowHeader;
  * @see FoldingAwareIconRowHeader
  */
 public class IconRowHeader extends AbstractGutterComponent implements MouseListener {
-	
+
 	/**
 	 * The icons to render.
 	 */
 	protected List<GutterIconImpl> trackingIcons;
-	
+
 	/**
 	 * The width of this component.
 	 */
 	protected int width;
-	
+
 	/**
-	 * Whether this component listens for mouse clicks and toggles "bookmark" icons on them.
+	 * Whether this component listens for mouse clicks and toggles "bookmark" icons
+	 * on them.
 	 */
 	private boolean bookmarkingEnabled;
-	
+
 	/**
 	 * The icon to use for bookmarks.
 	 */
 	private Icon bookmarkIcon;
-	
+
 	/**
-	 * Used in {@link #paintComponent(Graphics)} to prevent reallocation on each paint.
+	 * Used in {@link #paintComponent(Graphics)} to prevent reallocation on each
+	 * paint.
 	 */
 	protected Rectangle visibleRect;
-	
+
 	/**
-	 * Used in {@link #paintComponent(Graphics)} to prevent reallocation on each paint.
+	 * Used in {@link #paintComponent(Graphics)} to prevent reallocation on each
+	 * paint.
 	 */
 	protected Insets textAreaInsets;
-	
+
 	/**
 	 * The first line in the active line range.
 	 */
 	protected int activeLineRangeStart;
-	
+
 	/**
 	 * The end line in the active line range.
 	 */
 	protected int activeLineRangeEnd;
-	
+
 	/**
 	 * The color used to highlight the active code block.
 	 */
 	private Color activeLineRangeColor;
-	
+
 	/**
-	 * Whether this component should use the gutter's background color (as opposed to using a
-	 * LookAndFeel-dependent color, which is the default behavior).
+	 * Whether this component should use the gutter's background color (as opposed
+	 * to using a LookAndFeel-dependent color, which is the default behavior).
 	 */
 	private boolean inheritsGutterBackground;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -112,30 +116,34 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	public IconRowHeader(RTextArea textArea) {
 		super(textArea);
 	}
-	
+
 	/**
-	 * Adds an icon that tracks an offset in the document, and is displayed adjacent to the line
-	 * numbers. This is useful for marking things such as source code errors.
+	 * Adds an icon that tracks an offset in the document, and is displayed adjacent
+	 * to the line numbers. This is useful for marking things such as source code
+	 * errors.
 	 *
 	 * @param offs The offset to track.
 	 * @param icon The icon to display. This should be small (say 16x16).
 	 * @return A tag for this icon.
-	 * @throws BadLocationException If <code>offs</code> is an invalid offset into the text area.
+	 * @throws BadLocationException If <code>offs</code> is an invalid offset into
+	 *                              the text area.
 	 * @see #removeTrackingIcon(Object)
 	 */
 	public GutterIconInfo addOffsetTrackingIcon(int offs, Icon icon) throws BadLocationException {
 		return addOffsetTrackingIcon(offs, icon, null);
 	}
-	
+
 	/**
-	 * Adds an icon that tracks an offset in the document, and is displayed adjacent to the line
-	 * numbers. This is useful for marking things such as source code errors.
+	 * Adds an icon that tracks an offset in the document, and is displayed adjacent
+	 * to the line numbers. This is useful for marking things such as source code
+	 * errors.
 	 *
 	 * @param offs The offset to track.
 	 * @param icon The icon to display. This should be small (say 16x16).
-	 * @param tip A tool tip for the icon.
+	 * @param tip  A tool tip for the icon.
 	 * @return A tag for this icon.
-	 * @throws BadLocationException If <code>offs</code> is an invalid offset into the text area.
+	 * @throws BadLocationException If <code>offs</code> is an invalid offset into
+	 *                              the text area.
 	 * @see #removeTrackingIcon(Object)
 	 */
 	public GutterIconInfo addOffsetTrackingIcon(int offs, Icon icon, String tip) throws BadLocationException {
@@ -152,7 +160,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		repaint();
 		return ti;
 	}
-	
+
 	/**
 	 * Clears the active line range.
 	 *
@@ -164,7 +172,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			repaint();
 		}
 	}
-	
+
 	/**
 	 * Returns the color used to paint the active line range, if any.
 	 *
@@ -174,28 +182,28 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	public Color getActiveLineRangeColor() {
 		return activeLineRangeColor;
 	}
-	
+
 	/**
 	 * Returns the icon to use for bookmarks.
 	 *
-	 * @return The icon to use for bookmarks. If this is <code>null</code>, bookmarking is
-	 *         effectively disabled.
+	 * @return The icon to use for bookmarks. If this is <code>null</code>,
+	 *         bookmarking is effectively disabled.
 	 * @see #setBookmarkIcon(Icon)
 	 * @see #isBookmarkingEnabled()
 	 */
 	public Icon getBookmarkIcon() {
 		return bookmarkIcon;
 	}
-	
+
 	/**
 	 * Returns the bookmarks known to this gutter.
 	 *
 	 * @return The bookmarks. If there are no bookmarks, an empty array is returned.
 	 */
 	public GutterIconInfo[] getBookmarks() {
-		
+
 		List<GutterIconInfo> retVal = new ArrayList<GutterIconInfo>(1);
-		
+
 		if (trackingIcons != null) {
 			for (int i = 0; i < trackingIcons.size(); i++) {
 				GutterIconImpl ti = getTrackingIcon(i);
@@ -204,12 +212,12 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 				}
 			}
 		}
-		
+
 		GutterIconInfo[] array = new GutterIconInfo[retVal.size()];
 		return retVal.toArray(array);
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -221,7 +229,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			repaint();
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -230,7 +238,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		int h = textArea != null ? textArea.getHeight() : 100; // Arbitrary
 		return new Dimension(width, h);
 	}
-	
+
 	/**
 	 * Overridden to display the tool tip of any icons on this line.
 	 *
@@ -252,23 +260,23 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		}
 		return null;
 	}
-	
+
 	protected GutterIconImpl getTrackingIcon(int index) {
 		return trackingIcons.get(index);
 	}
-	
+
 	/**
 	 * Returns the tracking icons at the specified line.
 	 *
 	 * @param line The line.
-	 * @return The tracking icons at that line. If there are no tracking icons there, this will be
-	 *         an empty array.
+	 * @return The tracking icons at that line. If there are no tracking icons
+	 *         there, this will be an empty array.
 	 * @throws BadLocationException If <code>line</code> is invalid.
 	 */
 	public GutterIconInfo[] getTrackingIcons(int line) throws BadLocationException {
-		
+
 		List<GutterIconInfo> retVal = new ArrayList<GutterIconInfo>(1);
-		
+
 		if (trackingIcons != null) {
 			int start = textArea.getLineStartOffset(line);
 			int end = textArea.getLineEndOffset(line);
@@ -285,31 +293,31 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 				}
 			}
 		}
-		
+
 		GutterIconInfo[] array = new GutterIconInfo[retVal.size()];
 		return retVal.toArray(array);
-		
+
 	}
-	
+
 	@Override
 	protected void init() {
-		
+
 		super.init();
-		
+
 		visibleRect = new Rectangle();
 		width = 16;
 		addMouseListener(this);
 		activeLineRangeStart = activeLineRangeEnd = -1;
 		setActiveLineRangeColor(null);
-		
+
 		// Must explicitly set our background color, otherwise we inherit that
 		// of the parent Gutter.
 		updateBackground();
-		
+
 		ToolTipManager.sharedInstance().registerComponent(this);
-		
+
 	}
-	
+
 	/**
 	 * Returns whether bookmarking is enabled.
 	 *
@@ -319,7 +327,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	public boolean isBookmarkingEnabled() {
 		return bookmarkingEnabled;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -327,19 +335,19 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	void lineHeightsChanged() {
 		repaint();
 	}
-	
+
 	@Override
 	public void mouseClicked(MouseEvent e) {
 	}
-	
+
 	@Override
 	public void mouseEntered(MouseEvent e) {
 	}
-	
+
 	@Override
 	public void mouseExited(MouseEvent e) {
 	}
-	
+
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if (bookmarkingEnabled && bookmarkIcon != null) {
@@ -353,21 +361,21 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			}
 		}
 	}
-	
+
 	@Override
 	public void mouseReleased(MouseEvent e) {
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void paintComponent(Graphics g) {
-		
+
 		if (textArea == null) {
 			return;
 		}
-		
+
 		visibleRect = g.getClipBounds(visibleRect);
 		if (visibleRect == null) { // ???
 			visibleRect = getVisibleRect();
@@ -377,12 +385,12 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			return;
 		}
 		paintBackgroundImpl(g, visibleRect);
-		
+
 		if (textArea.getLineWrap()) {
 			paintComponentWrapped(g);
 			return;
 		}
-		
+
 		Document doc = textArea.getDocument();
 		Element root = doc.getDefaultRootElement();
 		textAreaInsets = textArea.getInsets(textAreaInsets);
@@ -390,25 +398,27 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			visibleRect.height -= (textAreaInsets.top - visibleRect.y);
 			visibleRect.y = textAreaInsets.top;
 		}
-		
+
 		// Get the first and last lines to paint.
 		int cellHeight = textArea.getLineHeight();
 		int topLine = (visibleRect.y - textAreaInsets.top) / cellHeight;
 		int bottomLine = Math.min(topLine + visibleRect.height / cellHeight + 1, root.getElementCount());
-		
+
 		// Get where to start painting (top of the row).
 		// We need to be "scrolled up" up just enough for the missing part of
 		// the first line.
 		int y = topLine * cellHeight + textAreaInsets.top;
-		
-		if ((activeLineRangeStart >= topLine && activeLineRangeStart <= bottomLine) || (activeLineRangeEnd >= topLine && activeLineRangeEnd <= bottomLine) || (activeLineRangeStart <= topLine && activeLineRangeEnd >= bottomLine)) {
-			
+
+		if ((activeLineRangeStart >= topLine && activeLineRangeStart <= bottomLine)
+				|| (activeLineRangeEnd >= topLine && activeLineRangeEnd <= bottomLine)
+				|| (activeLineRangeStart <= topLine && activeLineRangeEnd >= bottomLine)) {
+
 			g.setColor(activeLineRangeColor);
 			int firstLine = Math.max(activeLineRangeStart, topLine);
 			int y1 = firstLine * cellHeight + textAreaInsets.top;
 			int lastLine = Math.min(activeLineRangeEnd, bottomLine);
 			int y2 = (lastLine + 1) * cellHeight + textAreaInsets.top - 1;
-			
+
 			int j = y1;
 			while (j <= y2) {
 				int yEnd = Math.min(y2, j + getWidth());
@@ -416,23 +426,23 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 				g.drawLine(0, j, xEnd, yEnd);
 				j += 2;
 			}
-			
+
 			int i = 2;
 			while (i < getWidth()) {
 				int yEnd = y1 + getWidth() - i;
 				g.drawLine(i, y1, getWidth(), yEnd);
 				i += 2;
 			}
-			
+
 			if (firstLine == activeLineRangeStart) {
 				g.drawLine(0, y1, getWidth(), y1);
 			}
 			if (lastLine == activeLineRangeEnd) {
 				g.drawLine(0, y2, getWidth(), y2);
 			}
-			
+
 		}
-		
+
 		if (trackingIcons != null) {
 			int lastLine = bottomLine;
 			for (int i = trackingIcons.size() - 1; i >= 0; i--) { // Last to first
@@ -454,13 +464,13 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 				}
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Paints the background of this component.
 	 *
-	 * @param g The graphics context.
+	 * @param g           The graphics context.
 	 * @param visibleRect The visible bounds of this component.
 	 */
 	protected void paintBackgroundImpl(Graphics g, Rectangle visibleRect) {
@@ -471,14 +481,14 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		g.setColor(bg);
 		g.fillRect(0, visibleRect.y, width, visibleRect.height);
 	}
-	
+
 	/**
 	 * Paints icons when line wrapping is enabled.
 	 *
 	 * @param g The graphics context.
 	 */
 	private void paintComponentWrapped(Graphics g) {
-		
+
 		// The variables we use are as follows:
 		// - visibleRect is the "visible" area of the text area; e.g.
 		// [0,100, 300,100+(lineCount*cellHeight)-1].
@@ -492,7 +502,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		// we begin painting with the first logical line. This can be
 		// negative, signifying that we've scrolled past the actual topmost
 		// part of this line.
-		
+
 		// The algorithm is as follows:
 		// - Get the starting y-coordinate at which to paint. This may be
 		// above the first visible y-coordinate as we're in line-wrapping
@@ -503,11 +513,11 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		// - Get the ending visual position for that line. We can now loop
 		// back, paint this line, and continue until our y-coordinate is
 		// past the last visible y-value.
-		
+
 		// We avoid using modelToView/viewToModel where possible, as these
 		// methods trigger a parsing of the line into syntax tokens, which is
 		// costly. It's cheaper to just grab the child views' bounds.
-		
+
 		RTextAreaUI ui = (RTextAreaUI) textArea.getUI();
 		View v = ui.getRootView(textArea).getView(0);
 		// boolean currentLineHighlighted = textArea.getHighlightCurrentLine();
@@ -516,7 +526,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		int lineCount = root.getElementCount();
 		int topPosition = textArea.viewToModel(new Point(visibleRect.x, visibleRect.y));
 		int topLine = root.getElementIndex(topPosition);
-		
+
 		// Compute the y at which to begin painting text, taking into account
 		// that 1 logical line => at least 1 physical line, so it may be that
 		// y<0. The computed y-value is the y-value of the top of the first
@@ -524,9 +534,9 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		Rectangle visibleEditorRect = ui.getVisibleEditorRect();
 		Rectangle r = IconRowHeader.getChildViewBounds(v, topLine, visibleEditorRect);
 		int y = r.y;
-		
+
 		int visibleBottom = visibleRect.y + visibleRect.height;
-		
+
 		// Get the first possibly visible icon index.
 		int currentIcon = -1;
 		if (trackingIcons != null) {
@@ -542,22 +552,23 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 				}
 			}
 		}
-		
+
 		// Keep painting lines until our y-coordinate is past the visible
 		// end of the text area.
 		g.setColor(getForeground());
 		int cellHeight = textArea.getLineHeight();
 		while (y < visibleBottom) {
-			
+
 			r = getChildViewBounds(v, topLine, visibleEditorRect);
 			// int lineEndY = r.y+r.height;
-			
+
 			/*
-			 * // Highlight the current line's line number, if desired. if (currentLineHighlighted
-			 * && topLine==currentLine) { g.setColor(textArea.getCurrentLineHighlightColor());
-			 * g.fillRect(0,y, width,lineEndY-y); g.setColor(getForeground()); }
+			 * // Highlight the current line's line number, if desired. if
+			 * (currentLineHighlighted && topLine==currentLine) {
+			 * g.setColor(textArea.getCurrentLineHighlightColor()); g.fillRect(0,y,
+			 * width,lineEndY-y); g.setColor(getForeground()); }
 			 */
-			
+
 			// Possibly paint an icon.
 			if (currentIcon > -1) {
 				// We want to paint the last icon added for this line.
@@ -583,22 +594,22 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 					}
 				}
 			}
-			
+
 			// The next possible y-coordinate is just after the last line
 			// painted.
 			y += r.height;
-			
+
 			// Update topLine (we're actually using it for our "current line"
 			// variable now).
 			topLine++;
 			if (topLine >= lineCount) {
 				break;
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	/**
 	 * Removes the specified tracking icon.
 	 *
@@ -611,7 +622,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			repaint();
 		}
 	}
-	
+
 	/**
 	 * Removes all tracking icons.
 	 *
@@ -624,7 +635,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			repaint();
 		}
 	}
-	
+
 	/**
 	 * Removes all bookmark tracking icons.
 	 */
@@ -638,12 +649,12 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			}
 		}
 	}
-	
+
 	/**
 	 * Highlights a range of lines in the icon area.
 	 *
 	 * @param startLine The start of the line range.
-	 * @param endLine The end of the line range.
+	 * @param endLine   The end of the line range.
 	 * @see #clearActiveLineRange()
 	 */
 	public void setActiveLineRange(int startLine, int endLine) {
@@ -653,11 +664,12 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			repaint();
 		}
 	}
-	
+
 	/**
 	 * Sets the color to use to render active line ranges.
 	 *
-	 * @param color The color to use. If this is null, then the default color is used.
+	 * @param color The color to use. If this is null, then the default color is
+	 *              used.
 	 * @see #getActiveLineRangeColor()
 	 * @see Gutter#DEFAULT_ACTIVE_LINE_RANGE_COLOR
 	 */
@@ -670,12 +682,12 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			repaint();
 		}
 	}
-	
+
 	/**
 	 * Sets the icon to use for bookmarks. Any previous bookmark icons are removed.
 	 *
-	 * @param icon The new bookmark icon. If this is <code>null</code>, bookmarking is effectively
-	 *            disabled.
+	 * @param icon The new bookmark icon. If this is <code>null</code>, bookmarking
+	 *             is effectively disabled.
 	 * @see #getBookmarkIcon()
 	 * @see #isBookmarkingEnabled()
 	 */
@@ -684,13 +696,13 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		bookmarkIcon = icon;
 		repaint();
 	}
-	
+
 	/**
-	 * Sets whether bookmarking is enabled. Note that a bookmarking icon must be set via
-	 * {@link #setBookmarkIcon(Icon)} before bookmarks are truly enabled.
+	 * Sets whether bookmarking is enabled. Note that a bookmarking icon must be set
+	 * via {@link #setBookmarkIcon(Icon)} before bookmarks are truly enabled.
 	 *
-	 * @param enabled Whether bookmarking is enabled. If this is <code>false</code>, any bookmark
-	 *            icons are removed.
+	 * @param enabled Whether bookmarking is enabled. If this is <code>false</code>,
+	 *                any bookmark icons are removed.
 	 * @see #isBookmarkingEnabled()
 	 * @see #setBookmarkIcon(Icon)
 	 */
@@ -703,13 +715,14 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			repaint();
 		}
 	}
-	
+
 	/**
-	 * Sets whether the icon area inherits the gutter background (as opposed to painting with its
-	 * own, default "panel" color, which is the default).
+	 * Sets whether the icon area inherits the gutter background (as opposed to
+	 * painting with its own, default "panel" color, which is the default).
 	 *
-	 * @param inherits Whether the gutter background should be used in the icon row header. If this
-	 *            is <code>false</code>, a default, Look-and-feel-dependent color is used.
+	 * @param inherits Whether the gutter background should be used in the icon row
+	 *                 header. If this is <code>false</code>, a default,
+	 *                 Look-and-feel-dependent color is used.
 	 */
 	public void setInheritsGutterBackground(boolean inherits) {
 		if (inherits != inheritsGutterBackground) {
@@ -717,9 +730,10 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			repaint();
 		}
 	}
-	
+
 	/**
-	 * Sets the text area being displayed. This will clear any tracking icons currently displayed.
+	 * Sets the text area being displayed. This will clear any tracking icons
+	 * currently displayed.
 	 *
 	 * @param textArea The text area.
 	 */
@@ -728,28 +742,29 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		removeAllTrackingIcons();
 		super.setTextArea(textArea);
 	}
-	
+
 	/**
-	 * Programatically toggles whether there is a bookmark for the specified line. If bookmarking is
-	 * not enabled, this method does nothing.
+	 * Programatically toggles whether there is a bookmark for the specified line.
+	 * If bookmarking is not enabled, this method does nothing.
 	 *
 	 * @param line The line.
 	 * @return Whether a bookmark is now at the specified line.
-	 * @throws BadLocationException If <code>line</code> is an invalid line number in the text area.
+	 * @throws BadLocationException If <code>line</code> is an invalid line number
+	 *                              in the text area.
 	 */
 	public boolean toggleBookmark(int line) throws BadLocationException {
-		
+
 		if (!isBookmarkingEnabled() || getBookmarkIcon() == null) {
 			return false;
 		}
-		
+
 		GutterIconInfo[] icons = getTrackingIcons(line);
 		if (icons.length == 0) {
 			int offs = textArea.getLineStartOffset(line);
 			addOffsetTrackingIcon(offs, bookmarkIcon);
 			return true;
 		}
-		
+
 		boolean found = false;
 		for (int i = 0; i < icons.length; i++) {
 			if (icons[i].getIcon() == bookmarkIcon) {
@@ -767,14 +782,15 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			int offs = textArea.getLineStartOffset(line);
 			addOffsetTrackingIcon(offs, bookmarkIcon);
 		}
-		
+
 		return !found;
-		
+
 	}
-	
+
 	/**
-	 * Sets our background color to that of standard "panels" in this LookAndFeel. This is necessary
-	 * because, otherwise, we'd inherit the background color of our parent component (the Gutter).
+	 * Sets our background color to that of standard "panels" in this LookAndFeel.
+	 * This is necessary because, otherwise, we'd inherit the background color of
+	 * our parent component (the Gutter).
 	 */
 	private void updateBackground() {
 		Color bg = UIManager.getColor("Panel.background");
@@ -783,7 +799,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		}
 		setBackground(bg);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -792,7 +808,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		super.updateUI(); // Does nothing
 		updateBackground();
 	}
-	
+
 	/**
 	 * Returns the line rendered at the specified location.
 	 *
@@ -804,24 +820,24 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		int offs = textArea.viewToModel(p);
 		return offs > -1 ? textArea.getLineOfOffset(offs) : -1;
 	}
-	
+
 	/**
 	 * Implementation of the icons rendered.
 	 */
 	private static class GutterIconImpl implements GutterIconInfo, Comparable<GutterIconInfo> {
-		
+
 		private Icon icon;
-		
+
 		private Position pos;
-		
+
 		private String toolTip;
-		
+
 		public GutterIconImpl(Icon icon, Position pos, String toolTip) {
 			this.icon = icon;
 			this.pos = pos;
 			this.toolTip = toolTip;
 		}
-		
+
 		@Override
 		public int compareTo(GutterIconInfo other) {
 			if (other != null) {
@@ -829,32 +845,32 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			}
 			return -1;
 		}
-		
+
 		@Override
 		public boolean equals(Object o) {
 			return o == this;
 		}
-		
+
 		@Override
 		public Icon getIcon() {
 			return icon;
 		}
-		
+
 		@Override
 		public int getMarkedOffset() {
 			return pos.getOffset();
 		}
-		
+
 		@Override
 		public String getToolTip() {
 			return toolTip;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return icon.hashCode(); // FindBugs
 		}
-		
+
 	}
-	
+
 }

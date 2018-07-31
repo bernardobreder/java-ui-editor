@@ -13,9 +13,9 @@ import org.fife.ui.autocomplete.AbstractCompletionProvider;
 import org.fife.ui.autocomplete.Completion;
 
 /**
- * A cache to store completions for Template completions and Comment completions. Template
- * completions should extend <code>TemplateCompletion</code> that uses parameterized
- * variables/values.
+ * A cache to store completions for Template completions and Comment
+ * completions. Template completions should extend
+ * <code>TemplateCompletion</code> that uses parameterized variables/values.
  * <p>
  * While template completion example:
  *
@@ -31,29 +31,31 @@ import org.fife.ui.autocomplete.Completion;
  * null --&gt; &lt;code&gt;null&lt;/code&gt;
  * </pre>
  *
- * This is really a convenient place to store these types of completions that are re-used.
+ * This is really a convenient place to store these types of completions that
+ * are re-used.
  *
  * @author Steve
  */
 public class ShorthandCompletionCache {
-	
+
 	private List<Completion> shorthandCompletion;
-	
+
 	private List<Completion> commentCompletion;
-	
+
 	private AbstractCompletionProvider templateProvider, commentProvider;
-	
-	public ShorthandCompletionCache(AbstractCompletionProvider templateProvider, AbstractCompletionProvider commentProvider) {
+
+	public ShorthandCompletionCache(AbstractCompletionProvider templateProvider,
+			AbstractCompletionProvider commentProvider) {
 		shorthandCompletion = new ArrayList<Completion>();
 		commentCompletion = new ArrayList<Completion>();
 		this.templateProvider = templateProvider;
 		this.commentProvider = commentProvider;
 	}
-	
+
 	public void addShorthandCompletion(Completion completion) {
 		addSorted(shorthandCompletion, completion);
 	}
-	
+
 	private static final void addSorted(List<Completion> list, Completion completion) {
 		int index = Collections.binarySearch(list, completion);
 		if (index < 0) {
@@ -62,38 +64,38 @@ public class ShorthandCompletionCache {
 		}
 		list.add(index, completion);
 	}
-	
+
 	public List<Completion> getShorthandCompletions() {
 		return shorthandCompletion;
 	}
-	
+
 	public void removeShorthandCompletion(Completion completion) {
 		shorthandCompletion.remove(completion);
 	}
-	
+
 	public void clearCache() {
 		shorthandCompletion.clear();
 	}
-	
+
 	// comments
 	public void addCommentCompletion(Completion completion) {
 		addSorted(commentCompletion, completion);
 	}
-	
+
 	public List<Completion> getCommentCompletions() {
 		return commentCompletion;
 	}
-	
+
 	public void removeCommentCompletion(Completion completion) {
 		commentCompletion.remove(completion);
 	}
-	
+
 	public AbstractCompletionProvider getTemplateProvider() {
 		return templateProvider;
 	}
-	
+
 	public AbstractCompletionProvider getCommentProvider() {
 		return commentProvider;
 	}
-	
+
 }

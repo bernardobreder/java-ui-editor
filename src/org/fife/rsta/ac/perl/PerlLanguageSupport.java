@@ -22,52 +22,53 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
  * @version 1.0
  */
 public class PerlLanguageSupport extends AbstractLanguageSupport {
-	
+
 	/**
 	 * The completion provider. This is shared amongst all Perl text areas.
 	 */
 	private PerlCompletionProvider provider;
-	
+
 	/**
 	 * The parser. This is shared amongst all Perl text areas.
 	 */
 	private PerlParser parser;
-	
+
 	/**
 	 * The Perl install location currently being used.
 	 */
 	private static File perlInstallLoc;
-	
+
 	/**
 	 * The root directory of the default Perl install.
 	 */
 	private static File DEFAULT_PERL_INSTALL_LOC;
-	
+
 	/**
 	 * Whether parens should be used around arguments to functions.
 	 */
 	private static boolean useParensWithFunctions;
-	
+
 	/**
-	 * Whether to use the system "perldoc" command for function descriptions. This parameter is
-	 * ignored if {@link #DEFAULT_PERL_INSTALL_LOC} is <code>false</code>.
+	 * Whether to use the system "perldoc" command for function descriptions. This
+	 * parameter is ignored if {@link #DEFAULT_PERL_INSTALL_LOC} is
+	 * <code>false</code>.
 	 */
 	private static boolean useSystemPerldoc;
-	
+
 	/**
 	 * Determine the Perl install on the user's PATH, if any.
 	 */
 	static {
-		
+
 		String path = IOUtil.getEnvSafely("PATH");
-		
+
 		if (path != null) {
-			
+
 			String perlLoc = "perl";
 			if (File.separatorChar == '\\') {
 				perlLoc += ".exe";
 			}
-			
+
 			String[] dirs = path.split(File.pathSeparator);
 			for (int i = 0; i < dirs.length; i++) {
 				File temp = new File(dirs[i], perlLoc);
@@ -77,13 +78,13 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 					break;
 				}
 			}
-			
+
 			perlInstallLoc = DEFAULT_PERL_INSTALL_LOC;
-			
+
 		}
-		
+
 	}
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -91,7 +92,7 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 		setParameterAssistanceEnabled(true);
 		setShowDescWindow(true);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -101,7 +102,7 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 		ccr.setShowTypes(false);
 		return ccr;
 	}
-	
+
 	/**
 	 * Returns the location of the first Perl install located on the user's PATH.
 	 *
@@ -111,18 +112,18 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 	public static File getDefaultPerlInstallLocation() {
 		return DEFAULT_PERL_INSTALL_LOC;
 	}
-	
+
 	/**
 	 * Returns the Perl install that is being used for syntax checking.
 	 *
-	 * @return The location at which Perl is installed, or <code>null</code> if none is currently
-	 *         selected.
+	 * @return The location at which Perl is installed, or <code>null</code> if none
+	 *         is currently selected.
 	 * @see #setPerlInstallLocation(File)
 	 */
 	public static File getPerlInstallLocation() {
 		return perlInstallLoc;
 	}
-	
+
 	/**
 	 * Returns the shared parser, lazily creating it if necessary.
 	 *
@@ -134,13 +135,14 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 		}
 		return parser;
 	}
-	
+
 	/**
-	 * Returns the Perl parser running on a text area with this Perl language support installed.
+	 * Returns the Perl parser running on a text area with this Perl language
+	 * support installed.
 	 *
 	 * @param textArea The text area.
-	 * @return The Perl parser. This will be <code>null</code> if the text area does not have this
-	 *         <tt>PerlLanguageSupport</tt> installed.
+	 * @return The Perl parser. This will be <code>null</code> if the text area does
+	 *         not have this <tt>PerlLanguageSupport</tt> installed.
 	 */
 	public PerlParser getParser(RSyntaxTextArea textArea) {
 		// Could be a parser for another language.
@@ -150,7 +152,7 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Lazily creates the shared completion provider instance for Perl.
 	 *
@@ -162,7 +164,7 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 		}
 		return provider;
 	}
-	
+
 	/**
 	 * Returns the value to use for <code>PERL5LIB</code> when parsing Perl code.
 	 *
@@ -172,7 +174,7 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 	public String getPerl5LibOverride() {
 		return getParser().getPerl5LibOverride();
 	}
-	
+
 	/**
 	 * Returns whether parens are inserted when auto-completing functions.
 	 *
@@ -182,15 +184,15 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 	public boolean getUseParensWithFunctions() {
 		return useParensWithFunctions;
 	}
-	
+
 	/**
-	 * Returns whether to use the system "perldoc" command when getting descriptions of Perl
-	 * functions. If this is <code>false</code>, then a built-in snapshot of Perl 5.10 descriptions
-	 * will be used. This will perform better, but may be out of date if your version of Perl is
-	 * newer.
+	 * Returns whether to use the system "perldoc" command when getting descriptions
+	 * of Perl functions. If this is <code>false</code>, then a built-in snapshot of
+	 * Perl 5.10 descriptions will be used. This will perform better, but may be out
+	 * of date if your version of Perl is newer.
 	 * <p>
-	 * Note that this parameter is ignored if {@link #getPerlInstallLocation()} returns
-	 * <code>null</code>.
+	 * Note that this parameter is ignored if {@link #getPerlInstallLocation()}
+	 * returns <code>null</code>.
 	 *
 	 * @return Whether to use the system "perldoc" command.
 	 * @see #setUseSystemPerldoc(boolean)
@@ -198,7 +200,7 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 	public static boolean getUseSystemPerldoc() {
 		return useSystemPerldoc;
 	}
-	
+
 	/**
 	 * Returns whether warnings are enabled when checking syntax.
 	 *
@@ -208,31 +210,33 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 	public boolean getWarningsEnabled() {
 		return getParser().getWarningsEnabled();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void install(RSyntaxTextArea textArea) {
-		
+
 		PerlCompletionProvider provider = getProvider();
 		AutoCompletion ac = createAutoCompletion(provider);
 		ac.install(textArea);
 		installImpl(textArea, ac);
-		
+
 		textArea.setToolTipSupplier(provider);
-		
+
 		PerlParser parser = getParser();
 		textArea.addParser(parser);
 		textArea.putClientProperty(PROPERTY_LANGUAGE_PARSER, parser);
-		
+
 	}
-	
+
 	/**
-	 * Returns whether text areas with this language support installed are parsed for syntax errors.
+	 * Returns whether text areas with this language support installed are parsed
+	 * for syntax errors.
 	 * <p>
-	 * Note that if {@link #getPerlInstallLocation()} returns <code>null</code> or an invalid value,
-	 * parsing will not occur even if this value is <code>true</code>.
+	 * Note that if {@link #getPerlInstallLocation()} returns <code>null</code> or
+	 * an invalid value, parsing will not occur even if this value is
+	 * <code>true</code>.
 	 *
 	 * @return Whether parsing is enabled.
 	 * @see #setParsingEnabled(boolean)
@@ -240,7 +244,7 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 	public boolean isParsingEnabled() {
 		return getParser().isEnabled();
 	}
-	
+
 	/**
 	 * Returns whether taint mode is enabled when checking syntax.
 	 *
@@ -250,9 +254,10 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 	public boolean isTaintModeEnabled() {
 		return getParser().isTaintModeEnabled();
 	}
-	
+
 	/**
-	 * Toggles whether text areas with this language support installed are parsed for syntax errors.
+	 * Toggles whether text areas with this language support installed are parsed
+	 * for syntax errors.
 	 *
 	 * @param enabled Whether parsing should be enabled.
 	 * @see #isParsingEnabled()
@@ -260,7 +265,7 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 	public void setParsingEnabled(boolean enabled) {
 		getParser().setEnabled(enabled);
 	}
-	
+
 	/**
 	 * Sets the value to use for <code>PERL5LIB</code> when parsing Perl code.
 	 *
@@ -270,17 +275,18 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 	public void setPerl5LibOverride(String override) {
 		getParser().setPerl5LibOverride(override);
 	}
-	
+
 	/**
 	 * Sets the Perl install to use for syntax checking, perldoc, etc.
 	 *
-	 * @param loc The root directory of the Perl installation, or <code>null</code> for none.
+	 * @param loc The root directory of the Perl installation, or <code>null</code>
+	 *            for none.
 	 * @see #getPerlInstallLocation()
 	 */
 	public static void setPerlInstallLocation(File loc) {
 		perlInstallLoc = loc;
 	}
-	
+
 	/**
 	 * Toggles whether taint mode is enabled when checking syntax.
 	 *
@@ -290,7 +296,7 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 	public void setTaintModeEnabled(boolean enabled) {
 		getParser().setTaintModeEnabled(enabled);
 	}
-	
+
 	/**
 	 * Toggles whether warnings are returned when checking syntax.
 	 *
@@ -300,7 +306,7 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 	public void setWarningsEnabled(boolean enabled) {
 		getParser().setWarningsEnabled(enabled);
 	}
-	
+
 	/**
 	 * Toggles whether parens are inserted when auto-completing functions.
 	 *
@@ -315,14 +321,15 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 			}
 		}
 	}
-	
+
 	/**
-	 * Sets whether to use the system "perldoc" command when getting descriptions of Perl functions.
-	 * If this is <code>false</code>, then a built-in snapshot of Perl 5.10 descriptions will be
-	 * used. This will perform better, but may be out of date if your version of Perl is newer.
+	 * Sets whether to use the system "perldoc" command when getting descriptions of
+	 * Perl functions. If this is <code>false</code>, then a built-in snapshot of
+	 * Perl 5.10 descriptions will be used. This will perform better, but may be out
+	 * of date if your version of Perl is newer.
 	 * <p>
-	 * Note that this parameter is ignored if {@link #getPerlInstallLocation()} returns
-	 * <code>null</code>.
+	 * Note that this parameter is ignored if {@link #getPerlInstallLocation()}
+	 * returns <code>null</code>.
 	 *
 	 * @param use Whether to use the system "perldoc" command.
 	 * @see #getUseSystemPerldoc()
@@ -330,20 +337,20 @@ public class PerlLanguageSupport extends AbstractLanguageSupport {
 	public static void setUseSystemPerldoc(boolean use) {
 		useSystemPerldoc = use;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void uninstall(RSyntaxTextArea textArea) {
-		
+
 		uninstallImpl(textArea);
-		
+
 		PerlParser parser = getParser(textArea);
 		if (parser != null) {
 			textArea.removeParser(parser);
 		}
-		
+
 	}
-	
+
 }

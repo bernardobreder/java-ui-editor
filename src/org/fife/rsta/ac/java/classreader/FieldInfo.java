@@ -21,26 +21,26 @@ import org.fife.rsta.ac.java.classreader.constantpool.ConstantUtf8Info;
  * @version 1.0
  */
 public class FieldInfo extends MemberInfo {
-	
+
 	/**
-	 * Index into the constant pool of a {@link ConstantUtf8Info} structure representing the field
-	 * name, as a simple name.
+	 * Index into the constant pool of a {@link ConstantUtf8Info} structure
+	 * representing the field name, as a simple name.
 	 */
 	private int nameIndex; // u2
-	
+
 	/**
-	 * Index into the constant pool of a {@link ConstantUtf8Info} structure representing a valid
-	 * field descriptor.
+	 * Index into the constant pool of a {@link ConstantUtf8Info} structure
+	 * representing a valid field descriptor.
 	 */
 	private int descriptorIndex; // u2
-	
+
 	/**
 	 * An array of attributes of this field.
 	 */
 	private List<AttributeInfo> attributes;
-	
+
 	public static final String CONSTANT_VALUE = "ConstantValue";
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -52,7 +52,7 @@ public class FieldInfo extends MemberInfo {
 		this.descriptorIndex = descriptorIndex;
 		attributes = new ArrayList<AttributeInfo>(1); // Usually 0 or 1?
 	}
-	
+
 	/**
 	 * Adds the specified attribute to this field.
 	 *
@@ -61,7 +61,7 @@ public class FieldInfo extends MemberInfo {
 	public void addAttribute(AttributeInfo info) {
 		attributes.add(info);
 	}
-	
+
 	/**
 	 * Returns the specified attribute.
 	 *
@@ -71,7 +71,7 @@ public class FieldInfo extends MemberInfo {
 	public AttributeInfo getAttribute(int index) {
 		return attributes.get(index);
 	}
-	
+
 	/**
 	 * Returns the number of attributes of this field.
 	 *
@@ -80,16 +80,17 @@ public class FieldInfo extends MemberInfo {
 	public int getAttributeCount() {
 		return attributes.size();
 	}
-	
+
 	public String getConstantValueAsString() {
 		ConstantValue cv = getConstantValueAttributeInfo();
 		return cv == null ? null : cv.getConstantValueAsString();
 	}
-	
+
 	/**
 	 * Returns the {@link ConstantValue} attribute info for this field, if any.
 	 *
-	 * @return The <code>ConstantValue</code> attribute, or <code>null</code> if there isn't one.
+	 * @return The <code>ConstantValue</code> attribute, or <code>null</code> if
+	 *         there isn't one.
 	 */
 	private ConstantValue getConstantValueAttributeInfo() {
 		for (int i = 0; i < getAttributeCount(); i++) {
@@ -100,7 +101,7 @@ public class FieldInfo extends MemberInfo {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns the field descriptor of this field.
 	 *
@@ -110,7 +111,7 @@ public class FieldInfo extends MemberInfo {
 	public String getDescriptor() {
 		return cf.getUtf8ValueFromConstantPool(descriptorIndex);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -118,31 +119,31 @@ public class FieldInfo extends MemberInfo {
 	public String getName() {
 		return cf.getUtf8ValueFromConstantPool(nameIndex);
 	}
-	
+
 	/**
-	 * Returns the index into the constant pool of a {@link ConstantUtf8Info} structure representing
-	 * the field name, as a simple name.
+	 * Returns the index into the constant pool of a {@link ConstantUtf8Info}
+	 * structure representing the field name, as a simple name.
 	 *
 	 * @return The index into the constant pool.
 	 */
 	public int getNameIndex() {
 		return nameIndex;
 	}
-	
+
 	/**
 	 * Returns the type of this field, as determined from its field descriptor.
 	 *
 	 * @return The type of this field.
 	 */
 	public String getTypeString(boolean qualified) {
-		
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		String descriptor = getDescriptor();
 		int braceCount = descriptor.lastIndexOf('[') + 1;
-		
+
 		switch (descriptor.charAt(braceCount)) {
-		
+
 		// BaseType
 		case 'B':
 			sb.append("byte");
@@ -168,7 +169,7 @@ public class FieldInfo extends MemberInfo {
 		case 'Z':
 			sb.append("boolean");
 			break;
-		
+
 		// ObjectType
 		case 'L':
 			String clazz = descriptor.substring(braceCount + 1, descriptor.length() - 1);
@@ -179,26 +180,26 @@ public class FieldInfo extends MemberInfo {
 			}
 			sb.append(clazz);
 			break;
-		
+
 		// Invalid field descriptor
 		default:
 			sb.append("UNSUPPORTED_TYPE_").append(descriptor);
 			break;
-		
+
 		}
-		
+
 		for (int i = 0; i < braceCount; i++) {
 			sb.append("[]");
 		}
-		
+
 		return sb.toString();
-		
+
 	}
-	
+
 	public boolean isConstant() {
 		return getConstantValueAttributeInfo() != null;
 	}
-	
+
 	/**
 	 * Reads a <code>FieldInfo</code> structure from the specified input stream.
 	 *
@@ -218,37 +219,37 @@ public class FieldInfo extends MemberInfo {
 		}
 		return info;
 	}
-	
+
 	/**
 	 * Reads an attribute for this field from an input stream.
 	 *
 	 * @param in The input stream to read from.
-	 * @return The attribute read, possibly <code>null</code> if it was known to be unimportant for
-	 *         our purposes.
+	 * @return The attribute read, possibly <code>null</code> if it was known to be
+	 *         unimportant for our purposes.
 	 * @throws IOException If an IO error occurs.
 	 */
 	private AttributeInfo readAttribute(DataInputStream in) throws IOException {
-		
+
 		AttributeInfo ai = null;
-		
+
 		int attributeNameIndex = in.readUnsignedShort();
 		int attributeLength = in.readInt();
-		
+
 		String attrName = cf.getUtf8ValueFromConstantPool(attributeNameIndex);
-		
+
 		if (CONSTANT_VALUE.equals(attrName)) { // 4.7.2
 			int constantValueIndex = in.readUnsignedShort();
 			ConstantValue cv = new ConstantValue(cf, constantValueIndex);
 			ai = cv;
 		}
-		
+
 		// Attributes common to all members, or unhandled attributes.
 		else {
 			ai = super.readAttribute(in, attrName, attributeLength);
 		}
-		
+
 		return ai;
-		
+
 	}
-	
+
 }

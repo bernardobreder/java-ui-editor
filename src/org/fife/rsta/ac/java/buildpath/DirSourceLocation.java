@@ -22,9 +22,9 @@ import org.fife.rsta.ac.java.rjc.parser.ASTFactory;
  * @version 1.0
  */
 public class DirSourceLocation implements SourceLocation {
-	
+
 	private File dir;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -33,7 +33,7 @@ public class DirSourceLocation implements SourceLocation {
 	public DirSourceLocation(String dir) {
 		this(new File(dir));
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -42,15 +42,15 @@ public class DirSourceLocation implements SourceLocation {
 	public DirSourceLocation(File dir) {
 		this.dir = dir;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public CompilationUnit getCompilationUnit(ClassFile cf) throws IOException {
-		
+
 		CompilationUnit cu = null;
-		
+
 		String entryName = cf.getClassName(true);
 		entryName = entryName.replace('.', '/');
 		entryName += ".java";
@@ -60,7 +60,7 @@ public class DirSourceLocation implements SourceLocation {
 			// Be nice and check for "src/" subdirectory
 			file = new File(dir, "src/" + entryName);
 		}
-		
+
 		if (file.isFile()) {
 			BufferedReader r = new BufferedReader(new FileReader(file));
 			try {
@@ -71,11 +71,11 @@ public class DirSourceLocation implements SourceLocation {
 				r.close();
 			}
 		}
-		
+
 		return cu;
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -83,5 +83,5 @@ public class DirSourceLocation implements SourceLocation {
 	public String getLocationAsString() {
 		return dir.getAbsolutePath();
 	}
-	
+
 }

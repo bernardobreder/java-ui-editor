@@ -15,22 +15,22 @@ import org.fife.rsta.ac.java.rjc.lexer.Offset;
  * @version 1.0
  */
 abstract class AbstractMember extends AbstractASTNode implements Member {
-	
+
 	private TypeDeclaration parentTypeDec;
-	
+
 	protected AbstractMember(String name, Offset start) {
 		super(name, start);
 	}
-	
+
 	protected AbstractMember(String name, Offset start, Offset end) {
 		super(name, start, end);
 	}
-	
+
 	@Override
 	public TypeDeclaration getParentTypeDeclaration() {
 		return parentTypeDec;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -39,7 +39,7 @@ abstract class AbstractMember extends AbstractASTNode implements Member {
 		Modifiers modifiers = getModifiers();
 		return modifiers != null && modifiers.isStatic();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -50,5 +50,5 @@ abstract class AbstractMember extends AbstractASTNode implements Member {
 		}
 		parentTypeDec = dec;
 	}
-	
+
 }

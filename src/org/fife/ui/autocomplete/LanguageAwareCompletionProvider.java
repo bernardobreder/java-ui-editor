@@ -20,69 +20,75 @@ import org.fife.ui.rtextarea.RTextArea;
 import org.fife.ui.rtextarea.ToolTipSupplier;
 
 /**
- * A completion provider for the C programming language (and other languages with similar syntax).
- * This provider simply delegates to another provider, depending on whether the caret is in:
+ * A completion provider for the C programming language (and other languages
+ * with similar syntax). This provider simply delegates to another provider,
+ * depending on whether the caret is in:
  * <ul>
  * <li>Code (plain text)</li>
  * <li>A string</li>
  * <li>A comment</li>
  * <li>A documentation comment</li>
  * </ul>
- * This allows for different completion choices in comments than in code, for example.
+ * This allows for different completion choices in comments than in code, for
+ * example.
  * <p>
- * This provider also implements the <tt>org.fife.ui.rtextarea.ToolTipSupplier</tt> interface, which
- * allows it to display tooltips for completion choices. Thus the standard
- * {@link VariableCompletion} and {@link FunctionCompletion} completions should be able to display
- * tooltips with the variable declaration or function definition (provided the
- * <tt>RSyntaxTextArea</tt> was registered with the <tt>javax.swing.ToolTipManager</tt>).
+ * This provider also implements the
+ * <tt>org.fife.ui.rtextarea.ToolTipSupplier</tt> interface, which allows it to
+ * display tooltips for completion choices. Thus the standard
+ * {@link VariableCompletion} and {@link FunctionCompletion} completions should
+ * be able to display tooltips with the variable declaration or function
+ * definition (provided the <tt>RSyntaxTextArea</tt> was registered with the
+ * <tt>javax.swing.ToolTipManager</tt>).
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class LanguageAwareCompletionProvider extends CompletionProviderBase implements ToolTipSupplier {
-	
+
 	/**
 	 * The provider to use when no provider is assigned to a particular token type.
 	 */
 	private CompletionProvider defaultProvider;
-	
+
 	/**
 	 * The provider to use when completing in a string.
 	 */
 	private CompletionProvider stringCompletionProvider;
-	
+
 	/**
 	 * The provider to use when completing in a comment.
 	 */
 	private CompletionProvider commentCompletionProvider;
-	
+
 	/**
 	 * The provider to use while in documentation comments.
 	 */
 	private CompletionProvider docCommentCompletionProvider;
-	
+
 	/**
-	 * Constructor subclasses can use when they don't have their default provider created at
-	 * construction time. They should call {@link #setDefaultCompletionProvider(CompletionProvider)}
-	 * in this constructor.
+	 * Constructor subclasses can use when they don't have their default provider
+	 * created at construction time. They should call
+	 * {@link #setDefaultCompletionProvider(CompletionProvider)} in this
+	 * constructor.
 	 */
 	protected LanguageAwareCompletionProvider() {
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param defaultProvider The provider to use when no provider is assigned to a particular token
-	 *            type. This cannot be <code>null</code>.
+	 * @param defaultProvider The provider to use when no provider is assigned to a
+	 *                        particular token type. This cannot be
+	 *                        <code>null</code>.
 	 */
 	public LanguageAwareCompletionProvider(CompletionProvider defaultProvider) {
 		setDefaultCompletionProvider(defaultProvider);
 	}
-	
+
 	/**
-	 * Calling this method will result in an {@link UnsupportedOperationException} being thrown. To
-	 * set the parameter completion parameters, do so on the provider returned by
-	 * {@link #getDefaultCompletionProvider()}.
+	 * Calling this method will result in an {@link UnsupportedOperationException}
+	 * being thrown. To set the parameter completion parameters, do so on the
+	 * provider returned by {@link #getDefaultCompletionProvider()}.
 	 *
 	 * @throws UnsupportedOperationException Always.
 	 * @see #setParameterizedCompletionParams(char, String, char)
@@ -91,7 +97,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 	public void clearParameterizedCompletionParams() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -103,7 +109,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 		CompletionProvider provider = getProviderFor(comp);
 		return provider != null ? provider.getAlreadyEnteredText(comp) : null;
 	}
-	
+
 	/**
 	 * Returns the completion provider to use for comments.
 	 *
@@ -113,7 +119,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 	public CompletionProvider getCommentCompletionProvider() {
 		return commentCompletionProvider;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -121,7 +127,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 	public List<Completion> getCompletionsAt(JTextComponent tc, Point p) {
 		return defaultProvider == null ? null : defaultProvider.getCompletionsAt(tc, p);
 	}
-	
+
 	/**
 	 * Does the dirty work of creating a list of completions.
 	 *
@@ -138,9 +144,10 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 		}
 		return Collections.emptyList();
 	}
-	
+
 	/**
-	 * Returns the completion provider used when one isn't defined for a particular token type.
+	 * Returns the completion provider used when one isn't defined for a particular
+	 * token type.
 	 *
 	 * @return The completion provider to use.
 	 * @see #setDefaultCompletionProvider(CompletionProvider)
@@ -148,7 +155,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 	public CompletionProvider getDefaultCompletionProvider() {
 		return defaultProvider;
 	}
-	
+
 	/**
 	 * Returns the completion provider to use for documentation comments.
 	 *
@@ -158,7 +165,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 	public CompletionProvider getDocCommentCompletionProvider() {
 		return docCommentCompletionProvider;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -170,7 +177,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 		CompletionProvider provider = getProviderFor(tc);
 		return provider == defaultProvider ? provider.getParameterizedCompletions(tc) : null;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -178,7 +185,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 	public char getParameterListEnd() {
 		return defaultProvider.getParameterListEnd();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -186,7 +193,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 	public String getParameterListSeparator() {
 		return defaultProvider.getParameterListSeparator();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -194,15 +201,16 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 	public char getParameterListStart() {
 		return defaultProvider.getParameterListStart();
 	}
-	
+
 	/**
-	 * Returns the completion provider to use at the current caret position in a text component.
+	 * Returns the completion provider to use at the current caret position in a
+	 * text component.
 	 *
 	 * @param comp The text component to check.
 	 * @return The completion provider to use.
 	 */
 	private CompletionProvider getProviderFor(JTextComponent comp) {
-		
+
 		RSyntaxTextArea rsta = (RSyntaxTextArea) comp;
 		RSyntaxDocument doc = (RSyntaxDocument) rsta.getDocument();
 		int line = rsta.getCaretLineNumber();
@@ -210,12 +218,12 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 		if (t == null) {
 			return getDefaultCompletionProvider();
 		}
-		
+
 		int dot = rsta.getCaretPosition();
 		Token curToken = RSyntaxUtilities.getTokenAtOffset(t, dot);
-		
+
 		if (curToken == null) { // At end of the line
-		
+
 			int type = doc.getLastTokenTypeOnLine(line);
 			if (type == Token.NULL) {
 				Token temp = t.getLastPaintableToken();
@@ -224,14 +232,14 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 				}
 				type = temp.getType();
 			}
-			
+
 			// TokenMakers can use types < 0 for "internal types." This
 			// gives them a chance to map their internal types back to "real"
 			// types to get completion providers.
 			else if (type < 0) {
 				type = doc.getClosestStandardTokenTypeForInternalType(type);
 			}
-			
+
 			switch (type) {
 			case Token.ERROR_STRING_DOUBLE:
 				return getStringCompletionProvider();
@@ -243,16 +251,16 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 			default:
 				return getDefaultCompletionProvider();
 			}
-			
+
 		}
-		
+
 		// FIXME: This isn't always a safe assumption.
 		if (dot == curToken.getOffset()) { // At the very beginning of a new token
 			// Need to check previous token for its type before deciding.
 			// Previous token may also be on previous line!
 			return getDefaultCompletionProvider();
 		}
-		
+
 		switch (curToken.getType()) {
 		case Token.LITERAL_STRING_DOUBLE_QUOTE:
 		case Token.ERROR_STRING_DOUBLE:
@@ -272,11 +280,11 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 		case Token.OPERATOR:
 			return getDefaultCompletionProvider();
 		}
-		
+
 		return null; // In a token type we can't auto-complete from.
-		
+
 	}
-	
+
 	/**
 	 * Returns the completion provider to use for strings.
 	 *
@@ -286,7 +294,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 	public CompletionProvider getStringCompletionProvider() {
 		return stringCompletionProvider;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -295,7 +303,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 		CompletionProvider provider = getProviderFor(tc);
 		return provider != null ? provider.isAutoActivateOkay(tc) : false;
 	}
-	
+
 	/**
 	 * Sets the comment completion provider.
 	 *
@@ -305,12 +313,12 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 	public void setCommentCompletionProvider(CompletionProvider provider) {
 		this.commentCompletionProvider = provider;
 	}
-	
+
 	/**
 	 * Sets the default completion provider.
 	 *
-	 * @param provider The provider to use when no provider is assigned to a particular token type.
-	 *            This cannot be <code>null</code>.
+	 * @param provider The provider to use when no provider is assigned to a
+	 *                 particular token type. This cannot be <code>null</code>.
 	 * @see #getDefaultCompletionProvider()
 	 */
 	public void setDefaultCompletionProvider(CompletionProvider provider) {
@@ -319,7 +327,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 		}
 		this.defaultProvider = provider;
 	}
-	
+
 	/**
 	 * Sets the documentation comment completion provider.
 	 *
@@ -329,11 +337,11 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 	public void setDocCommentCompletionProvider(CompletionProvider provider) {
 		this.docCommentCompletionProvider = provider;
 	}
-	
+
 	/**
-	 * Calling this method will result in an {@link UnsupportedOperationException} being thrown. To
-	 * set the parameter completion parameters, do so on the provider returned by
-	 * {@link #getDefaultCompletionProvider()}.
+	 * Calling this method will result in an {@link UnsupportedOperationException}
+	 * being thrown. To set the parameter completion parameters, do so on the
+	 * provider returned by {@link #getDefaultCompletionProvider()}.
 	 *
 	 * @throws UnsupportedOperationException Always.
 	 * @see #clearParameterizedCompletionParams()
@@ -342,7 +350,7 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 	public void setParameterizedCompletionParams(char listStart, String separator, char listEnd) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * Sets the completion provider to use while in a string.
 	 *
@@ -352,35 +360,35 @@ public class LanguageAwareCompletionProvider extends CompletionProviderBase impl
 	public void setStringCompletionProvider(CompletionProvider provider) {
 		stringCompletionProvider = provider;
 	}
-	
+
 	/**
 	 * Returns the tool tip to display for a mouse event.
 	 * <p>
-	 * For this method to be called, the <tt>RSyntaxTextArea</tt> must be registered with the
-	 * <tt>javax.swing.ToolTipManager</tt> like so:
+	 * For this method to be called, the <tt>RSyntaxTextArea</tt> must be registered
+	 * with the <tt>javax.swing.ToolTipManager</tt> like so:
 	 *
 	 * <pre>
 	 * ToolTipManager.sharedInstance().registerComponent(textArea);
 	 * </pre>
 	 *
 	 * @param textArea The text area.
-	 * @param e The mouse event.
+	 * @param e        The mouse event.
 	 * @return The tool tip text, or <code>null</code> if none.
 	 */
 	@Override
 	public String getToolTipText(RTextArea textArea, MouseEvent e) {
-		
+
 		String tip = null;
-		
+
 		List<Completion> completions = getCompletionsAt(textArea, e.getPoint());
 		if (completions != null && completions.size() > 0) {
 			// Only ever 1 match for us in C...
 			Completion c = completions.get(0);
 			tip = c.getToolTipText();
 		}
-		
+
 		return tip;
-		
+
 	}
-	
+
 }

@@ -10,17 +10,18 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 /**
- * A strategy for painting the background of an <code>RTextAreaBase</code> as a solid color. The
- * default background for <code>RTextAreaBase</code>s is this strategy using the color white.
+ * A strategy for painting the background of an <code>RTextAreaBase</code> as a
+ * solid color. The default background for <code>RTextAreaBase</code>s is this
+ * strategy using the color white.
  *
  * @author Robert Futrell
  * @version 0.1
  * @see org.fife.ui.rtextarea.ImageBackgroundPainterStrategy
  */
 public class ColorBackgroundPainterStrategy implements BackgroundPainterStrategy {
-	
+
 	private Color color;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -29,19 +30,21 @@ public class ColorBackgroundPainterStrategy implements BackgroundPainterStrategy
 	public ColorBackgroundPainterStrategy(Color color) {
 		setColor(color);
 	}
-	
+
 	/**
 	 * Returns whether or not the specified object is equivalent to this one.
 	 *
 	 * @param o2 The object to which to compare.
-	 * @return Whether <code>o2</code> is another <code>ColorBackgroundPainterStrategy</code>
-	 *         representing the same color as this one.
+	 * @return Whether <code>o2</code> is another
+	 *         <code>ColorBackgroundPainterStrategy</code> representing the same
+	 *         color as this one.
 	 */
 	@Override
 	public boolean equals(Object o2) {
-		return o2 != null && (o2 instanceof ColorBackgroundPainterStrategy) && this.color.equals(((ColorBackgroundPainterStrategy) o2).getColor());
+		return o2 != null && (o2 instanceof ColorBackgroundPainterStrategy)
+				&& this.color.equals(((ColorBackgroundPainterStrategy) o2).getColor());
 	}
-	
+
 	/**
 	 * Returns the color used to paint the background.
 	 *
@@ -51,10 +54,11 @@ public class ColorBackgroundPainterStrategy implements BackgroundPainterStrategy
 	public Color getColor() {
 		return color;
 	}
-	
+
 	/**
-	 * Returns the hash code to use when placing an object of this type into hash maps. This method
-	 * is implemented since we overrode {@link #equals(Object)}, to keep FindBugs happy.
+	 * Returns the hash code to use when placing an object of this type into hash
+	 * maps. This method is implemented since we overrode {@link #equals(Object)},
+	 * to keep FindBugs happy.
 	 *
 	 * @return The hash code.
 	 */
@@ -62,11 +66,11 @@ public class ColorBackgroundPainterStrategy implements BackgroundPainterStrategy
 	public int hashCode() {
 		return color.hashCode();
 	}
-	
+
 	/**
 	 * Paints the background.
 	 *
-	 * @param g The graphics context.
+	 * @param g      The graphics context.
 	 * @param bounds The bounds of the object whose backgrouns we're painting.
 	 */
 	@Override
@@ -76,7 +80,7 @@ public class ColorBackgroundPainterStrategy implements BackgroundPainterStrategy
 		g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
 		g.setColor(temp);
 	}
-	
+
 	/**
 	 * Sets the color used to paint the background.
 	 *
@@ -86,5 +90,5 @@ public class ColorBackgroundPainterStrategy implements BackgroundPainterStrategy
 	public void setColor(Color color) {
 		this.color = color;
 	}
-	
+
 }

@@ -18,17 +18,17 @@ import org.fife.ui.autocomplete.CompletionProvider;
  * @version 1.0
  */
 class BorderStyleCompletionGenerator implements CompletionGenerator {
-	
+
 	private static final String ICON_KEY = "css_propertyvalue_identifier";
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Completion> generate(CompletionProvider provider, String input) {
-		
+
 		List<Completion> completions = new ArrayList<Completion>();
-		
+
 		completions.add(new BorderStyleCompletion(provider, "none"));
 		completions.add(new BorderStyleCompletion(provider, "hidden"));
 		completions.add(new BorderStyleCompletion(provider, "dotted"));
@@ -39,19 +39,19 @@ class BorderStyleCompletionGenerator implements CompletionGenerator {
 		completions.add(new BorderStyleCompletion(provider, "ridge"));
 		completions.add(new BorderStyleCompletion(provider, "inset"));
 		completions.add(new BorderStyleCompletion(provider, "outset"));
-		
+
 		return completions;
 	}
-	
+
 	/**
 	 * The type of completion returned by this generator.
 	 */
 	private static class BorderStyleCompletion extends BasicCssCompletion {
-		
+
 		public BorderStyleCompletion(CompletionProvider provider, String value) {
 			super(provider, value, ICON_KEY);
 		}
-		
+
 	}
-	
+
 }

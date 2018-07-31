@@ -21,17 +21,17 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
  * @version 1.0
  */
 public class ShellLanguageSupport extends AbstractLanguageSupport {
-	
+
 	/**
 	 * The completion provider. This is shared amongst all sh text areas.
 	 */
 	private ShellCompletionProvider provider;
-	
+
 	/**
 	 * Whether local man pages should be used.
 	 */
 	private boolean useLocalManPages;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -40,7 +40,7 @@ public class ShellLanguageSupport extends AbstractLanguageSupport {
 		setShowDescWindow(true);
 		useLocalManPages = File.separatorChar == '/';
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -48,7 +48,7 @@ public class ShellLanguageSupport extends AbstractLanguageSupport {
 	protected ListCellRenderer createDefaultCompletionCellRenderer() {
 		return new CompletionCellRenderer();
 	}
-	
+
 	/**
 	 * Lazily creates the shared completion provider instance for sh scripts.
 	 *
@@ -61,11 +61,11 @@ public class ShellLanguageSupport extends AbstractLanguageSupport {
 		}
 		return provider;
 	}
-	
+
 	/**
-	 * Returns whether the local system's man pages should be used for descriptions of functions. If
-	 * this returns <tt>false</tt>, or man cannot be found (e.g. if this is Windows), a shorter
-	 * description will be used instead.
+	 * Returns whether the local system's man pages should be used for descriptions
+	 * of functions. If this returns <tt>false</tt>, or man cannot be found (e.g. if
+	 * this is Windows), a shorter description will be used instead.
 	 *
 	 * @return Whether to use the local man pages in function descriptions.
 	 * @see #setUseLocalManPages(boolean)
@@ -73,26 +73,26 @@ public class ShellLanguageSupport extends AbstractLanguageSupport {
 	public boolean getUseLocalManPages() {
 		return useLocalManPages;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void install(RSyntaxTextArea textArea) {
-		
+
 		ShellCompletionProvider provider = getProvider();
 		AutoCompletion ac = createAutoCompletion(provider);
 		ac.install(textArea);
 		installImpl(textArea, ac);
-		
+
 		textArea.setToolTipSupplier(provider);
-		
+
 	}
-	
+
 	/**
-	 * Sets whether the local system's man pages should be used for descriptions of functions. If
-	 * this is set to <tt>false</tt>, or man cannot be found (e.g. if this is Windows), a shorter
-	 * description will be used instead.
+	 * Sets whether the local system's man pages should be used for descriptions of
+	 * functions. If this is set to <tt>false</tt>, or man cannot be found (e.g. if
+	 * this is Windows), a shorter description will be used instead.
 	 *
 	 * @param use Whether to use the local man pages in function descriptions.
 	 * @see #getUseLocalManPages()
@@ -105,7 +105,7 @@ public class ShellLanguageSupport extends AbstractLanguageSupport {
 			}
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -113,5 +113,5 @@ public class ShellLanguageSupport extends AbstractLanguageSupport {
 	public void uninstall(RSyntaxTextArea textArea) {
 		uninstallImpl(textArea);
 	}
-	
+
 }

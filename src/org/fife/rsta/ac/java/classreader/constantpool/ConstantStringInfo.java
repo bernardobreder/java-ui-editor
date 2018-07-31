@@ -14,11 +14,11 @@ import org.fife.rsta.ac.java.classreader.ClassFile;
  * @version 1.0
  */
 public class ConstantStringInfo extends ConstantPoolInfo {
-	
+
 	private ClassFile cf;
-	
+
 	private int stringIndex;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -29,11 +29,11 @@ public class ConstantStringInfo extends ConstantPoolInfo {
 		this.cf = cf;
 		this.stringIndex = stringIndex;
 	}
-	
+
 	public int getStringIndex() {
 		return stringIndex;
 	}
-	
+
 	/**
 	 * Returns the string represented by this constant.
 	 *
@@ -41,9 +41,9 @@ public class ConstantStringInfo extends ConstantPoolInfo {
 	 */
 	public String getStringValue() {
 		return '"' + cf.getUtf8ValueFromConstantPool(getStringIndex()) + '"';
-		
+
 	}
-	
+
 	/**
 	 * Returns a string representation of this object. Useful for debugging.
 	 *
@@ -53,5 +53,5 @@ public class ConstantStringInfo extends ConstantPoolInfo {
 	public String toString() {
 		return "[ConstantStringInfo: " + "stringIndex=" + getStringIndex() + "]";
 	}
-	
+
 }

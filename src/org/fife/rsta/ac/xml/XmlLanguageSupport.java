@@ -42,17 +42,17 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
  * @see XmlOutlineTree
  */
 public class XmlLanguageSupport extends AbstractMarkupLanguageSupport {
-	
+
 	/**
 	 * The shared completion provider instance for all XML editors.
 	 */
 	private XmlCompletionProvider provider;
-	
+
 	/**
 	 * Whether syntax errors are squiggle-underlined in the editor.
 	 */
 	private boolean showSyntaxErrors;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -62,7 +62,7 @@ public class XmlLanguageSupport extends AbstractMarkupLanguageSupport {
 		setShowDescWindow(false);
 		setShowSyntaxErrors(true);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -70,7 +70,7 @@ public class XmlLanguageSupport extends AbstractMarkupLanguageSupport {
 	protected ListCellRenderer createDefaultCompletionCellRenderer() {
 		return new HtmlCellRenderer();
 	}
-	
+
 	/**
 	 * Lazily creates the shared completion provider instance for XML.
 	 *
@@ -82,13 +82,14 @@ public class XmlLanguageSupport extends AbstractMarkupLanguageSupport {
 		}
 		return provider;
 	}
-	
+
 	/**
-	 * Returns the XML parser running on a text area with this XML language support installed.
+	 * Returns the XML parser running on a text area with this XML language support
+	 * installed.
 	 *
 	 * @param textArea The text area.
-	 * @return The XML parser. This will be <code>null</code> if the text area does not have this
-	 *         <tt>XmlLanguageSupport</tt> installed.
+	 * @return The XML parser. This will be <code>null</code> if the text area does
+	 *         not have this <tt>XmlLanguageSupport</tt> installed.
 	 */
 	public XmlParser getParser(RSyntaxTextArea textArea) {
 		// Could be a parser for another language.
@@ -98,7 +99,7 @@ public class XmlLanguageSupport extends AbstractMarkupLanguageSupport {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns whether syntax errors are squiggle-underlined in the editor.
 	 *
@@ -108,20 +109,20 @@ public class XmlLanguageSupport extends AbstractMarkupLanguageSupport {
 	public boolean getShowSyntaxErrors() {
 		return showSyntaxErrors;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void install(RSyntaxTextArea textArea) {
-		
+
 		// Code completion currently only completes words found elsewhere in
 		// the editor.
 		XmlCompletionProvider provider = getProvider();
 		AutoCompletion ac = createAutoCompletion(provider);
 		ac.install(textArea);
 		installImpl(textArea, ac);
-		
+
 		XmlParser parser = new XmlParser(this);
 		// EntityResolver resolver = new EntityResolver() {
 		// public InputSource resolveEntity(String publicId, String systemId)
@@ -133,36 +134,37 @@ public class XmlLanguageSupport extends AbstractMarkupLanguageSupport {
 		// parser.setValidationConfig(new DtdValidationConfig(resolver));
 		// InputStream in = getClass().getResourceAsStream("/test.xsd");
 		// try {
-		// parser.setValidationConfig(new SchemaValidationConfig(XMLConstants.W3C_XML_SCHEMA_NS_URI,
+		// parser.setValidationConfig(new
+		// SchemaValidationConfig(XMLConstants.W3C_XML_SCHEMA_NS_URI,
 		// in));
 		// } catch (IOException e) {
 		// e.printStackTrace();
 		// }
 		textArea.addParser(parser);
 		textArea.putClientProperty(PROPERTY_LANGUAGE_PARSER, parser);
-		
+
 		installKeyboardShortcuts(textArea);
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void installKeyboardShortcuts(RSyntaxTextArea textArea) {
-		
+
 		super.installKeyboardShortcuts(textArea);
-		
+
 		InputMap im = textArea.getInputMap();
 		ActionMap am = textArea.getActionMap();
 		int c = textArea.getToolkit().getMenuShortcutKeyMask();
 		int shift = InputEvent.SHIFT_MASK;
-		
+
 		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_O, c | shift), "GoToType");
 		am.put("GoToType", new GoToMemberAction(XmlOutlineTree.class));
-		
+
 	}
-	
+
 	/**
 	 * Sets whether syntax errors are squiggle-underlined in the editor.
 	 *
@@ -172,7 +174,7 @@ public class XmlLanguageSupport extends AbstractMarkupLanguageSupport {
 	public void setShowSyntaxErrors(boolean show) {
 		showSyntaxErrors = show;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -180,40 +182,40 @@ public class XmlLanguageSupport extends AbstractMarkupLanguageSupport {
 	protected boolean shouldAutoCloseTag(String tag) {
 		return true;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void uninstall(RSyntaxTextArea textArea) {
-		
+
 		uninstallImpl(textArea);
-		
+
 		XmlParser parser = getParser(textArea);
 		if (parser != null) {
 			textArea.removeParser(parser);
 		}
-		
+
 		uninstallKeyboardShortcuts(textArea);
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void uninstallKeyboardShortcuts(RSyntaxTextArea textArea) {
-		
+
 		super.uninstallKeyboardShortcuts(textArea);
-		
+
 		InputMap im = textArea.getInputMap();
 		ActionMap am = textArea.getActionMap();
 		int c = textArea.getToolkit().getMenuShortcutKeyMask();
 		int shift = InputEvent.SHIFT_MASK;
-		
+
 		im.remove(KeyStroke.getKeyStroke(KeyEvent.VK_O, c | shift));
 		am.remove("GoToType");
-		
+
 	}
-	
+
 }

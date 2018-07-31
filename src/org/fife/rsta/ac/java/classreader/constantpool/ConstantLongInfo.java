@@ -12,11 +12,11 @@ package org.fife.rsta.ac.java.classreader.constantpool;
  * @version 1.0
  */
 public class ConstantLongInfo extends ConstantPoolInfo {
-	
+
 	private int highBytes; // u4
-	
+
 	private int lowBytes; // u4
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -28,19 +28,19 @@ public class ConstantLongInfo extends ConstantPoolInfo {
 		this.highBytes = highBytes;
 		this.lowBytes = lowBytes;
 	}
-	
+
 	public int getHighBytes() {
 		return highBytes;
 	}
-	
+
 	public long getLongValue() {
 		return (((long) highBytes << 32)) + lowBytes;
 	}
-	
+
 	public int getLowBytes() {
 		return lowBytes;
 	}
-	
+
 	/**
 	 * Returns a string representation of this object. Useful for debugging.
 	 *
@@ -50,5 +50,5 @@ public class ConstantLongInfo extends ConstantPoolInfo {
 	public String toString() {
 		return "[ConstantLongInfo: " + "value=" + getLongValue() + "]";
 	}
-	
+
 }

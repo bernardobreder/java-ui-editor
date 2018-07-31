@@ -15,35 +15,35 @@ import org.fife.ui.autocomplete.ParameterizedCompletion.Parameter;
  * @version 1.0
  */
 class TldAttribute extends AttributeCompletion {
-	
+
 	public boolean required;
-	
+
 	public boolean rtexprvalue;
-	
+
 	public TldAttribute(JspCompletionProvider provider, TldAttributeParam param) {
 		super(provider, param);
 	}
-	
+
 	public static class TldAttributeParam extends Parameter {
-		
+
 		private boolean required;
-		
+
 		private boolean rtextprvalue;
-		
+
 		public TldAttributeParam(Object type, String name, boolean required, boolean rtextprvalue) {
 			super(type, name);
 			this.required = required;
 			this.rtextprvalue = rtextprvalue;
 		}
-		
+
 		public boolean isRequired() {
 			return required;
 		}
-		
+
 		public boolean getRtextprvalue() {
 			return rtextprvalue;
 		}
-		
+
 	}
-	
+
 }

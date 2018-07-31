@@ -27,18 +27,18 @@ import org.fife.ui.rsyntaxtextarea.Token;
  * @version 1.0
  */
 public class GroovySourceCompletionProvider extends DefaultCompletionProvider {
-	
+
 	// private JarManager jarManager;
-	
+
 	private static final char[] KEYWORD_DEF = { 'd', 'e', 'f' };
-	
+
 	/**
 	 * Constructor.
 	 */
 	public GroovySourceCompletionProvider() {
 		this(null);
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -52,38 +52,38 @@ public class GroovySourceCompletionProvider extends DefaultCompletionProvider {
 		setParameterizedCompletionParams('(', ", ", ')');
 		setAutoActivationRules(false, "."); // Default - only activate after '.'
 	}
-	
+
 	private CodeBlock createAst(JTextComponent comp) {
-		
+
 		CodeBlock ast = new CodeBlock(0);
-		
+
 		RSyntaxTextArea textArea = (RSyntaxTextArea) comp;
 		TokenScanner scanner = new TokenScanner(textArea);
 		parseCodeBlock(scanner, ast);
-		
+
 		return ast;
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	protected List<Completion> getCompletionsImpl(JTextComponent comp) {
-		
+
 		completions.clear();
-		
+
 		CodeBlock ast = createAst(comp);
-		
+
 		int dot = comp.getCaretPosition();
 		recursivelyAddLocalVars(completions, ast, dot);
-		
+
 		Collections.sort(completions);
-		
+
 		// Cut down the list to just those matching what we've typed.
 		String text = getAlreadyEnteredText(comp);
-		
+
 		int start = Collections.binarySearch(completions, text, comparator);
 		if (start < 0) {
 			start = -(start + 1);
@@ -93,14 +93,14 @@ public class GroovySourceCompletionProvider extends DefaultCompletionProvider {
 				start--;
 			}
 		}
-		
+
 		int end = Collections.binarySearch(completions, text + '{', comparator);
 		end = -(end + 1);
-		
+
 		return completions.subList(start, end);
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -108,9 +108,9 @@ public class GroovySourceCompletionProvider extends DefaultCompletionProvider {
 	protected boolean isValidChar(char ch) {
 		return Character.isJavaIdentifierPart(ch) || ch == '.';
 	}
-	
+
 	private void parseCodeBlock(TokenScanner scanner, CodeBlock block) {
-		
+
 		Token t = scanner.next();
 		while (t != null) {
 			if (t.isRightCurly()) {
@@ -128,15 +128,15 @@ public class GroovySourceCompletionProvider extends DefaultCompletionProvider {
 			}
 			t = scanner.next();
 		}
-		
+
 	}
-	
+
 	private void recursivelyAddLocalVars(List<Completion> completions, CodeBlock block, int dot) {
-		
+
 		if (!block.contains(dot)) {
 			return;
 		}
-		
+
 		// Add local variables declared in this code block
 		for (int i = 0; i < block.getVariableDeclarationCount(); i++) {
 			VariableDeclaration dec = block.getVariableDeclaration(i);
@@ -148,7 +148,7 @@ public class GroovySourceCompletionProvider extends DefaultCompletionProvider {
 				break;
 			}
 		}
-		
+
 		// Add any local variables declared in a child code block
 		for (int i = 0; i < block.getChildCodeBlockCount(); i++) {
 			CodeBlock child = block.getChildCodeBlock(i);
@@ -157,7 +157,7 @@ public class GroovySourceCompletionProvider extends DefaultCompletionProvider {
 				return; // No other child blocks can contain the dot
 			}
 		}
-		
+
 	}
-	
+
 }

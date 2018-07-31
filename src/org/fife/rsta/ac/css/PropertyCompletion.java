@@ -17,17 +17,17 @@ import org.fife.ui.autocomplete.ShorthandCompletion;
  * @version 1.0
  */
 class PropertyCompletion extends ShorthandCompletion {
-	
+
 	private String iconKey;
-	
+
 	public PropertyCompletion(CompletionProvider provider, String property, String iconKey) {
 		super(provider, property, property + ": ");
 		this.iconKey = iconKey;
 	}
-	
+
 	@Override
 	public Icon getIcon() {
 		return IconFactory.get().getIcon(iconKey);
 	}
-	
+
 }

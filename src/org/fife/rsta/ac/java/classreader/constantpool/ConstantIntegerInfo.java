@@ -12,9 +12,9 @@ package org.fife.rsta.ac.java.classreader.constantpool;
  * @version 1.0
  */
 public class ConstantIntegerInfo extends ConstantPoolInfo {
-	
+
 	private long bytes; // u4
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -22,11 +22,11 @@ public class ConstantIntegerInfo extends ConstantPoolInfo {
 		super(CONSTANT_String);
 		this.bytes = bytes;
 	}
-	
+
 	public long getBytes() {
 		return bytes;
 	}
-	
+
 	/**
 	 * Returns the <code>int</code>represented by this info.
 	 *
@@ -35,7 +35,7 @@ public class ConstantIntegerInfo extends ConstantPoolInfo {
 	public int getIntValue() {
 		return (int) bytes;
 	}
-	
+
 	/**
 	 * Returns a string representation of this object. Useful for debugging.
 	 *
@@ -45,5 +45,5 @@ public class ConstantIntegerInfo extends ConstantPoolInfo {
 	public String toString() {
 		return "[ConstantIntegerInfo: " + "bytes=" + getBytes() + "]";
 	}
-	
+
 }

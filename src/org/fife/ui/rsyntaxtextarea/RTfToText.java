@@ -18,24 +18,24 @@ import java.io.StringReader;
 /**
  * Gets the plain text version of RTF documents.
  * <p>
- * This is used by <code>RtfTransferable</code> to return the plain text version of the transferable
- * when the receiver does not support RTF.
+ * This is used by <code>RtfTransferable</code> to return the plain text version
+ * of the transferable when the receiver does not support RTF.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 class RtfToText {
-	
+
 	private Reader r;
-	
+
 	private StringBuilder sb;
-	
+
 	private StringBuilder controlWord;
-	
+
 	private int blockCount;
-	
+
 	private boolean inControlWord;
-	
+
 	/**
 	 * Private constructor.
 	 *
@@ -48,24 +48,25 @@ class RtfToText {
 		blockCount = 0;
 		inControlWord = false;
 	}
-	
+
 	/**
-	 * Converts the RTF text read from this converter's <code>Reader</code> into plain text. It is
-	 * the caller's responsibility to close the reader after this method is called.
+	 * Converts the RTF text read from this converter's <code>Reader</code> into
+	 * plain text. It is the caller's responsibility to close the reader after this
+	 * method is called.
 	 *
 	 * @return The plain text.
 	 * @throws IOException If an IO error occurs.
 	 */
 	private String convert() throws IOException {
-		
+
 		// Skip over first curly brace as the whole file is in '{' and '}'
 		int i = r.read();
 		if (i != '{') {
 			throw new IOException("Invalid RTF file");
 		}
-		
+
 		while ((i = r.read()) != -1) {
-			
+
 			char ch = (char) i;
 			switch (ch) {
 			case '{':
@@ -130,16 +131,17 @@ class RtfToText {
 				}
 				break;
 			}
-			
+
 		}
-		
+
 		return sb.toString();
-		
+
 	}
-	
+
 	/**
-	 * Ends a control word. Checks whether it is a common one that affects the plain text output
-	 * (such as "<code>par</code>" or "<code>tab</code>") and updates the text buffer accordingly.
+	 * Ends a control word. Checks whether it is a common one that affects the plain
+	 * text output (such as "<code>par</code>" or "<code>tab</code>") and updates
+	 * the text buffer accordingly.
 	 */
 	private void endControlWord() {
 		String word = controlWord.toString();
@@ -151,10 +153,10 @@ class RtfToText {
 		controlWord.setLength(0);
 		inControlWord = false;
 	}
-	
+
 	/**
-	 * Converts the contents of the specified byte array representing an RTF document into plain
-	 * text.
+	 * Converts the contents of the specified byte array representing an RTF
+	 * document into plain text.
 	 *
 	 * @param rtf The byte array representing an RTF document.
 	 * @return The contents of the RTF document, in plain text.
@@ -163,7 +165,7 @@ class RtfToText {
 	public static String getPlainText(byte[] rtf) throws IOException {
 		return getPlainText(new ByteArrayInputStream(rtf));
 	}
-	
+
 	/**
 	 * Converts the contents of the specified RTF file to plain text.
 	 *
@@ -174,23 +176,25 @@ class RtfToText {
 	public static String getPlainText(File file) throws IOException {
 		return getPlainText(new BufferedReader(new FileReader(file)));
 	}
-	
+
 	/**
-	 * Converts the contents of the specified input stream to plain text. The input stream will be
-	 * closed when this method returns.
+	 * Converts the contents of the specified input stream to plain text. The input
+	 * stream will be closed when this method returns.
 	 *
-	 * @param in The input stream to convert. This will be closed when this method returns.
+	 * @param in The input stream to convert. This will be closed when this method
+	 *           returns.
 	 * @return The contents of the stream, in plain text.
 	 * @throws IOException If an IO error occurs.
 	 */
 	public static String getPlainText(InputStream in) throws IOException {
 		return getPlainText(new InputStreamReader(in, "US-ASCII"));
 	}
-	
+
 	/**
 	 * Converts the contents of the specified <code>Reader</code> to plain text.
 	 *
-	 * @param r The <code>Reader</code>. This will be closed when this method returns.
+	 * @param r The <code>Reader</code>. This will be closed when this method
+	 *          returns.
 	 * @return The contents of the <code>Reader</code>, in plain text.
 	 * @throws IOException If an IO error occurs.
 	 */
@@ -202,7 +206,7 @@ class RtfToText {
 			r.close();
 		}
 	}
-	
+
 	/**
 	 * Converts the contents of the specified String to plain text.
 	 *
@@ -213,5 +217,5 @@ class RtfToText {
 	public static String getPlainText(String rtf) throws IOException {
 		return getPlainText(new StringReader(rtf));
 	}
-	
+
 }

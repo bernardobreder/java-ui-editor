@@ -13,9 +13,10 @@ import org.fife.rsta.ac.java.Util;
 import org.fife.rsta.ac.java.classreader.ClassFile;
 
 /**
- * Information about a folder containing a set of classes to add to the "build path." This type of
- * library info could be used, for example, to add sibling projects in a workspace, not yet built
- * into jars, to another project's build path.
+ * Information about a folder containing a set of classes to add to the "build
+ * path." This type of library info could be used, for example, to add sibling
+ * projects in a workspace, not yet built into jars, to another project's build
+ * path.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -23,40 +24,40 @@ import org.fife.rsta.ac.java.classreader.ClassFile;
  * @see ClasspathLibraryInfo
  */
 public class DirLibraryInfo extends LibraryInfo {
-	
+
 	private File dir;
-	
+
 	public DirLibraryInfo(File dir) {
 		this(dir, null);
 	}
-	
+
 	public DirLibraryInfo(String dir) {
 		this(new File(dir));
 	}
-	
+
 	public DirLibraryInfo(File dir, SourceLocation sourceLoc) {
 		setDirectory(dir);
 		setSourceLocation(sourceLoc);
 	}
-	
+
 	public DirLibraryInfo(String dir, SourceLocation sourceLoc) {
 		this(new File(dir), sourceLoc);
 	}
-	
+
 	@Override
 	public void bulkClassFileCreationEnd() {
 		// Do nothing
 	}
-	
+
 	@Override
 	public void bulkClassFileCreationStart() {
 		// Do nothing
 	}
-	
+
 	/**
-	 * Compares this <code>LibraryInfo</code> to another one. Two instances of this class are only
-	 * considered equal if they represent the same class file location. Source attachment is
-	 * irrelevant.
+	 * Compares this <code>LibraryInfo</code> to another one. Two instances of this
+	 * class are only considered equal if they represent the same class file
+	 * location. Source attachment is irrelevant.
 	 *
 	 * @return The sort order of these two library infos.
 	 */
@@ -71,12 +72,12 @@ public class DirLibraryInfo extends LibraryInfo {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public ClassFile createClassFile(String entryName) throws IOException {
 		return createClassFileBulk(entryName);
 	}
-	
+
 	@Override
 	public ClassFile createClassFileBulk(String entryName) throws IOException {
 		File file = new File(dir, entryName);
@@ -86,38 +87,38 @@ public class DirLibraryInfo extends LibraryInfo {
 		}
 		return new ClassFile(file);
 	}
-	
+
 	@Override
 	public TreeMap createPackageMap() throws IOException {
 		TreeMap map = new TreeMap();
 		getPackageMapImpl(dir, null, map);
 		return map;
 	}
-	
+
 	@Override
 	public long getLastModified() {
 		return dir.lastModified();
 	}
-	
+
 	@Override
 	public String getLocationAsString() {
 		return dir.getAbsolutePath();
 	}
-	
+
 	/**
 	 * Does the dirty-work of finding all class files in a directory tree.
 	 *
 	 * @param dir The directory to scan.
-	 * @param pkg The package name scanned so far, in the form " <code>com/company/pkgname</code> 
-	 *            "...
+	 * @param pkg The package name scanned so far, in the form "
+	 *            <code>com/company/pkgname</code> "...
 	 * @throws IOException If an IO error occurs.
 	 */
 	private void getPackageMapImpl(File dir, String pkg, TreeMap retVal) throws IOException {
-		
+
 		File[] children = dir.listFiles();
 		TreeMap m = retVal;
 		boolean firstTimeThrough = true;
-		
+
 		for (int i = 0; i < children.length; i++) {
 			File child = children[i];
 			if (child.isFile() && child.getName().endsWith(".class")) {
@@ -151,14 +152,14 @@ public class DirLibraryInfo extends LibraryInfo {
 				getPackageMapImpl(child, subpkg, retVal);
 			}
 		}
-		
+
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return dir.hashCode();
 	}
-	
+
 	/**
 	 * Sets the directory containing the classes.
 	 *
@@ -171,9 +172,10 @@ public class DirLibraryInfo extends LibraryInfo {
 		}
 		this.dir = dir;
 	}
-	
+
 	/**
-	 * Returns a string representation of this jar information. Useful for debugging.
+	 * Returns a string representation of this jar information. Useful for
+	 * debugging.
 	 *
 	 * @return A string representation of this object.
 	 */
@@ -181,5 +183,5 @@ public class DirLibraryInfo extends LibraryInfo {
 	public String toString() {
 		return "[DirLibraryInfo: " + "jar=" + dir.getAbsolutePath() + "; source=" + getSourceLocation() + "]";
 	}
-	
+
 }

@@ -21,29 +21,29 @@ import org.fife.rsta.ac.java.rjc.ast.Method;
 import org.fife.rsta.ac.java.rjc.ast.TypeDeclaration;
 
 /**
- * Metadata about a method as read from a class file. This class is used by instances of
- * {@link MethodCompletion}.
+ * Metadata about a method as read from a class file. This class is used by
+ * instances of {@link MethodCompletion}.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 class MethodInfoData implements Data {
-	
+
 	/**
 	 * The parent completion provider.
 	 */
 	private SourceCompletionProvider provider;
-	
+
 	/**
 	 * The actual metadata.
 	 */
 	private MethodInfo info;
-	
+
 	/**
 	 * Cached method parameter names.
 	 */
 	private List<String> paramNames;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -54,7 +54,7 @@ class MethodInfoData implements Data {
 		this.info = info;
 		this.provider = provider;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -62,16 +62,16 @@ class MethodInfoData implements Data {
 	public String getEnclosingClassName(boolean fullyQualified) {
 		return info.getClassFile().getClassName(fullyQualified);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String getIcon() {
-		
+
 		String key = null;
 		int flags = info.getAccessFlags();
-		
+
 		if (Util.isDefault(flags)) {
 			key = IconFactory.METHOD_DEFAULT_ICON;
 		} else if (Util.isPrivate(flags)) {
@@ -83,38 +83,39 @@ class MethodInfoData implements Data {
 		} else {
 			key = IconFactory.METHOD_DEFAULT_ICON;
 		}
-		
+
 		return key;
-		
+
 	}
-	
+
 	/**
-	 * Scours the source in a location (zip file, directory), looking for a particular class's
-	 * source. If it is found, it is parsed, and the {@link Method} for this method (if any) is
-	 * returned.
+	 * Scours the source in a location (zip file, directory), looking for a
+	 * particular class's source. If it is found, it is parsed, and the
+	 * {@link Method} for this method (if any) is returned.
 	 *
 	 * @param loc The zip file, jar file, or directory to look in.
-	 * @param cf The {@link ClassFile} representing the class of this method.
-	 * @return The method, or <code>null</code> if it cannot be found, or an IO error occurred.
+	 * @param cf  The {@link ClassFile} representing the class of this method.
+	 * @return The method, or <code>null</code> if it cannot be found, or an IO
+	 *         error occurred.
 	 */
 	private Method getMethodFromSourceLoc(SourceLocation loc, ClassFile cf) {
-		
+
 		Method res = null;
 		CompilationUnit cu = org.fife.rsta.ac.java.Util.getCompilationUnitFromDisk(loc, cf);
-		
+
 		// If the class's source was found and successfully parsed, look for
 		// this method.
 		if (cu != null) {
-			
+
 			Iterator<TypeDeclaration> i = cu.getTypeDeclarationIterator();
 			while (i.hasNext()) {
-				
+
 				TypeDeclaration td = i.next();
 				String typeName = td.getName();
-				
+
 				// Avoid inner classes, etc.
 				if (typeName.equals(cf.getClassName(false))) {
-					
+
 					// Get all overloads of this method with the number of
 					// parameters we're looking for. 99% of the time, there
 					// will only be 1, the method we're looking for.
@@ -131,16 +132,16 @@ class MethodInfoData implements Data {
 							}
 						}
 					}
-					
+
 					// We found some matches.
 					if (contenders != null) {
-						
+
 						// Common case - only 1 overload with the desired
 						// number of parameters => it must be our method.
 						if (contenders.size() == 1) {
 							res = contenders.get(0);
 						}
-						
+
 						// More than 1 overload with the same number of
 						// parameters... we decide which contender is the one
 						// we're looking for by checking each of its
@@ -163,53 +164,53 @@ class MethodInfoData implements Data {
 								}
 							}
 						}
-						
+
 					}
-					
+
 					break;
-					
+
 				} // if (typeName.equals(cf.getClassName(false)))
-				
+
 			} // for (Iterator i=cu.getTypeDeclarationIterator(); i.hasNext(); )
-			
+
 		} // if (cu!=null)
-		
+
 		return res;
-		
+
 	}
-	
+
 	/**
-	 * Returns the name of the specified parameter to this method, or <code>null</code> if it cannot
-	 * be determined.
+	 * Returns the name of the specified parameter to this method, or
+	 * <code>null</code> if it cannot be determined.
 	 *
 	 * @param index The index of the parameter.
 	 * @return The name of the parameter, or <code>null</code>.
 	 */
 	public String getParameterName(int index) {
-		
+
 		// First, check whether the debugging attribute was enabled at
 		// compilation, and the parameter name is embedded in the class file.
 		// This method takes priority because it *likely* matches a name
 		// specified in Javadoc, and is much faster for us to fetch (it's
 		// already parsed).
 		String name = info.getParameterName(index);
-		
+
 		// Otherwise...
 		if (name == null) {
-			
+
 			// Next, check the attached source, if any (lazily parsed).
 			if (paramNames == null) {
-				
+
 				paramNames = new ArrayList<String>(1);
 				int offs = 0;
 				String rawSummary = getSummary();
-				
+
 				// If there's attached source with Javadoc for this method...
 				if (rawSummary != null && rawSummary.startsWith("/**")) {
-					
+
 					int nextParam = 0;
 					int summaryLen = rawSummary.length();
-					
+
 					while ((nextParam = rawSummary.indexOf("@param", offs)) > -1) {
 						int temp = nextParam + "@param".length() + 1;
 						while (temp < summaryLen && Character.isWhitespace(rawSummary.charAt(temp))) {
@@ -227,35 +228,35 @@ class MethodInfoData implements Data {
 							break;
 						}
 					}
-					
+
 				}
-				
+
 			}
-			
+
 			if (index < paramNames.size()) {
 				name = paramNames.get(index);
 			}
-			
+
 		}
-		
+
 		// Use a default name.
 		if (name == null) {
 			name = "arg" + index;
 		}
-		
+
 		return name;
-		
+
 	}
-	
+
 	@Override
 	public String getSignature() {
-		
+
 		// Don't call MethodInfo's implementation, as it is unaware of param
 		// names.
 		// return info.getNameAndParameters();
-		
+
 		StringBuilder sb = new StringBuilder(info.getName());
-		
+
 		sb.append('(');
 		int paramCount = info.getParameterCount();
 		for (int i = 0; i < paramCount; i++) {
@@ -267,46 +268,47 @@ class MethodInfoData implements Data {
 			}
 		}
 		sb.append(')');
-		
+
 		return sb.toString();
-		
+
 	}
-	
+
 	@Override
 	public String getSummary() {
-		
+
 		ClassFile cf = info.getClassFile();
 		SourceLocation loc = provider.getSourceLocForClass(cf.getClassName(true));
 		String summary = null;
-		
+
 		// First, try to parse the Javadoc for this method from the attached
 		// source.
 		if (loc != null) {
 			summary = getSummaryFromSourceLoc(loc, cf);
 		}
-		
+
 		// Default to the method signature.
 		if (summary == null) {
 			summary = info.getSignature();
 		}
 		return summary;
-		
+
 	}
-	
+
 	/**
-	 * Scours the source in a location (zip file, directory), looking for a particular class's
-	 * source. If it is found, it is parsed, and the Javadoc for this method (if any) is returned.
+	 * Scours the source in a location (zip file, directory), looking for a
+	 * particular class's source. If it is found, it is parsed, and the Javadoc for
+	 * this method (if any) is returned.
 	 *
 	 * @param loc The zip file, jar file, or directory to look in.
-	 * @param cf The {@link ClassFile} representing the class of this method.
-	 * @return The summary, or <code>null</code> if the method has no javadoc, the class's source
-	 *         was not found, or an IO error occurred.
+	 * @param cf  The {@link ClassFile} representing the class of this method.
+	 * @return The summary, or <code>null</code> if the method has no javadoc, the
+	 *         class's source was not found, or an IO error occurred.
 	 */
 	private String getSummaryFromSourceLoc(SourceLocation loc, ClassFile cf) {
 		Method method = getMethodFromSourceLoc(loc, cf);
 		return method != null ? method.getDocComment() : null;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -314,12 +316,12 @@ class MethodInfoData implements Data {
 	public String getType() {
 		return info.getReturnTypeString(false);
 	}
-	
+
 	@Override
 	public boolean isAbstract() {
 		return info.isAbstract();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -327,7 +329,7 @@ class MethodInfoData implements Data {
 	public boolean isConstructor() {
 		return info.isConstructor();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -335,15 +337,15 @@ class MethodInfoData implements Data {
 	public boolean isDeprecated() {
 		return info.isDeprecated();
 	}
-	
+
 	@Override
 	public boolean isFinal() {
 		return info.isFinal();
 	}
-	
+
 	@Override
 	public boolean isStatic() {
 		return info.isStatic();
 	}
-	
+
 }

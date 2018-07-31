@@ -12,11 +12,11 @@ package org.fife.rsta.ac.java.classreader.constantpool;
  * @version 1.0
  */
 public class ConstantDoubleInfo extends ConstantPoolInfo {
-	
+
 	private int highBytes;
-	
+
 	private int lowBytes;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -28,7 +28,7 @@ public class ConstantDoubleInfo extends ConstantPoolInfo {
 		this.highBytes = highBytes;
 		this.lowBytes = lowBytes;
 	}
-	
+
 	/**
 	 * Returns the <code>double</code> value represented by this constant.
 	 *
@@ -38,15 +38,15 @@ public class ConstantDoubleInfo extends ConstantPoolInfo {
 		long bits = (((long) highBytes << 32)) + lowBytes;
 		return Double.longBitsToDouble(bits);
 	}
-	
+
 	public int getHighBytes() {
 		return highBytes;
 	}
-	
+
 	public int getLowBytes() {
 		return lowBytes;
 	}
-	
+
 	/**
 	 * Returns a string representation of this object. Useful for debugging.
 	 *
@@ -56,5 +56,5 @@ public class ConstantDoubleInfo extends ConstantPoolInfo {
 	public String toString() {
 		return "[ConstantDoubleInfo: " + "value=" + getDoubleValue() + "]";
 	}
-	
+
 }

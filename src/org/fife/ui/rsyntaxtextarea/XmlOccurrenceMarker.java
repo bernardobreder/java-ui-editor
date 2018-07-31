@@ -20,11 +20,11 @@ import org.fife.ui.rtextarea.SmartHighlightPainter;
  * @version 1.0
  */
 public class XmlOccurrenceMarker implements OccurrenceMarker {
-	
+
 	private static final char[] CLOSE_TAG_START = { '<', '/' };
-	
+
 	private static final char[] TAG_SELF_CLOSE = { '/', '>' };
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -32,7 +32,7 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 	public Token getTokenToMark(RSyntaxTextArea textArea) {
 		return HtmlOccurrenceMarker.getTagNameTokenForCaretOffset(textArea, this);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -40,20 +40,20 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 	public boolean isValidType(RSyntaxTextArea textArea, Token t) {
 		return textArea.getMarkOccurrencesOfTokenType(t.getType());
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void markOccurrences(RSyntaxDocument doc, Token t, RSyntaxTextAreaHighlighter h, SmartHighlightPainter p) {
-		
+
 		char[] lexeme = t.getLexeme().toCharArray();
 		int tokenOffs = t.getOffset();
 		Element root = doc.getDefaultRootElement();
 		int lineCount = root.getElementCount();
 		int curLine = root.getElementIndex(t.getOffset());
 		int depth = 0;
-		
+
 		// For now, we only check for tags on the current line, for
 		// simplicity. Tags spanning multiple lines aren't common anyway.
 		boolean found = false;
@@ -72,17 +72,17 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 			}
 			t = t.getNextToken();
 		}
-		
+
 		if (!found) {
 			return;
 		}
-		
+
 		if (forward) {
-			
+
 			t = t.getNextToken().getNextToken();
-			
+
 			do {
-				
+
 				while (t != null && t.isPaintable()) {
 					if (t.getType() == Token.MARKUP_TAG_DELIMITER) {
 						if (t.is(CLOSE_TAG_START)) {
@@ -111,29 +111,29 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 					}
 					t = t == null ? null : t.getNextToken();
 				}
-				
+
 				if (++curLine < lineCount) {
 					t = doc.getTokenListForLine(curLine);
 				}
-				
+
 			} while (curLine < lineCount);
-			
+
 		}
-		
+
 		else { // !forward
-		
+
 			// Idea: Get all opening and closing tags of the relevant type on
 			// the current line. Find the opening tag paired to the closing
 			// tag we found originally; if it's not on this line, keep going
 			// to the previous line.
-			
+
 			List<Entry> openCloses = new ArrayList<Entry>();
 			boolean inPossibleMatch = false;
 			t = doc.getTokenListForLine(curLine);
 			final int endBefore = tokenOffs - 2; // Stop before "</".
-			
+
 			do {
-				
+
 				while (t != null && t.getOffset() < endBefore && t.isPaintable()) {
 					if (t.getType() == Token.MARKUP_TAG_DELIMITER) {
 						if (t.isSingleChar('<')) {
@@ -165,7 +165,7 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 					}
 					t = t.getNextToken();
 				}
-				
+
 				for (int i = openCloses.size() - 1; i >= 0; i--) {
 					Entry entry = openCloses.get(i);
 					depth += entry.open ? -1 : 1;
@@ -183,32 +183,32 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 						return;
 					}
 				}
-				
+
 				openCloses.clear();
 				if (--curLine >= 0) {
 					t = doc.getTokenListForLine(curLine);
 				}
-				
+
 			} while (curLine >= 0);
-			
+
 		}
-		
+
 	}
-	
+
 	/**
 	 * Used internally when searching backward for a matching "open" tag.
 	 */
 	private static class Entry {
-		
+
 		public boolean open;
-		
+
 		public Token t;
-		
+
 		public Entry(boolean open, Token t) {
 			this.open = open;
 			this.t = t;
 		}
-		
+
 	}
-	
+
 }

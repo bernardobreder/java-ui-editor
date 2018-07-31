@@ -15,13 +15,13 @@ import java.io.IOException;
  * @version 1.0
  */
 public class Util implements AccessFlags {
-	
+
 	/**
 	 * Private constructor to prevent instantiation.
 	 */
 	private Util() {
 	}
-	
+
 	/**
 	 * Returns whether an object has default scope.
 	 *
@@ -34,7 +34,7 @@ public class Util implements AccessFlags {
 		int access = ACC_PUBLIC | ACC_PROTECTED | ACC_PRIVATE;
 		return (accessFlags & access) == 0;
 	}
-	
+
 	/**
 	 * Returns whether an object has private scope.
 	 *
@@ -46,7 +46,7 @@ public class Util implements AccessFlags {
 	public static boolean isPrivate(int accessFlags) {
 		return (accessFlags & ACC_PRIVATE) > 0;
 	}
-	
+
 	/**
 	 * Returns whether an object has protected scope.
 	 *
@@ -58,7 +58,7 @@ public class Util implements AccessFlags {
 	public static boolean isProtected(int accessFlags) {
 		return (accessFlags & ACC_PROTECTED) > 0;
 	}
-	
+
 	/**
 	 * Returns whether an object has public scope.
 	 *
@@ -70,11 +70,11 @@ public class Util implements AccessFlags {
 	public static boolean isPublic(int accessFlags) {
 		return (accessFlags & ACC_PUBLIC) > 0;
 	}
-	
+
 	/**
 	 * Fully skips a given number of bytes in an input stream.
 	 *
-	 * @param in The input stream.
+	 * @param in    The input stream.
 	 * @param count The number of bytes to skip.
 	 * @throws IOException If an IO error occurs.
 	 */
@@ -84,5 +84,5 @@ public class Util implements AccessFlags {
 			skipped += in.skipBytes(count - skipped);
 		}
 	}
-	
+
 }

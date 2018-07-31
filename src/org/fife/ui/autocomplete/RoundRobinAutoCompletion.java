@@ -12,10 +12,10 @@ import java.util.List;
 import javax.swing.Action;
 
 /**
- * An <code>AutoCompletion</code> that adds the ability to cycle through a set of
- * <code>CompletionProvider</code>s via the trigger key. This allows the application to logically
- * "group together" completions of similar kinds; for example, Java code completions vs. template
- * completions.
+ * An <code>AutoCompletion</code> that adds the ability to cycle through a set
+ * of <code>CompletionProvider</code>s via the trigger key. This allows the
+ * application to logically "group together" completions of similar kinds; for
+ * example, Java code completions vs. template completions.
  * <p>
  * Usage:
  *
@@ -32,10 +32,10 @@ import javax.swing.Action;
  * @author mschlegel
  */
 public class RoundRobinAutoCompletion extends AutoCompletion {
-	
+
 	/** The List of CompletionProviders to use */
 	private List<CompletionProvider> cycle = new ArrayList<CompletionProvider>();
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -43,10 +43,10 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 	 * @see #addCompletionProvider(CompletionProvider)
 	 */
 	public RoundRobinAutoCompletion(CompletionProvider provider) {
-		
+
 		super(provider);
 		cycle.add(provider);
-		
+
 		// principal requirement for round-robin
 		setHideOnCompletionProviderChange(false);
 		// this is required since otherwise, on empty list of completions for
@@ -57,24 +57,26 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 		// the completion since the user may want the second provider to be
 		// chosen.
 		setAutoCompleteSingleChoices(false);
-		
+
 	}
-	
+
 	/**
-	 * Adds an additional <code>CompletionProvider</code> to the list to cycle through.
+	 * Adds an additional <code>CompletionProvider</code> to the list to cycle
+	 * through.
 	 *
 	 * @param provider The new completion provider.
 	 */
 	public void addCompletionProvider(CompletionProvider provider) {
 		cycle.add(provider);
 	}
-	
+
 	/**
-	 * Moves to the next Provider internally. Needs refresh of the popup window to display the
-	 * changes.
+	 * Moves to the next Provider internally. Needs refresh of the popup window to
+	 * display the changes.
 	 *
-	 * @return true if the next provider was the default one (thus returned to the default view).
-	 *         May be used in case you like to hide the popup in this case.
+	 * @return true if the next provider was the default one (thus returned to the
+	 *         default view). May be used in case you like to hide the popup in this
+	 *         case.
 	 */
 	public boolean advanceProvider() {
 		CompletionProvider currentProvider = getCompletionProvider();
@@ -82,7 +84,7 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 		setCompletionProvider(cycle.get(i));
 		return i == 0;
 	}
-	
+
 	/**
 	 * Overridden to provide our own implementation of the action.
 	 */
@@ -90,7 +92,7 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 	protected Action createAutoCompleteAction() {
 		return new CycleAutoCompleteAction();
 	}
-	
+
 	/**
 	 * Resets the cycle to use the default provider on next refresh.
 	 */
@@ -101,14 +103,14 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 			setCompletionProvider(defaultProvider);
 		}
 	}
-	
+
 	/**
 	 * An implementation of the auto-complete action that ensures the proper
-	 * <code>CompletionProvider</code> is displayed based on the context in which the user presses
-	 * the trigger key.
+	 * <code>CompletionProvider</code> is displayed based on the context in which
+	 * the user presses the trigger key.
 	 */
 	private class CycleAutoCompleteAction extends AutoCompleteAction {
-		
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (isAutoCompleteEnabled()) {
@@ -120,7 +122,8 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 					// Be sure to start with the default provider
 					resetProvider();
 				}
-				// Check if there are completions from the current provider. If not, advance to the
+				// Check if there are completions from the current provider. If not, advance to
+				// the
 				// next provider and display that one.
 				// A completion provider can force displaying "his" empty completion pop-up by
 				// returning an empty BasicCompletion. This is useful when the user is typing
@@ -138,8 +141,8 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 			}
 			super.actionPerformed(e);
 		}
-		
+
 	}
-	
+
 	// TODO add label "Ctrl-Space for <next provider name>" to the popup window
 }

@@ -42,39 +42,40 @@ import org.fife.rsta.ac.java.rjc.notices.ParserNotice;
  * @version 1.0
  */
 public class ASTFactory implements TokenTypes {
-	
+
 	private static final boolean DEBUG = false;
-	
+
 	/**
 	 * Whether the next member (or class, interface or enum) is deprecated.
 	 */
 	private boolean nextMemberDeprecated;
-	
+
 	public ASTFactory() {
 	}
-	
+
 	private boolean checkDeprecated() {
 		boolean deprecated = nextMemberDeprecated;
 		nextMemberDeprecated = false;
 		return deprecated;
 	}
-	
+
 	/**
-	 * Checks whether a local variable's name collides with a local variable defined earlier. Note
-	 * that this method assumes that it is called immediately whenever a variable is parsed, thus
-	 * any other variables declared in a code block were declared before the one being checked.
+	 * Checks whether a local variable's name collides with a local variable defined
+	 * earlier. Note that this method assumes that it is called immediately whenever
+	 * a variable is parsed, thus any other variables declared in a code block were
+	 * declared before the one being checked.
 	 *
-	 * @param cu The compilation unit.
-	 * @param lVar The just-scanned local variable.
+	 * @param cu    The compilation unit.
+	 * @param lVar  The just-scanned local variable.
 	 * @param block The code block the variable is in.
-	 * @param m The method the (possibly nested) code block <code>block</code> is in, or
-	 *            <code>null</code> for none.
+	 * @param m     The method the (possibly nested) code block <code>block</code>
+	 *              is in, or <code>null</code> for none.
 	 */
 	private void checkForDuplicateLocalVarNames(CompilationUnit cu, Token lVar, CodeBlock block, Method m) {
-		
+
 		String name = lVar.getLexeme();
 		boolean found = false;
-		
+
 		// See if a local variable defined previously in this block has the
 		// same name.
 		for (int i = 0; i < block.getLocalVarCount(); i++) {
@@ -85,16 +86,16 @@ public class ASTFactory implements TokenTypes {
 				break;
 			}
 		}
-		
+
 		// If not...
 		if (!found) {
-			
+
 			// If this was a nested code block, check previously-defined
 			// variables in the parent block.
 			if (block.getParent() != null) {
 				checkForDuplicateLocalVarNames(cu, lVar, block.getParent(), m);
 			}
-			
+
 			// If this was the highest-level code block, if we're in the body
 			// of a method, check the method's parameters.
 			else if (m != null) {
@@ -106,11 +107,11 @@ public class ASTFactory implements TokenTypes {
 					}
 				}
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	/**
 	 * Assumes <tt>t</tt> is the actual '<tt>@foobar</tt>' annotation token.
 	 *
@@ -120,54 +121,56 @@ public class ASTFactory implements TokenTypes {
 	 * @throws IOException
 	 */
 	private Annotation _getAnnotation(CompilationUnit cu, Scanner s) throws IOException {
-		
+
 		s.yylexNonNull(ANNOTATION_START, "Annotation expected");
 		Type type = _getType(cu, s);
-		
+
 		if ("Deprecated".equals(type.toString())) {
 			nextMemberDeprecated = true;
 		}
-		
+
 		if (s.yyPeekCheckType() == SEPARATOR_LPAREN) {
 			s.yylex();
 			// TODO: Read rest of Annotation stuff
 			s.eatThroughNextSkippingBlocks(SEPARATOR_RPAREN);
 		}
-		
+
 		Annotation a = new Annotation(type);
 		return a;
-		
+
 	}
-	
-	private CodeBlock _getBlock(CompilationUnit cu, CodeBlock parent, Method m, Scanner s, boolean isStatic) throws IOException {
+
+	private CodeBlock _getBlock(CompilationUnit cu, CodeBlock parent, Method m, Scanner s, boolean isStatic)
+			throws IOException {
 		return _getBlock(cu, parent, m, s, isStatic, 1);
 	}
-	
+
 	/**
 	 * Parses a block of code. This should not be called.
 	 *
-	 * @param parent The parent code block, or <code>null</code> if none (i.e. this is the body of a
-	 *            method, a static initializer block, etc.).
-	 * @param m The method containing this block, or <code>null</code> if this block is not part of
-	 *            a method.
-	 * @param s The scanner.
+	 * @param parent   The parent code block, or <code>null</code> if none (i.e.
+	 *                 this is the body of a method, a static initializer block,
+	 *                 etc.).
+	 * @param m        The method containing this block, or <code>null</code> if
+	 *                 this block is not part of a method.
+	 * @param s        The scanner.
 	 * @param isStatic Whether this is a static code block.
-	 * @param depth The nested depth of this code block.
+	 * @param depth    The nested depth of this code block.
 	 */
-	private CodeBlock _getBlock(CompilationUnit cu, CodeBlock parent, Method m, Scanner s, boolean isStatic, int depth) throws IOException {
-		
+	private CodeBlock _getBlock(CompilationUnit cu, CodeBlock parent, Method m, Scanner s, boolean isStatic, int depth)
+			throws IOException {
+
 		log("Entering _getBlock() (" + depth + ")");
-		
+
 		// TODO: Implement me to get variable declarations.
-		
+
 		Token t = s.yylexNonNull(SEPARATOR_LBRACE, "'{' expected");
 		CodeBlock block = new CodeBlock(isStatic, s.createOffset(t.getOffset()));
 		block.setParent(parent);
 		boolean atStatementStart = true;
-		
-		OUTER:
-		while (true) {
-			
+
+		OUTER: while (true) {
+
 			// Don't bail if they have unmatched parens (for example), just
 			// return the current status of the block.
 			// t = s.yylexNonNull("Unexpected end of input");
@@ -176,23 +179,23 @@ public class ASTFactory implements TokenTypes {
 				block.setDeclarationEndOffset(s.createOffset(s.getOffset()));
 				return block;
 			}
-			
+
 			int type = t.getType();
 			boolean isFinal = false;
-			
+
 			switch (type) {
-			
+
 			case SEPARATOR_LBRACE:
 				s.yyPushback(t);
 				CodeBlock child = _getBlock(cu, block, m, s, isStatic, depth + 1);
 				block.add(child);
 				atStatementStart = true;
 				break;
-			
+
 			case SEPARATOR_RBRACE:
 				block.setDeclarationEndOffset(s.createOffset(t.getOffset()));
 				break OUTER;
-			
+
 			case KEYWORD_TRY:
 				t = s.yyPeekNonNull(SEPARATOR_LBRACE, SEPARATOR_LPAREN, "'{' or '(' expected");
 				if (t.getType() == SEPARATOR_LPAREN) { // Auto-closeable stuff
@@ -238,7 +241,7 @@ public class ASTFactory implements TokenTypes {
 					block.add(catchBlock);
 				}
 				break;
-			
+
 			case KEYWORD_FOR:
 				// TODO: Get local var (e.g. "int i", "Iterator i", etc.)
 				// Fall through
@@ -262,7 +265,7 @@ public class ASTFactory implements TokenTypes {
 					atStatementStart = true;
 				}
 				break;
-			
+
 			// NOTE: The code below is supposed to try to parse code blocks and identify
 			// variable declarations. This does work somewhat, but the problem is that
 			// our parsing of type parameters isn't good enough, and lines like:
@@ -278,7 +281,7 @@ public class ASTFactory implements TokenTypes {
 				isFinal = true;
 				t = s.yylexNonNull("Unexpected end of file");
 				// Fall through
-				
+
 			default:
 				if (t.isType(SEPARATOR_SEMICOLON)) {
 					atStatementStart = true;
@@ -296,7 +299,8 @@ public class ASTFactory implements TokenTypes {
 						break;
 					}
 					if (s.yyPeekCheckType() == IDENTIFIER) {
-						while ((t = s.yylexNonNull(IDENTIFIER, "Variable name expected (type==" + varType.toString() + ")")) != null) {
+						while ((t = s.yylexNonNull(IDENTIFIER,
+								"Variable name expected (type==" + varType.toString() + ")")) != null) {
 							int arrayDepth = s.skipBracketPairs();
 							varType.incrementBracketPairCount(arrayDepth);
 							String varDec = varType.toString() + " " + t.getLexeme();
@@ -310,7 +314,8 @@ public class ASTFactory implements TokenTypes {
 							// A "valid" nextType would be '=', ',' or ';'.
 							// If it's an '=', skip past the assignment.
 							if (nextType == OPERATOR_EQUALS) {
-								Token temp = s.eatThroughNextSkippingBlocksAndStuffInParens(SEPARATOR_COMMA, SEPARATOR_SEMICOLON);
+								Token temp = s.eatThroughNextSkippingBlocksAndStuffInParens(SEPARATOR_COMMA,
+										SEPARATOR_SEMICOLON);
 								if (temp != null) {
 									s.yyPushback(temp);
 								}
@@ -330,32 +335,32 @@ public class ASTFactory implements TokenTypes {
 					atStatementStart = false;
 				}
 				break;
-			
+
 			}
-			
+
 		}
-		
+
 		log("Exiting _getBlock() (" + depth + ")");
 		return block;
-		
+
 	}
-	
+
 	private void _getClassBody(CompilationUnit cu, Scanner s, NormalClassDeclaration classDec) throws IOException {
-		
+
 		log("Entering _getClassBody");
-		
+
 		Token t = s.yylexNonNull(SEPARATOR_LBRACE, "'{' expected");
 		classDec.setBodyStartOffset(s.createOffset(t.getOffset()));
-		
+
 		t = s.yylexNonNull("ClassBody expected");
-		
+
 		while (t.getType() != SEPARATOR_RBRACE) {
-			
+
 			switch (t.getType()) {
-			
+
 			case SEPARATOR_SEMICOLON:
 				break; // Do nothing
-				
+
 			case KEYWORD_STATIC:
 				Token t2 = s.yyPeekNonNull("'{' or modifier expected");
 				if (t2.isType(SEPARATOR_LBRACE)) {
@@ -368,21 +373,21 @@ public class ASTFactory implements TokenTypes {
 					_getMemberDecl(cu, s, classDec, modList);
 				}
 				break;
-			
+
 			case SEPARATOR_LBRACE:
 				s.yyPushback(t);
 				CodeBlock block = _getBlock(cu, null, null, s, false);
 				classDec.addMember(block);
 				break;
-			
+
 			default:
 				s.yyPushback(t);
 				Modifiers modList = _getModifierList(cu, s);
 				_getMemberDecl(cu, s, classDec, modList);
 				break;
-			
+
 			}
-			
+
 			try {
 				t = s.yylexNonNull("'}' expected (one)");
 				classDec.setBodyEndOffset(s.createOffset(t.getOffset()));
@@ -394,43 +399,44 @@ public class ASTFactory implements TokenTypes {
 				cu.addParserNotice(pn);
 				break; // No more content in file
 			}
-			
+
 		}
-		
+
 		log("Exiting _getClassBody");
-		
+
 	}
-	
-	private TypeDeclaration _getClassOrInterfaceDeclaration(CompilationUnit cu, Scanner s, TypeDeclarationContainer addTo, Modifiers modList) throws IOException {
-		
+
+	private TypeDeclaration _getClassOrInterfaceDeclaration(CompilationUnit cu, Scanner s,
+			TypeDeclarationContainer addTo, Modifiers modList) throws IOException {
+
 		log("Entering _getClassOrInterfaceDeclaration");
 		Token t = s.yyPeekNonNull("class, enum, interface or @interface expected");
-		
+
 		if (modList == null) { // Not yet read in
 			modList = _getModifierList(cu, s);
 		}
 		t = s.yylexNonNull("class, enum, interface or @interface expected");
-		
+
 		TypeDeclaration td = null;
-		
+
 		switch (t.getType()) {
-		
+
 		case KEYWORD_CLASS:
 			td = _getNormalClassDeclaration(cu, s, addTo);
 			break;
-		
+
 		case KEYWORD_ENUM:
 			td = _getEnumDeclaration(cu, s, addTo);
 			break;
-		
+
 		case KEYWORD_INTERFACE:
 			td = _getNormalInterfaceDeclaration(cu, s, addTo);
 			break;
-		
+
 		case ANNOTATION_START:
 			// TODO: AnnotationTypeDeclaration, implement me.
 			throw new IOException("AnnotationTypeDeclaration not implemented");
-			
+
 		default:
 			ParserNotice notice = new ParserNotice(t, "class, interface or enum expected");
 			cu.addParserNotice(notice);
@@ -438,30 +444,30 @@ public class ASTFactory implements TokenTypes {
 			// Assume we're a class to get more problems.
 			td = _getNormalClassDeclaration(cu, s, addTo);
 			break;
-		
+
 		}
-		
+
 		((AbstractTypeDeclarationNode) td).setModifiers(modList);
 		((AbstractTypeDeclarationNode) td).setDeprecated(checkDeprecated());
-		
+
 		log("Exiting _getClassOrInterfaceDeclaration");
 		return td;
-		
+
 	}
-	
+
 	/**
-	 * Reads tokens for a Java source file from the specified lexer and returns the structure of the
-	 * source as an AST.
+	 * Reads tokens for a Java source file from the specified lexer and returns the
+	 * structure of the source as an AST.
 	 *
 	 * @param scanner The scanner to read from.
 	 * @return The root node of the AST.
 	 */
 	public CompilationUnit getCompilationUnit(String name, Scanner scanner) throws IOException {
-		
+
 		CompilationUnit cu = new CompilationUnit(name);
-		
+
 		try {
-			
+
 			// Get annotations.
 			List<Annotation> initialAnnotations = null; // Usually none
 			while (scanner.yyPeekCheckType() == ANNOTATION_START) {
@@ -470,7 +476,7 @@ public class ASTFactory implements TokenTypes {
 				}
 				initialAnnotations.add(_getAnnotation(cu, scanner));
 			}
-			
+
 			// Get possible "package" line.
 			Token t = scanner.yylex();
 			if (t == null) {
@@ -489,22 +495,21 @@ public class ASTFactory implements TokenTypes {
 				scanner.yylexNonNull(SEPARATOR_SEMICOLON, "Semicolon expected");
 				t = scanner.yylex();
 			}
-			
+
 			// Go through any import statements.
-			OUTER:
-			while (t != null && t.isType(KEYWORD_IMPORT)) {
-				
+			OUTER: while (t != null && t.isType(KEYWORD_IMPORT)) {
+
 				boolean isStatic = false;
 				StringBuilder buf = new StringBuilder();
 				t = scanner.yylexNonNull("Incomplete import statement");
 				Token temp = null;
 				int offs = 0;
-				
+
 				if (t.isType(KEYWORD_STATIC)) {
 					isStatic = true;
 					t = scanner.yylexNonNull("Incomplete import statement");
 				}
-				
+
 				if (!t.isIdentifier()) {
 					cu.addParserNotice(t, "Expected identifier, found: \"" + t.getLexeme() + "\"");
 					scanner.eatThroughNextSkippingBlocks(SEPARATOR_SEMICOLON);
@@ -523,7 +528,8 @@ public class ASTFactory implements TokenTypes {
 							temp = scanner.yylex(); // We're bailing, so scan here
 							break;
 						}
-						temp = scanner.yylexNonNull(KEYWORD_IMPORT, SEPARATOR_DOT, SEPARATOR_SEMICOLON, "'.' or ';' expected");
+						temp = scanner.yylexNonNull(KEYWORD_IMPORT, SEPARATOR_DOT, SEPARATOR_SEMICOLON,
+								"'.' or ';' expected");
 						if (temp.isType(KEYWORD_IMPORT)) {
 							cu.addParserNotice(temp, "';' expected");
 							t = temp;
@@ -532,22 +538,22 @@ public class ASTFactory implements TokenTypes {
 					}
 					t = temp;
 				}
-				
+
 				if (temp == null || !t.isType(SEPARATOR_SEMICOLON)) {
 					throw new IOException("Semicolon expected, found " + t);
 				}
-				
+
 				ImportDeclaration id = new ImportDeclaration(scanner, offs, buf.toString(), isStatic);
 				cu.addImportDeclaration(id);
 				t = scanner.yylex();
-				
+
 			}
-			
+
 			// class files aren't required to have TypeDeclarations.
 			if (t == null) {
 				return cu;
 			}
-			
+
 			scanner.yyPushback(t);
 			// TypeDeclaration td = null;
 			while ((/* td = */_getTypeDeclaration(cu, scanner)) != null) {
@@ -558,7 +564,7 @@ public class ASTFactory implements TokenTypes {
 				// cu.addTypeDeclaration(td);
 				// Done when the type declarations are created.
 			}
-			
+
 		} catch (IOException ioe) {
 			if (!(ioe instanceof EOFException)) { // Not just "end of file"
 				ioe.printStackTrace();
@@ -571,31 +577,33 @@ public class ASTFactory implements TokenTypes {
 				notice = new ParserNotice(lastTokenLexed, ioe.getMessage());
 			}
 			cu.addParserNotice(notice);
-			// throw ioe; // Un-comment me to get the AnnotationTypeDeclaration error count in
+			// throw ioe; // Un-comment me to get the AnnotationTypeDeclaration error count
+			// in
 			// "Main" test
 		}
-		
+
 		return cu;
-		
+
 	}
-	
+
 	private EnumBody _getEnumBody(CompilationUnit cu, Scanner s, EnumDeclaration enumDec) throws IOException {
 		// TODO: Implement me
 		CodeBlock block = _getBlock(cu, null, null, s, false);
 		enumDec.setBodyEndOffset(s.createOffset(block.getNameEndOffset()));
 		return null;
 	}
-	
-	private EnumDeclaration _getEnumDeclaration(CompilationUnit cu, Scanner s, TypeDeclarationContainer addTo) throws IOException {
-		
+
+	private EnumDeclaration _getEnumDeclaration(CompilationUnit cu, Scanner s, TypeDeclarationContainer addTo)
+			throws IOException {
+
 		Token t = s.yylexNonNull(IDENTIFIER, "Identifier expected");
 		String enumName = t.getLexeme();
 		EnumDeclaration enumDec = new EnumDeclaration(s, t.getOffset(), enumName);
 		enumDec.setPackage(cu.getPackage());
 		addTo.addTypeDeclaration(enumDec);
-		
+
 		t = s.yylexNonNull("implements or '{' expected");
-		
+
 		if (t.isType(KEYWORD_IMPLEMENTS)) {
 			List<Type> implemented = new ArrayList<Type>(1); // Usually small
 			do {
@@ -609,25 +617,25 @@ public class ASTFactory implements TokenTypes {
 		} else if (t.isType(SEPARATOR_LBRACE)) {
 			s.yyPushback(t);
 		}
-		
+
 		_getEnumBody(cu, s, enumDec);
 		// EnumBody enumBody = _getEnumBody(cu, s);
 		// enumDec.setEnumBody(enumBody);
-		
+
 		return enumDec;
-		
+
 	}
-	
+
 	private List<FormalParameter> _getFormalParameters(CompilationUnit cu, List<Token> tokenList) throws IOException {
-		
+
 		List<FormalParameter> list = new ArrayList<FormalParameter>(0);
-		
+
 		Scanner s = new Scanner(tokenList);
 		Token t = s.yylex();
 		if (t == null) { // No parameters
 			return list;
 		}
-		
+
 		while (true) {
 			boolean isFinal = false;
 			if (t.isType(KEYWORD_FINAL)) {
@@ -660,41 +668,41 @@ public class ASTFactory implements TokenTypes {
 			}
 			t = s.yylexNonNull("Parameter or ')' expected");
 		}
-		
+
 		return list;
-		
+
 	}
-	
+
 	private void _getInterfaceBody(CompilationUnit cu, Scanner s, NormalInterfaceDeclaration iDec) throws IOException {
-		
+
 		log("Entering _getInterfaceBody");
-		
+
 		Token t = s.yylexNonNull(SEPARATOR_LBRACE, "'{' expected");
 		iDec.setBodyStartOffset(s.createOffset(t.getOffset()));
-		
+
 		t = s.yylexNonNull("InterfaceBody expected");
-		
+
 		while (t.getType() != SEPARATOR_RBRACE) {
-			
+
 			switch (t.getType()) {
-			
+
 			case SEPARATOR_SEMICOLON:
 				break; // Do nothing
-				
+
 			case SEPARATOR_LBRACE:
 				s.yyPushback(t);
 				// TODO: What is this?
 				_getBlock(cu, null, null, s, false);
 				break;
-			
+
 			default:
 				s.yyPushback(t);
 				Modifiers modList = _getModifierList(cu, s);
 				_getInterfaceMemberDecl(cu, s, iDec, modList);
 				break;
-			
+
 			}
-			
+
 			try {
 				t = s.yylexNonNull("'}' expected (one)");
 				iDec.setBodyEndOffset(s.createOffset(t.getOffset()));
@@ -705,21 +713,23 @@ public class ASTFactory implements TokenTypes {
 				ParserNotice pn = new ParserNotice(line, col, 1, "'}' expected (two)");
 				cu.addParserNotice(pn);
 			}
-			
+
 		}
-		
+
 		log("Exiting _getInterfaceBody");
-		
+
 	}
-	
+
 	/*
-	 * InterfaceMemberDecl: InterfaceMethodOrFieldDecl InterfaceGenericMethodDecl void Identifier
-	 * VoidInterfaceMethodDeclaratorRest InterfaceDeclaration ClassDeclaration
+	 * InterfaceMemberDecl: InterfaceMethodOrFieldDecl InterfaceGenericMethodDecl
+	 * void Identifier VoidInterfaceMethodDeclaratorRest InterfaceDeclaration
+	 * ClassDeclaration
 	 */
-	private void _getInterfaceMemberDecl(CompilationUnit cu, Scanner s, NormalInterfaceDeclaration iDec, Modifiers modList) throws IOException {
-		
+	private void _getInterfaceMemberDecl(CompilationUnit cu, Scanner s, NormalInterfaceDeclaration iDec,
+			Modifiers modList) throws IOException {
+
 		log("Entering _getInterfaceMemberDecl");
-		
+
 		List<Token> tokenList = new ArrayList<Token>(1);
 		List<Token> methodNameAndTypeTokenList = null;
 		List<Token> methodParamsList = null;
@@ -728,12 +738,11 @@ public class ASTFactory implements TokenTypes {
 		boolean blockDecl = false;
 		boolean varDecl = false;
 		Token t;
-		
-		OUTER:
-		while (true) {
-			
+
+		OUTER: while (true) {
+
 			t = s.yylexNonNull("Unexpected end of input");
-			
+
 			switch (t.getType()) {
 			case SEPARATOR_LPAREN:
 				methodNameAndTypeTokenList = tokenList;
@@ -755,9 +764,9 @@ public class ASTFactory implements TokenTypes {
 				tokenList.add(t);
 				break;
 			}
-			
+
 		}
-		
+
 		if (varDecl) {
 			log("*** Variable declaration:");
 			Scanner tempScanner = new Scanner(tokenList);
@@ -828,20 +837,21 @@ public class ASTFactory implements TokenTypes {
 				/* TypeDeclaration type = */_getClassOrInterfaceDeclaration(cu, s, iDec, modList);
 			}
 		}
-		
+
 		log("Exiting _getInterfaceMemberDecl");
-		
+
 	}
-	
+
 	/*
 	 * MemberDecl: GenericMethodOrConstructorDecl MethodOrFieldDecl void Identifier
-	 * VoidMethodDeclaratorRest Identifier ConstructorDeclaratorRest InterfaceDeclaration
-	 * ClassDeclaration
+	 * VoidMethodDeclaratorRest Identifier ConstructorDeclaratorRest
+	 * InterfaceDeclaration ClassDeclaration
 	 */
-	private void _getMemberDecl(CompilationUnit cu, Scanner s, NormalClassDeclaration classDec, Modifiers modList) throws IOException {
-		
+	private void _getMemberDecl(CompilationUnit cu, Scanner s, NormalClassDeclaration classDec, Modifiers modList)
+			throws IOException {
+
 		log("Entering _getMemberDecl");
-		
+
 		List<Token> tokenList = new ArrayList<Token>(1);
 		List<Token> methodNameAndTypeTokenList = null;
 		List<Token> methodParamsList = null;
@@ -850,12 +860,11 @@ public class ASTFactory implements TokenTypes {
 		boolean blockDecl = false;
 		boolean varDecl = false;
 		Token t;
-		
-		OUTER:
-		while (true) {
-			
+
+		OUTER: while (true) {
+
 			t = s.yylexNonNull("Unexpected end of input");
-			
+
 			switch (t.getType()) {
 			case SEPARATOR_LPAREN:
 				methodNameAndTypeTokenList = tokenList;
@@ -877,9 +886,9 @@ public class ASTFactory implements TokenTypes {
 				tokenList.add(t);
 				break;
 			}
-			
+
 		}
-		
+
 		if (varDecl) {
 			log("*** Variable declaration:");
 			Scanner tempScanner = new Scanner(tokenList);
@@ -958,18 +967,18 @@ public class ASTFactory implements TokenTypes {
 				/* TypeDeclaration type = */_getClassOrInterfaceDeclaration(cu, s, classDec, modList);
 			}
 		}
-		
+
 		log("Exiting _getMemberDecl (next== " + s.yyPeek() + ")");
-		
+
 	}
-	
+
 	private Modifiers _getModifierList(CompilationUnit cu, Scanner s) throws IOException {
-		
+
 		Modifiers modList = null;
 		Token t = s.yylexNonNull("Unexpected end of input");
-		
+
 		while (true) {
-			
+
 			int modifier = isModifier(t);
 			if (modifier != -1) {
 				if (modList == null) {
@@ -993,18 +1002,19 @@ public class ASTFactory implements TokenTypes {
 				s.yyPushback(t);
 				return modList;
 			}
-			
+
 			t = s.yylexNonNull("Unexpected end of input");
-			
+
 		}
-		
+
 	}
-	
-	private NormalClassDeclaration _getNormalClassDeclaration(CompilationUnit cu, Scanner s, TypeDeclarationContainer addTo) throws IOException {
-		
+
+	private NormalClassDeclaration _getNormalClassDeclaration(CompilationUnit cu, Scanner s,
+			TypeDeclarationContainer addTo) throws IOException {
+
 		log("Entering _getNormalClassDeclaration");
 		String className = null;
-		
+
 		Token t = s.yylexNonNull("Identifier expected");
 		if (t.isType(IDENTIFIER)) {
 			className = t.getLexeme();
@@ -1013,11 +1023,11 @@ public class ASTFactory implements TokenTypes {
 			cu.addParserNotice(new ParserNotice(t, "Class name expected"));
 			s.eatUntilNext(KEYWORD_EXTENDS, KEYWORD_IMPLEMENTS, SEPARATOR_LBRACE);
 		}
-		
+
 		NormalClassDeclaration classDec = new NormalClassDeclaration(s, t.getOffset(), className);
 		classDec.setPackage(cu.getPackage());
 		addTo.addTypeDeclaration(classDec);
-		
+
 		t = s.yylexNonNull("TypeParameters, extends, implements or '{' expected");
 		if (t.isType(OPERATOR_LT)) {
 			s.yyPushback(t);
@@ -1025,12 +1035,12 @@ public class ASTFactory implements TokenTypes {
 			classDec.setTypeParameters(typeParams);
 			t = s.yylexNonNull("extends, implements or '{' expected");
 		}
-		
+
 		if (t.isType(KEYWORD_EXTENDS)) {
 			classDec.setExtendedType(_getType(cu, s));
 			t = s.yylexNonNull("implements or '{' expected");
 		}
-		
+
 		if (t.isType(KEYWORD_IMPLEMENTS)) {
 			do {
 				classDec.addImplemented(_getType(cu, s));
@@ -1042,18 +1052,19 @@ public class ASTFactory implements TokenTypes {
 		} else if (t.isType(SEPARATOR_LBRACE)) {
 			s.yyPushback(t);
 		}
-		
+
 		_getClassBody(cu, s, classDec);
-		
+
 		log("Exiting _getNormalClassDeclaration");
 		return classDec;
-		
+
 	}
-	
-	private NormalInterfaceDeclaration _getNormalInterfaceDeclaration(CompilationUnit cu, Scanner s, TypeDeclarationContainer addTo) throws IOException {
-		
+
+	private NormalInterfaceDeclaration _getNormalInterfaceDeclaration(CompilationUnit cu, Scanner s,
+			TypeDeclarationContainer addTo) throws IOException {
+
 		String iName = null;
-		
+
 		Token t = s.yylexNonNull("Identifier expected");
 		if (t.isType(IDENTIFIER)) {
 			iName = t.getLexeme();
@@ -1062,18 +1073,18 @@ public class ASTFactory implements TokenTypes {
 			cu.addParserNotice(new ParserNotice(t, "Interface name expected"));
 			s.eatUntilNext(KEYWORD_EXTENDS, SEPARATOR_LBRACE);
 		}
-		
+
 		NormalInterfaceDeclaration iDec = new NormalInterfaceDeclaration(s, t.getOffset(), iName);
 		iDec.setPackage(cu.getPackage());
 		addTo.addTypeDeclaration(iDec);
-		
+
 		t = s.yylexNonNull("TypeParameters, extends or '{' expected");
 		if (t.isType(OPERATOR_LT)) {
 			s.yyPushback(t);
 			_getTypeParameters(cu, s);
 			t = s.yylexNonNull("Interface body expected");
 		}
-		
+
 		if (t.isType(KEYWORD_EXTENDS)) {
 			do {
 				iDec.addExtended(_getType(cu, s));
@@ -1085,18 +1096,18 @@ public class ASTFactory implements TokenTypes {
 		} else if (t.isType(SEPARATOR_LBRACE)) {
 			s.yyPushback(t);
 		}
-		
+
 		_getInterfaceBody(cu, s, iDec);
-		
+
 		return iDec;
-		
+
 	}
-	
+
 	private String getQualifiedIdentifier(Scanner scanner) throws IOException {
-		
+
 		Token t = null;
 		StringBuilder sb = new StringBuilder();
-		
+
 		while ((t = scanner.yylex()).isIdentifier()) {
 			sb.append(t.getLexeme());
 			t = scanner.yylex();
@@ -1106,46 +1117,46 @@ public class ASTFactory implements TokenTypes {
 				break;
 			}
 		}
-		
+
 		// QualifiedIdentifier has ended.
 		scanner.yyPushback(t);
-		
+
 		return sb.toString();
-		
+
 	}
-	
+
 	private List<String> getThrownTypeNames(CompilationUnit cu, Scanner s) throws IOException {
-		
+
 		if (s.yyPeekCheckType() != KEYWORD_THROWS) {
 			return null;
 		}
 		s.yylex();
-		
+
 		List<String> list = new ArrayList<String>(1); // Usually small
-		
+
 		list.add(getQualifiedIdentifier(s));
 		while (s.yyPeekCheckType() == SEPARATOR_COMMA) {
 			s.yylex();
 			list.add(getQualifiedIdentifier(s));
 		}
-		
+
 		return list;
-		
+
 	}
-	
+
 	// For "backwards compatibility," don't know if "false" is usually
 	// correct or not
 	private Type _getType(CompilationUnit cu, Scanner s) throws IOException {
 		return _getType(cu, s, false);
 	}
-	
+
 	private Type _getType(CompilationUnit cu, Scanner s, boolean pushbackOnUnexpected) throws IOException {
-		
+
 		log("Entering _getType()");
 		Type type = new Type();
-		
+
 		Token t = s.yylexNonNull("Type expected");
-		
+
 		// TODO: "void" checking is NOT in the JLS for type! Remove me
 		if (t.isType(KEYWORD_VOID)) {
 			type.addIdentifier(t.getLexeme(), null);
@@ -1158,9 +1169,8 @@ public class ASTFactory implements TokenTypes {
 			log("Exiting _getType(): " + type.toString());
 			return type;
 		}
-		
-		OUTER:
-		while (true) {
+
+		OUTER: while (true) {
 			switch (t.getType()) {
 			case IDENTIFIER:
 				List<TypeArgument> typeArgs = null;
@@ -1187,20 +1197,20 @@ public class ASTFactory implements TokenTypes {
 				throw new IOException("Expected identifier, found: " + t);
 			}
 		}
-		
+
 		log("Exiting _getType(): " + type.toString());
 		return type;
-		
+
 	}
-	
+
 	private TypeArgument _getTypeArgument(CompilationUnit cu, Scanner s) throws IOException {
-		
+
 		log("Entering _getTypeArgument()");
-		
+
 		TypeArgument typeArg = null;
-		
+
 		Token t = s.yyPeekNonNull("Type or '?' expected");
-		
+
 		if (t.isType(OPERATOR_QUESTION)) {
 			s.yylex(); // Pop the '?' off the stream.
 			t = s.yyPeek();
@@ -1227,22 +1237,22 @@ public class ASTFactory implements TokenTypes {
 			Type type = _getType(cu, s);
 			typeArg = new TypeArgument(type);
 		}
-		
+
 		log("Exiting _getTypeArgument() : " + typeArg);
 		return typeArg;
-		
+
 	}
-	
+
 	private List<TypeArgument> _getTypeArguments(CompilationUnit cu, Scanner s) throws IOException {
-		
+
 		s.increaseTypeArgumentsLevel();
 		log("Entering _getTypeArguments() (" + s.getTypeArgumentsLevel() + ")");
-		
+
 		s.markResetPosition();
 		s.yylexNonNull(OPERATOR_LT, "'<' expected");
-		
+
 		List<TypeArgument> typeArgs = new ArrayList<TypeArgument>(1);
-		
+
 		Token t = null;
 		do {
 			typeArgs.add(_getTypeArgument(cu, s));
@@ -1251,31 +1261,32 @@ public class ASTFactory implements TokenTypes {
 				// Assume we're in a code block, and are simply at the (much
 				// more common) case of e.g. "if (i < 7) ...".
 				s.resetToLastMarkedPosition();
-				log("Exiting _getTypeArguments() (" + s.getTypeArgumentsLevel() + ") - NOT TYPE ARGUMENTS (" + t.getLexeme() + ")");
+				log("Exiting _getTypeArguments() (" + s.getTypeArgumentsLevel() + ") - NOT TYPE ARGUMENTS ("
+						+ t.getLexeme() + ")");
 				s.decreaseTypeArgumentsLevel();
 				return null;
 			}
 		} while (t.isType(SEPARATOR_COMMA));
-		
+
 		log("Exiting _getTypeArguments() (" + s.getTypeArgumentsLevel() + ")");
 		s.decreaseTypeArgumentsLevel();
-		
+
 		s.clearResetPosition();
 		return typeArgs;
-		
+
 	}
-	
+
 	private TypeDeclaration _getTypeDeclaration(CompilationUnit cu, Scanner s) throws IOException {
-		
+
 		/*
 		 * TypeDeclaration: ClassOrInterfaceDeclaration ';'
 		 */
-		
+
 		Token t = s.yylex();
 		if (t == null) {
 			return null; // End of source file.
 		}
-		
+
 		// Skip any semicolons.
 		while (t.isType(SEPARATOR_SEMICOLON)) {
 			t = s.yylex();
@@ -1283,58 +1294,58 @@ public class ASTFactory implements TokenTypes {
 				return null; // End of source file
 			}
 		}
-		
+
 		s.yyPushback(t); // Probably some modifier, e.g. "public"
-		
+
 		String docComment = s.getLastDocComment();
 		TypeDeclaration td = _getClassOrInterfaceDeclaration(cu, s, cu, null);
 		td.setDocComment(docComment); // May be null
 		return td;
-		
+
 	}
-	
+
 	private TypeParameter _getTypeParameter(CompilationUnit cu, Scanner s) throws IOException {
-		
+
 		log("Entering _getTypeParameter()");
-		
+
 		Token identifier = s.yylexNonNull(IDENTIFIER, "Identifier expected");
 		TypeParameter typeParam = new TypeParameter(identifier);
-		
+
 		if (s.yyPeekCheckType() == KEYWORD_EXTENDS) {
 			do {
 				s.yylex(); // Pop off "extends" or "&".
 				typeParam.addBound(_getType(cu, s));
 			} while (s.yyPeekCheckType() == OPERATOR_BITWISE_AND);
 		}
-		
+
 		log("Exiting _getTypeParameter(): " + typeParam.getName());
 		return typeParam;
-		
+
 	}
-	
+
 	private List<TypeParameter> _getTypeParameters(CompilationUnit cu, Scanner s) throws IOException {
-		
+
 		s.increaseTypeArgumentsLevel();
 		log("Entering _getTypeParameters() (" + s.getTypeArgumentsLevel() + ")");
-		
+
 		s.markResetPosition();
 		Token t = s.yylexNonNull(OPERATOR_LT, "TypeParameters expected");
-		
+
 		List<TypeParameter> typeParams = new ArrayList<TypeParameter>(1);
-		
+
 		do {
 			TypeParameter typeParam = _getTypeParameter(cu, s);
 			typeParams.add(typeParam);
 			t = s.yylexNonNull(SEPARATOR_COMMA, OPERATOR_GT, "',' or '>' expected");
 		} while (t.isType(SEPARATOR_COMMA));
-		
+
 		log("Exiting _getTypeParameters() (" + s.getTypeArgumentsLevel() + ")");
 		s.decreaseTypeArgumentsLevel();
-		
+
 		return typeParams;
-		
+
 	}
-	
+
 	private int isModifier(Token t) {
 		switch (t.getType()) {
 		case KEYWORD_PUBLIC:
@@ -1353,11 +1364,11 @@ public class ASTFactory implements TokenTypes {
 			return -1;
 		}
 	}
-	
+
 	private static final void log(String msg) {
 		if (DEBUG) {
 			System.out.println(msg);
 		}
 	}
-	
+
 }

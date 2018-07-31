@@ -22,14 +22,14 @@ import org.fife.rsta.ac.java.rjc.lang.Modifiers;
  * @version 1.0
  */
 class TypeDeclarationTreeNode extends JavaTreeNode {
-	
+
 	public TypeDeclarationTreeNode(TypeDeclaration typeDec) {
-		
+
 		super(typeDec);
 		// System.out.println("... " + typeDec);
 		String iconName = null;
 		int priority = PRIORITY_TYPE;
-		
+
 		if (typeDec instanceof NormalClassDeclaration) {
 			NormalClassDeclaration ncd = (NormalClassDeclaration) typeDec;
 			if (ncd.getModifiers() != null) {
@@ -43,7 +43,7 @@ class TypeDeclarationTreeNode extends JavaTreeNode {
 					iconName = IconFactory.INNER_CLASS_DEFAULT_ICON;
 				}
 			} else {
-				// System.out.println("...  " + value);
+				// System.out.println("... " + value);
 				iconName = IconFactory.DEFAULT_CLASS_ICON;
 			}
 		} else if (typeDec instanceof NormalInterfaceDeclaration) {
@@ -67,14 +67,14 @@ class TypeDeclarationTreeNode extends JavaTreeNode {
 					iconName = IconFactory.ENUM_DEFAULT_ICON;
 				}
 			} else {
-				// System.out.println("...  " + value);
+				// System.out.println("... " + value);
 				iconName = IconFactory.ENUM_DEFAULT_ICON;
 			}
 		}
-		
+
 		IconFactory fact = IconFactory.get();
 		Icon mainIcon = fact.getIcon(iconName);
-		
+
 		if (mainIcon == null) { // Unknown type ???
 			System.out.println("*** " + typeDec);
 		} else {
@@ -94,16 +94,16 @@ class TypeDeclarationTreeNode extends JavaTreeNode {
 			}
 			setIcon(di);
 		}
-		
+
 		setSortPriority(priority);
-		
+
 	}
-	
+
 	@Override
 	public String getText(boolean selected) {
 		TypeDeclaration typeDec = (TypeDeclaration) getUserObject();
 		// System.out.println("... " + typeDec);
 		return typeDec != null ? typeDec.getName() : null;
 	}
-	
+
 }

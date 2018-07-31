@@ -16,23 +16,23 @@ import org.xml.sax.EntityResolver;
  * @version 1.0
  */
 public class DtdValidationConfig implements ValidationConfig {
-	
+
 	private EntityResolver entityResolver;
-	
+
 	public DtdValidationConfig(EntityResolver entityResolver) {
 		this.entityResolver = entityResolver;
 	}
-	
+
 	@Override
 	public void configureParser(XmlParser parser) {
 		SAXParserFactory spf = parser.getSaxParserFactory();
 		spf.setValidating(true);
 		spf.setSchema(null);
 	}
-	
+
 	@Override
 	public void configureHandler(XmlParser.Handler handler) {
 		handler.setEntityResolver(entityResolver);
 	}
-	
+
 }

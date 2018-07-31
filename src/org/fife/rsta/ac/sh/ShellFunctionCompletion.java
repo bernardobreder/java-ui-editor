@@ -20,7 +20,7 @@ import org.fife.ui.autocomplete.FunctionCompletion;
  * @version 1.0
  */
 public class ShellFunctionCompletion extends FunctionCompletion {
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -31,13 +31,13 @@ public class ShellFunctionCompletion extends FunctionCompletion {
 	public ShellFunctionCompletion(CompletionProvider provider, String name, String returnType) {
 		super(provider, name, returnType);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String getSummary() {
-		
+
 		String summary = null;
 		if (ShellCompletionProvider.getUseLocalManPages()) {
 			summary = getSummaryFromManPage();
@@ -46,20 +46,20 @@ public class ShellFunctionCompletion extends FunctionCompletion {
 		if (summary == null) {
 			summary = super.getSummary();
 		}
-		
+
 		return summary;
-		
+
 	}
-	
+
 	/**
 	 * Gets a summary of this function from the local system's man pages.
 	 *
 	 * @return The summary.
 	 */
 	private String getSummaryFromManPage() {
-		
+
 		Process p = null;
-		
+
 		String[] cmd = { "/usr/bin/man", getName() };
 		try {
 			p = Runtime.getRuntime().exec(cmd);
@@ -67,7 +67,7 @@ public class ShellFunctionCompletion extends FunctionCompletion {
 			ioe.printStackTrace();
 			return null;
 		}
-		
+
 		// TODO: Launch waitFor() in a thread and interrupt after set time
 		OutputCollector stdout = new OutputCollector(p.getInputStream());
 		Thread t = new Thread(stdout);
@@ -80,7 +80,7 @@ public class ShellFunctionCompletion extends FunctionCompletion {
 		} catch (InterruptedException ie) {
 			ie.printStackTrace();
 		}
-		
+
 		CharSequence output = null;
 		if (rc == 0) {
 			output = stdout.getOutput();
@@ -88,11 +88,11 @@ public class ShellFunctionCompletion extends FunctionCompletion {
 				output = manToHtml(output);
 			}
 		}
-		
+
 		return output == null ? null : output.toString();
-		
+
 	}
-	
+
 	private static final StringBuffer manToHtml(CharSequence text) {
 		// text = text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 		Pattern p = Pattern.compile("(?:_\\010.)+|(?:(.)\\010\\1)+");// "(?:.\\010.)+");
@@ -119,7 +119,7 @@ public class ShellFunctionCompletion extends FunctionCompletion {
 		// System.out.println(sb.toString());
 		return sb;
 	}
-	
+
 	// Matcher.quoteReplacement() in 1.5.
 	private static String quoteReplacement(String text) {
 		if (text.indexOf('$') > -1 || text.indexOf('\\') > -1) {
@@ -135,5 +135,5 @@ public class ShellFunctionCompletion extends FunctionCompletion {
 		}
 		return text;
 	}
-	
+
 }

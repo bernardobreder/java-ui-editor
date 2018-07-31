@@ -11,18 +11,18 @@ package org.fife.ui.rsyntaxtextarea.templates;
  * @version 1.0
  */
 public abstract class AbstractCodeTemplate implements CodeTemplate {
-	
+
 	/**
 	 * The ID of this template.
 	 */
 	private String id;
-	
+
 	/**
 	 * This no-arg constructor is required for serialization purposes.
 	 */
 	public AbstractCodeTemplate() {
 	}
-	
+
 	/**
 	 * Creates a new template.
 	 *
@@ -32,7 +32,7 @@ public abstract class AbstractCodeTemplate implements CodeTemplate {
 	public AbstractCodeTemplate(String id) {
 		setID(id);
 	}
-	
+
 	/**
 	 * Creates a deep copy of this template.
 	 *
@@ -48,14 +48,15 @@ public abstract class AbstractCodeTemplate implements CodeTemplate {
 			throw new InternalError("CodeTemplate implementation not Cloneable: " + getClass().getName());
 		}
 	}
-	
+
 	/**
 	 * Compares the <code>StaticCodeTemplate</code> to another.
 	 *
 	 * @param o Another <code>StaticCodeTemplate</code> object.
-	 * @return A negative integer, zero, or a positive integer as this object is less than,
-	 *         equal-to, or greater than the passed-in object.
-	 * @throws ClassCastException If <code>o</code> is not an instance of <code>CodeTemplate</code>.
+	 * @return A negative integer, zero, or a positive integer as this object is
+	 *         less than, equal-to, or greater than the passed-in object.
+	 * @throws ClassCastException If <code>o</code> is not an instance of
+	 *                            <code>CodeTemplate</code>.
 	 */
 	@Override
 	public int compareTo(CodeTemplate o) {
@@ -64,10 +65,10 @@ public abstract class AbstractCodeTemplate implements CodeTemplate {
 		}
 		return getID().compareTo(o.getID());
 	}
-	
+
 	/**
-	 * Overridden to return "<code>true</code>" iff {@link #compareTo(CodeTemplate)} returns
-	 * <code>0</code>.
+	 * Overridden to return "<code>true</code>" iff {@link #compareTo(CodeTemplate)}
+	 * returns <code>0</code>.
 	 *
 	 * @return Whether this code template is equal to another.
 	 */
@@ -78,7 +79,7 @@ public abstract class AbstractCodeTemplate implements CodeTemplate {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Returns the ID of this code template.
 	 *
@@ -89,7 +90,7 @@ public abstract class AbstractCodeTemplate implements CodeTemplate {
 	public String getID() {
 		return id;
 	}
-	
+
 	/**
 	 * Returns the hash code for this template.
 	 *
@@ -99,7 +100,7 @@ public abstract class AbstractCodeTemplate implements CodeTemplate {
 	public int hashCode() {
 		return id.hashCode();
 	}
-	
+
 	/**
 	 * Sets the ID for this template.
 	 *
@@ -113,5 +114,5 @@ public abstract class AbstractCodeTemplate implements CodeTemplate {
 		}
 		this.id = id;
 	}
-	
+
 }

@@ -14,28 +14,28 @@ import org.fife.rsta.ac.java.rjc.lexer.Token;
  * @version 0.1
  */
 public class ParserNotice {
-	
+
 	private int line;
-	
+
 	private int column;
-	
+
 	private int length;
-	
+
 	private String message;
-	
+
 	public ParserNotice(Token t, String msg) {
 		line = t.getLine();
 		column = t.getColumn();
 		length = t.getLexeme().length();
 		message = msg;
 	}
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param line The line of the notice.
-	 * @param column The column of the notice.
-	 * @param length The length of the code the message is concerned with.
+	 * @param line    The line of the notice.
+	 * @param column  The column of the notice.
+	 * @param length  The length of the code the message is concerned with.
 	 * @param message The message.
 	 */
 	public ParserNotice(int line, int column, int length, String message) {
@@ -44,7 +44,7 @@ public class ParserNotice {
 		this.length = length;
 		this.message = message;
 	}
-	
+
 	/**
 	 * Returns the character offset into the line of the parser notice, if any.
 	 *
@@ -53,7 +53,7 @@ public class ParserNotice {
 	public int getColumn() {
 		return column;
 	}
-	
+
 	/**
 	 * Returns the length of the code the message is concerned with.
 	 *
@@ -62,7 +62,7 @@ public class ParserNotice {
 	public int getLength() {
 		return length;
 	}
-	
+
 	/**
 	 * Returns the line number the notice is about, if any.
 	 *
@@ -71,7 +71,7 @@ public class ParserNotice {
 	public int getLine() {
 		return line;
 	}
-	
+
 	/**
 	 * Returns the message from the parser.
 	 *
@@ -80,7 +80,7 @@ public class ParserNotice {
 	public String getMessage() {
 		return message;
 	}
-	
+
 	/**
 	 * Returns a string representation of this parser notice.
 	 *
@@ -90,5 +90,5 @@ public class ParserNotice {
 	public String toString() {
 		return "(" + getLine() + ", " + getColumn() + ": " + getMessage();
 	}
-	
+
 }

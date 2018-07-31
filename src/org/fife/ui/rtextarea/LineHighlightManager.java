@@ -21,11 +21,11 @@ import javax.swing.text.Position;
  * @version 1.0
  */
 class LineHighlightManager {
-	
+
 	private RTextArea textArea;
-	
+
 	private List<LineHighlightInfo> lineHighlights;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -34,11 +34,11 @@ class LineHighlightManager {
 	public LineHighlightManager(RTextArea textArea) {
 		this.textArea = textArea;
 	}
-	
+
 	/**
 	 * Highlights the specified line.
 	 *
-	 * @param line The line to highlight.
+	 * @param line  The line to highlight.
 	 * @param color The color to highlight with.
 	 * @return A tag for the highlight.
 	 * @throws BadLocationException If <code>line</code> is not a valid line number.
@@ -58,23 +58,23 @@ class LineHighlightManager {
 		repaintLine(lhi);
 		return lhi;
 	}
-	
+
 	/**
 	 * Paints any highlighted lines in the specified line range.
 	 *
 	 * @param g The graphics context.
 	 */
 	public void paintLineHighlights(Graphics g) {
-		
+
 		int count = lineHighlights == null ? 0 : lineHighlights.size();
 		if (count > 0) {
-			
+
 			int docLen = textArea.getDocument().getLength();
 			Rectangle vr = textArea.getVisibleRect();
 			int lineHeight = textArea.getLineHeight();
-			
+
 			try {
-				
+
 				for (int i = 0; i < count; i++) {
 					LineHighlightInfo lhi = lineHighlights.get(i);
 					int offs = lhi.getOffset();
@@ -90,14 +90,14 @@ class LineHighlightManager {
 						}
 					}
 				}
-				
+
 			} catch (BadLocationException ble) { // Never happens
 				ble.printStackTrace();
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Removes all line highlights.
 	 *
@@ -109,7 +109,7 @@ class LineHighlightManager {
 			textArea.repaint();
 		}
 	}
-	
+
 	/**
 	 * Removes a line highlight.
 	 *
@@ -122,7 +122,7 @@ class LineHighlightManager {
 			repaintLine((LineHighlightInfo) tag);
 		}
 	}
-	
+
 	/**
 	 * Repaints the line pointed to by the specified highlight information.
 	 *
@@ -142,21 +142,21 @@ class LineHighlightManager {
 			}
 		}
 	}
-	
+
 	/**
 	 * Information about a line highlight.
 	 */
 	private static class LineHighlightInfo implements Comparable<LineHighlightInfo> {
-		
+
 		private Position offs;
-		
+
 		private Color color;
-		
+
 		public LineHighlightInfo(Position offs, Color c) {
 			this.offs = offs;
 			this.color = c;
 		}
-		
+
 		@Override
 		public int compareTo(LineHighlightInfo o) {
 			if (o != null) {
@@ -164,7 +164,7 @@ class LineHighlightManager {
 			}
 			return -1;
 		}
-		
+
 		@Override
 		public boolean equals(Object o) {
 			if (o == this) {
@@ -175,20 +175,20 @@ class LineHighlightManager {
 			}
 			return false;
 		}
-		
+
 		public Color getColor() {
 			return color;
 		}
-		
+
 		public int getOffset() {
 			return offs.getOffset();
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return getOffset();
 		}
-		
+
 	}
-	
+
 }

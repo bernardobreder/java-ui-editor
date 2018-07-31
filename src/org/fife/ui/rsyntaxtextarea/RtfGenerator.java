@@ -22,9 +22,9 @@ import org.fife.ui.rtextarea.RTextArea;
  * <li>Foreground and background colors
  * <li>Bold, italic, and underline
  * </ul>
- * The RTF generated isn't really "optimized," but it will do, especially for small amounts of text,
- * such as what's common when copy-and-pasting. It tries to be sufficient for the use case of
- * copying syntax highlighted code:
+ * The RTF generated isn't really "optimized," but it will do, especially for
+ * small amounts of text, such as what's common when copy-and-pasting. It tries
+ * to be sufficient for the use case of copying syntax highlighted code:
  * <ul>
  * <li>It assumes that tokens changing foreground color often is fairly common.
  * <li>It assumes that background highlighting is fairly uncommon.
@@ -34,37 +34,38 @@ import org.fife.ui.rtextarea.RTextArea;
  * @version 1.0
  */
 public class RtfGenerator {
-	
+
 	private List<Font> fontList;
-	
+
 	private List<Color> colorList;
-	
+
 	private StringBuilder document;
-	
+
 	private boolean lastWasControlWord;
-	
+
 	private int lastFontIndex;
-	
+
 	private int lastFGIndex;
-	
+
 	private boolean lastBold;
-	
+
 	private boolean lastItalic;
-	
+
 	private int lastFontSize;
-	
+
 	/**
-	 * Java2D assumes a 72 dpi screen resolution, but on Windows the screen resolution is either 96
-	 * dpi or 120 dpi, depending on your font display settings. This is an attempt to make the RTF
-	 * generated match the size of what's displayed in the RSyntaxTextArea.
+	 * Java2D assumes a 72 dpi screen resolution, but on Windows the screen
+	 * resolution is either 96 dpi or 120 dpi, depending on your font display
+	 * settings. This is an attempt to make the RTF generated match the size of
+	 * what's displayed in the RSyntaxTextArea.
 	 */
 	private int screenRes;
-	
+
 	/**
 	 * The default font size for RTF. This is point size, in half points.
 	 */
 	private static final int DEFAULT_FONT_SIZE = 12;// 24;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -74,7 +75,7 @@ public class RtfGenerator {
 		document = new StringBuilder();
 		reset();
 	}
-	
+
 	/**
 	 * Adds a newline to the RTF document.
 	 *
@@ -85,70 +86,74 @@ public class RtfGenerator {
 		document.append('\n'); // Just for ease of reading RTF.
 		lastWasControlWord = false;
 	}
-	
+
 	/**
 	 * Appends styled text to the RTF document being generated.
 	 *
 	 * @param text The text to append.
-	 * @param f The font of the text. If this is <code>null</code>, the default font is used.
-	 * @param fg The foreground of the text. If this is <code>null</code>, the default foreground
-	 *            color is used.
-	 * @param bg The background color of the text. If this is <code>null</code>, the default
-	 *            background color is used.
+	 * @param f    The font of the text. If this is <code>null</code>, the default
+	 *             font is used.
+	 * @param fg   The foreground of the text. If this is <code>null</code>, the
+	 *             default foreground color is used.
+	 * @param bg   The background color of the text. If this is <code>null</code>,
+	 *             the default background color is used.
 	 * @see #appendNewline()
 	 */
 	public void appendToDoc(String text, Font f, Color fg, Color bg) {
 		appendToDoc(text, f, fg, bg, false);
 	}
-	
+
 	/**
 	 * Appends styled text to the RTF document being generated.
 	 *
-	 * @param text The text to append.
-	 * @param f The font of the text. If this is <code>null</code>, the default font is used.
-	 * @param bg The background color of the text. If this is <code>null</code>, the default
-	 *            background color is used.
+	 * @param text      The text to append.
+	 * @param f         The font of the text. If this is <code>null</code>, the
+	 *                  default font is used.
+	 * @param bg        The background color of the text. If this is
+	 *                  <code>null</code>, the default background color is used.
 	 * @param underline Whether the text should be underlined.
 	 * @see #appendNewline()
 	 */
 	public void appendToDocNoFG(String text, Font f, Color bg, boolean underline) {
 		appendToDoc(text, f, null, bg, underline, false);
 	}
-	
+
 	/**
 	 * Appends styled text to the RTF document being generated.
 	 *
-	 * @param text The text to append.
-	 * @param f The font of the text. If this is <code>null</code>, the default font is used.
-	 * @param fg The foreground of the text. If this is <code>null</code>, the default foreground
-	 *            color is used.
-	 * @param bg The background color of the text. If this is <code>null</code>, the default
-	 *            background color is used.
+	 * @param text      The text to append.
+	 * @param f         The font of the text. If this is <code>null</code>, the
+	 *                  default font is used.
+	 * @param fg        The foreground of the text. If this is <code>null</code>,
+	 *                  the default foreground color is used.
+	 * @param bg        The background color of the text. If this is
+	 *                  <code>null</code>, the default background color is used.
 	 * @param underline Whether the text should be underlined.
 	 * @see #appendNewline()
 	 */
 	public void appendToDoc(String text, Font f, Color fg, Color bg, boolean underline) {
 		appendToDoc(text, f, fg, bg, underline, true);
 	}
-	
+
 	/**
 	 * Appends styled text to the RTF document being generated.
 	 *
-	 * @param text The text to append.
-	 * @param f The font of the text. If this is <code>null</code>, the default font is used.
-	 * @param fg The foreground of the text. If this is <code>null</code>, the default foreground
-	 *            color is used.
-	 * @param bg The background color of the text. If this is <code>null</code>, the default
-	 *            background color is used.
+	 * @param text      The text to append.
+	 * @param f         The font of the text. If this is <code>null</code>, the
+	 *                  default font is used.
+	 * @param fg        The foreground of the text. If this is <code>null</code>,
+	 *                  the default foreground color is used.
+	 * @param bg        The background color of the text. If this is
+	 *                  <code>null</code>, the default background color is used.
 	 * @param underline Whether the text should be underlined.
-	 * @param setFG Whether the foreground specified by <code>fg</code> should be honored (if it is
-	 *            non-<code>null</code>).
+	 * @param setFG     Whether the foreground specified by <code>fg</code> should
+	 *                  be honored (if it is non-<code>null</code>).
 	 * @see #appendNewline()
 	 */
 	public void appendToDoc(String text, Font f, Color fg, Color bg, boolean underline, boolean setFG) {
-		
+
 		if (text != null) {
-			
+
 			// Set font to use, if different from last addition.
 			int fontIndex = f == null ? 0 : (getFontIndex(fontList, f) + 1);
 			if (fontIndex != lastFontIndex) {
@@ -156,7 +161,7 @@ public class RtfGenerator {
 				lastFontIndex = fontIndex;
 				lastWasControlWord = true;
 			}
-			
+
 			// Set styles to use.
 			if (f != null) {
 				int fontSize = fixFontSize(f.getSize2D() * 2); // Half points!
@@ -196,7 +201,7 @@ public class RtfGenerator {
 				document.append("\\ul");
 				lastWasControlWord = true;
 			}
-			
+
 			// Set the foreground color.
 			if (setFG) {
 				int fgIndex = 0;
@@ -209,20 +214,20 @@ public class RtfGenerator {
 					lastWasControlWord = true;
 				}
 			}
-			
+
 			// Set the background color.
 			if (bg != null) {
 				int pos = getColorIndex(colorList, bg);
 				document.append("\\highlight").append(pos + 1);
 				lastWasControlWord = true;
 			}
-			
+
 			if (lastWasControlWord) {
 				document.append(' '); // Delimiter
 				lastWasControlWord = false;
 			}
 			escapeAndAdd(document, text);
-			
+
 			// Reset everything that was set for this text fragment.
 			if (bg != null) {
 				document.append("\\highlight0");
@@ -232,21 +237,21 @@ public class RtfGenerator {
 				document.append("\\ul0");
 				lastWasControlWord = true;
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	/**
-	 * Appends some text to a buffer, with special care taken for special characters as defined by
-	 * the RTF spec:
+	 * Appends some text to a buffer, with special care taken for special characters
+	 * as defined by the RTF spec:
 	 * <ul>
 	 * <li>All tab characters are replaced with the string "<code>\tab</code>"
 	 * <li>'\', '{' and '}' are changed to "\\", "\{" and "\}"
 	 * </ul>
 	 *
 	 * @param text The text to append (with tab chars substituted).
-	 * @param sb The buffer to append to.
+	 * @param sb   The buffer to append to.
 	 */
 	private final void escapeAndAdd(StringBuilder sb, String text) {
 		int count = text.length();
@@ -276,18 +281,19 @@ public class RtfGenerator {
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns a font point size, adjusted for the current screen resolution.
 	 * <p>
-	 * Java2D assumes 72 dpi. On systems with larger dpi (Windows, GTK, etc.), font rendering will
-	 * appear too small if we simply return a Java "Font" object's getSize() value. We need to
-	 * adjust it for the screen resolution.
+	 * Java2D assumes 72 dpi. On systems with larger dpi (Windows, GTK, etc.), font
+	 * rendering will appear too small if we simply return a Java "Font" object's
+	 * getSize() value. We need to adjust it for the screen resolution.
 	 *
-	 * @param pointSize A Java Font's point size, as returned from <code>getSize2D()</code>.
-	 * @return The font point size, adjusted for the current screen resolution. This will allow
-	 *         other applications to render fonts the same size as they appear in the Java
-	 *         application.
+	 * @param pointSize A Java Font's point size, as returned from
+	 *                  <code>getSize2D()</code>.
+	 * @return The font point size, adjusted for the current screen resolution. This
+	 *         will allow other applications to render fonts the same size as they
+	 *         appear in the Java application.
 	 */
 	private int fixFontSize(float pointSize) {
 		if (screenRes != 72) { // Java2D assumes 72 dpi
@@ -295,10 +301,10 @@ public class RtfGenerator {
 		}
 		return (int) pointSize;
 	}
-	
+
 	/**
-	 * Returns the index of the specified item in a list. If the item is not in the list, it is
-	 * added, and its new index is returned.
+	 * Returns the index of the specified item in a list. If the item is not in the
+	 * list, it is added, and its new index is returned.
 	 *
 	 * @param list The list (possibly) containing the item.
 	 * @param item The item to get the index of.
@@ -312,14 +318,14 @@ public class RtfGenerator {
 		}
 		return pos;
 	}
-	
+
 	private String getColorTableRtf() {
-		
+
 		// Example:
 		// "{\\colortbl ;\\red255\\green0\\blue0;\\red0\\green0\\blue255; }"
-		
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		sb.append("{\\colortbl ;");
 		for (Color c : colorList) {
 			sb.append("\\red").append(c.getRed());
@@ -328,14 +334,15 @@ public class RtfGenerator {
 			sb.append(';');
 		}
 		sb.append("}");
-		
+
 		return sb.toString();
-		
+
 	}
-	
+
 	/**
-	 * Returns the index of the specified font in a list of fonts. This method only checks for a
-	 * font by its family name; its attributes such as bold and italic are ignored.
+	 * Returns the index of the specified font in a list of fonts. This method only
+	 * checks for a font by its family name; its attributes such as bold and italic
+	 * are ignored.
 	 * <p>
 	 * If the font is not in the list, it is added, and its new index is returned.
 	 *
@@ -354,19 +361,19 @@ public class RtfGenerator {
 		list.add(font);
 		return list.size() - 1;
 	}
-	
+
 	private String getFontTableRtf() {
-		
+
 		// Example:
 		// "{\\fonttbl{\\f0\\fmodern\\fcharset0 Courier;}}"
-		
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		// Workaround for text areas using the Java logical font "Monospaced"
 		// by default. There's no way to know what it's mapped to, so we
 		// just search for a monospaced font on the system.
 		String monoFamilyName = getMonospacedFontFamily();
-		
+
 		sb.append("{\\fonttbl{\\f0\\fnil\\fcharset0 " + monoFamilyName + ";}");
 		for (int i = 0; i < fontList.size(); i++) {
 			Font f = fontList.get(i);
@@ -378,14 +385,14 @@ public class RtfGenerator {
 			sb.append(familyName).append(";}");
 		}
 		sb.append('}');
-		
+
 		return sb.toString();
-		
+
 	}
-	
+
 	/**
-	 * Returns a good "default" monospaced font to use when Java's logical font "Monospaced" is
-	 * found.
+	 * Returns a good "default" monospaced font to use when Java's logical font
+	 * "Monospaced" is found.
 	 *
 	 * @return The monospaced font family to use.
 	 */
@@ -396,17 +403,17 @@ public class RtfGenerator {
 		}
 		return family;
 	}
-	
+
 	/**
 	 * Returns the RTF document created by this generator.
 	 *
 	 * @return The RTF document, as a <code>String</code>.
 	 */
 	public String getRtf() {
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
-		
+
 		// Header
 		sb.append("\\rtf1\\ansi\\ansicpg1252");
 		sb.append("\\deff0"); // First font in font table is the default
@@ -416,17 +423,17 @@ public class RtfGenerator {
 		sb.append("\\fs20"); // Font size in half-points (default 24)
 		sb.append(getFontTableRtf()).append('\n');
 		sb.append(getColorTableRtf()).append('\n');
-		
+
 		// Content
 		sb.append(document);
-		
+
 		sb.append("}");
-		
+
 		// System.err.println("*** " + sb.length());
 		return sb.toString();
-		
+
 	}
-	
+
 	/**
 	 * Resets this generator. All document information and content is cleared.
 	 */
@@ -442,5 +449,5 @@ public class RtfGenerator {
 		lastFontSize = DEFAULT_FONT_SIZE;
 		screenRes = Toolkit.getDefaultToolkit().getScreenResolution();
 	}
-	
+
 }

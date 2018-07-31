@@ -12,9 +12,9 @@ package org.fife.rsta.ac.java.classreader.constantpool;
  * @version 1.0
  */
 public class ConstantFloatInfo extends ConstantPoolInfo {
-	
+
 	private int bytes; // u4
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -24,11 +24,11 @@ public class ConstantFloatInfo extends ConstantPoolInfo {
 		super(CONSTANT_Float);
 		this.bytes = bytes;
 	}
-	
+
 	public long getBytes() {
 		return bytes;
 	}
-	
+
 	/**
 	 * Returns the float value represented.
 	 *
@@ -37,7 +37,7 @@ public class ConstantFloatInfo extends ConstantPoolInfo {
 	public float getFloatValue() {
 		return Float.intBitsToFloat(bytes);
 	}
-	
+
 	/**
 	 * Returns a string representation of this object. Useful for debugging.
 	 *
@@ -47,5 +47,5 @@ public class ConstantFloatInfo extends ConstantPoolInfo {
 	public String toString() {
 		return "[ConstantFloatInfo: " + "value=" + getFloatValue() + "]";
 	}
-	
+
 }

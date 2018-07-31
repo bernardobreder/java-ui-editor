@@ -15,37 +15,37 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
- * The fold parser for JSON. Objects (<code>"{ ... }</code>") and arrays ( <code>"[ ... ]"</code>)
- * that span multiple lines are considered fold regions.
+ * The fold parser for JSON. Objects (<code>"{ ... }</code>") and arrays (
+ * <code>"[ ... ]"</code>) that span multiple lines are considered fold regions.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class JsonFoldParser implements FoldParser {
-	
+
 	private static final Object OBJECT_BLOCK = new Object();
-	
+
 	private static final Object ARRAY_BLOCK = new Object();
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public List<Fold> getFolds(RSyntaxTextArea textArea) {
-		
+
 		Stack<Object> blocks = new Stack<Object>();
 		List<Fold> folds = new ArrayList<Fold>();
-		
+
 		Fold currentFold = null;
 		int lineCount = textArea.getLineCount();
-		
+
 		try {
-			
+
 			for (int line = 0; line < lineCount; line++) {
-				
+
 				Token t = textArea.getTokenListForLine(line);
 				while (t != null && t.isPaintable()) {
-					
+
 					if (t.isLeftCurly()) {
 						if (currentFold == null) {
 							currentFold = new Fold(FoldType.CODE, textArea, t.getOffset());
@@ -55,7 +55,7 @@ public class JsonFoldParser implements FoldParser {
 						}
 						blocks.push(OBJECT_BLOCK);
 					}
-					
+
 					else if (t.isRightCurly() && popOffTop(blocks, OBJECT_BLOCK)) {
 						if (currentFold != null) {
 							currentFold.setEndOffset(t.getOffset());
@@ -71,7 +71,7 @@ public class JsonFoldParser implements FoldParser {
 							currentFold = parentFold;
 						}
 					}
-					
+
 					else if (isLeftBracket(t)) {
 						if (currentFold == null) {
 							currentFold = new Fold(FoldType.CODE, textArea, t.getOffset());
@@ -81,7 +81,7 @@ public class JsonFoldParser implements FoldParser {
 						}
 						blocks.push(ARRAY_BLOCK);
 					}
-					
+
 					else if (isRightBracket(t) && popOffTop(blocks, ARRAY_BLOCK)) {
 						if (currentFold != null) {
 							currentFold.setEndOffset(t.getOffset());
@@ -97,21 +97,21 @@ public class JsonFoldParser implements FoldParser {
 							currentFold = parentFold;
 						}
 					}
-					
+
 					t = t.getNextToken();
-					
+
 				}
-				
+
 			}
-			
+
 		} catch (BadLocationException ble) { // Should never happen
 			ble.printStackTrace();
 		}
-		
+
 		return folds;
-		
+
 	}
-	
+
 	/**
 	 * Returns whether a token is the left bracket token.
 	 *
@@ -122,7 +122,7 @@ public class JsonFoldParser implements FoldParser {
 	private static final boolean isLeftBracket(Token t) {
 		return t.getType() == TokenTypes.SEPARATOR && t.isSingleChar('[');
 	}
-	
+
 	/**
 	 * Returns whether a token is the right bracket token.
 	 *
@@ -133,10 +133,10 @@ public class JsonFoldParser implements FoldParser {
 	private static final boolean isRightBracket(Token t) {
 		return t.getType() == TokenTypes.SEPARATOR && t.isSingleChar(']');
 	}
-	
+
 	/**
-	 * If the specified value is on top of the stack, pop it off and return <code>true</code>.
-	 * Otherwise, return <code>false</code>.
+	 * If the specified value is on top of the stack, pop it off and return
+	 * <code>true</code>. Otherwise, return <code>false</code>.
 	 *
 	 * @param stack The stack.
 	 * @param value The value to check for.
@@ -149,5 +149,5 @@ public class JsonFoldParser implements FoldParser {
 		}
 		return false;
 	}
-	
+
 }

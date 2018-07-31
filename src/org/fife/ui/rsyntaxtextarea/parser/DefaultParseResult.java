@@ -9,32 +9,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A basic implementation of {@link ParseResult}. Most, if not all, <code>Parser</code>s can return
- * instances of this class.
+ * A basic implementation of {@link ParseResult}. Most, if not all,
+ * <code>Parser</code>s can return instances of this class.
  *
  * @author Robert Futrell
  * @version 1.0
  * @see Parser
  */
 public class DefaultParseResult implements ParseResult {
-	
+
 	private Parser parser;
-	
+
 	private int firstLineParsed;
-	
+
 	private int lastLineParsed;
-	
+
 	private List<ParserNotice> notices;
-	
+
 	private long parseTime;
-	
+
 	private Exception error;
-	
+
 	public DefaultParseResult(Parser parser) {
 		this.parser = parser;
 		notices = new ArrayList<ParserNotice>();
 	}
-	
+
 	/**
 	 * Adds a parser notice.
 	 *
@@ -44,7 +44,7 @@ public class DefaultParseResult implements ParseResult {
 	public void addNotice(ParserNotice notice) {
 		notices.add(notice);
 	}
-	
+
 	/**
 	 * Clears any parser notices in this result.
 	 *
@@ -53,7 +53,7 @@ public class DefaultParseResult implements ParseResult {
 	public void clearNotices() {
 		notices.clear();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -61,7 +61,7 @@ public class DefaultParseResult implements ParseResult {
 	public Exception getError() {
 		return error;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -69,7 +69,7 @@ public class DefaultParseResult implements ParseResult {
 	public int getFirstLineParsed() {
 		return firstLineParsed;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -77,7 +77,7 @@ public class DefaultParseResult implements ParseResult {
 	public int getLastLineParsed() {
 		return lastLineParsed;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -85,7 +85,7 @@ public class DefaultParseResult implements ParseResult {
 	public List<ParserNotice> getNotices() {
 		return notices;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -93,7 +93,7 @@ public class DefaultParseResult implements ParseResult {
 	public long getParseTime() {
 		return parseTime;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -101,7 +101,7 @@ public class DefaultParseResult implements ParseResult {
 	public Parser getParser() {
 		return parser;
 	}
-	
+
 	/**
 	 * Sets the error that occurred when last parsing the document, if any.
 	 *
@@ -110,7 +110,7 @@ public class DefaultParseResult implements ParseResult {
 	public void setError(Exception e) {
 		this.error = e;
 	}
-	
+
 	/**
 	 * Sets the amount of time it took for this parser to parse the document.
 	 *
@@ -120,12 +120,12 @@ public class DefaultParseResult implements ParseResult {
 	public void setParseTime(long time) {
 		parseTime = time;
 	}
-	
+
 	/**
 	 * Sets the line range parsed.
 	 *
 	 * @param first The first line parsed, inclusive.
-	 * @param last The last line parsed, inclusive.
+	 * @param last  The last line parsed, inclusive.
 	 * @see #getFirstLineParsed()
 	 * @see #getLastLineParsed()
 	 */
@@ -133,5 +133,5 @@ public class DefaultParseResult implements ParseResult {
 		firstLineParsed = first;
 		lastLineParsed = last;
 	}
-	
+
 }

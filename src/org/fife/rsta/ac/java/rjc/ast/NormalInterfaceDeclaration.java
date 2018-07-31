@@ -24,29 +24,29 @@ import org.fife.rsta.ac.java.rjc.lexer.Scanner;
  * @version 1.0
  */
 public class NormalInterfaceDeclaration extends AbstractTypeDeclarationNode {
-	
+
 	private List<Type> extendedList;
-	
+
 	public NormalInterfaceDeclaration(Scanner s, int offs, String name) {
 		super(name, s.createOffset(offs), s.createOffset(offs + name.length()));
 		extendedList = new ArrayList<Type>(1); // Usually small
 	}
-	
+
 	public void addExtended(Type extended) {
 		extendedList.add(extended);
 	}
-	
+
 	public int getExtendedCount() {
 		return extendedList.size();
 	}
-	
+
 	public Iterator<Type> getExtendedIterator() {
 		return extendedList.iterator();
 	}
-	
+
 	@Override
 	public String getTypeString() {
 		return "interface";
 	}
-	
+
 }

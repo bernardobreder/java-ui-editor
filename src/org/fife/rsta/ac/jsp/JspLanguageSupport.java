@@ -29,17 +29,17 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
  * @version 1.0
  */
 public class JspLanguageSupport extends AbstractMarkupLanguageSupport {
-	
+
 	/**
 	 * The completion provider. This is shared amongst all JSP text areas.
 	 */
 	private JspCompletionProvider provider;
-	
+
 	/**
 	 * A cached set of tags that require closing tags.
 	 */
 	private static Set<String> tagsToClose = new HashSet<String>();
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -49,7 +49,7 @@ public class JspLanguageSupport extends AbstractMarkupLanguageSupport {
 		setShowDescWindow(true);
 		tagsToClose = HtmlLanguageSupport.getTagsToClose();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -57,30 +57,30 @@ public class JspLanguageSupport extends AbstractMarkupLanguageSupport {
 	protected ListCellRenderer createDefaultCompletionCellRenderer() {
 		return new HtmlCellRenderer();
 	}
-	
+
 	private JspCompletionProvider getProvider() {
 		if (provider == null) {
 			provider = new JspCompletionProvider();
 		}
 		return provider;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void install(RSyntaxTextArea textArea) {
-		
+
 		HtmlCompletionProvider provider = getProvider();
 		AutoCompletion ac = createAutoCompletion(provider);
 		ac.install(textArea);
 		installImpl(textArea, ac);
 		installKeyboardShortcuts(textArea);
-		
+
 		textArea.setToolTipSupplier(null);
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -88,7 +88,7 @@ public class JspLanguageSupport extends AbstractMarkupLanguageSupport {
 	protected boolean shouldAutoCloseTag(String tag) {
 		return tagsToClose.contains(tag.toLowerCase());
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -97,5 +97,5 @@ public class JspLanguageSupport extends AbstractMarkupLanguageSupport {
 		uninstallImpl(textArea);
 		uninstallKeyboardShortcuts(textArea);
 	}
-	
+
 }

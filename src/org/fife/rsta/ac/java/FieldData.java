@@ -11,20 +11,20 @@ import org.fife.rsta.ac.java.rjc.ast.TypeDeclaration;
 import org.fife.rsta.ac.java.rjc.lang.Modifiers;
 
 /**
- * Metadata about a field as read from a Java source file. This class is used by instances of
- * {@link FieldCompletion}.
+ * Metadata about a field as read from a Java source file. This class is used by
+ * instances of {@link FieldCompletion}.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 class FieldData implements Data {
-	
+
 	private Field field;
-	
+
 	public FieldData(Field field) {
 		this.field = field;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -39,15 +39,15 @@ class FieldData implements Data {
 		}
 		return td.getName(fullyQualified);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String getIcon() {
-		
+
 		String key = null;
-		
+
 		Modifiers mod = field.getModifiers();
 		if (mod == null) {
 			key = IconFactory.FIELD_DEFAULT_ICON;
@@ -60,11 +60,11 @@ class FieldData implements Data {
 		} else {
 			key = IconFactory.FIELD_DEFAULT_ICON;
 		}
-		
+
 		return key;
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -72,7 +72,7 @@ class FieldData implements Data {
 	public String getSignature() {
 		return field.getName();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -81,7 +81,7 @@ class FieldData implements Data {
 		String docComment = field.getDocComment();
 		return docComment != null ? docComment : field.toString();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -89,12 +89,12 @@ class FieldData implements Data {
 	public String getType() {
 		return field.getType().toString();
 	}
-	
+
 	@Override
 	public boolean isAbstract() {
 		return field.getModifiers().isAbstract();
 	}
-	
+
 	/**
 	 * Always returns <code>false</code>, fields cannot be constructors.
 	 *
@@ -104,7 +104,7 @@ class FieldData implements Data {
 	public boolean isConstructor() {
 		return false;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -112,15 +112,15 @@ class FieldData implements Data {
 	public boolean isDeprecated() {
 		return field.isDeprecated();
 	}
-	
+
 	@Override
 	public boolean isFinal() {
 		return field.getModifiers().isFinal();
 	}
-	
+
 	@Override
 	public boolean isStatic() {
 		return field.getModifiers().isStatic();
 	}
-	
+
 }

@@ -25,24 +25,24 @@ import org.fife.rsta.ac.java.rjc.lexer.Token;
  * @version 1.0
  */
 public class TypeParameter {
-	
+
 	private Token name;
-	
+
 	private List<Type> bounds;
-	
+
 	public TypeParameter(Token name) {
 		this.name = name;
 	}
-	
+
 	public void addBound(Type bound) {
 		if (bounds == null) {
 			bounds = new ArrayList<Type>(1); // Usually just 1
 		}
 		bounds.add(bound);
 	}
-	
+
 	public String getName() {
 		return name.getLexeme();
 	}
-	
+
 }

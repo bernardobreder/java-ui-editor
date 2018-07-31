@@ -17,11 +17,12 @@ import javax.swing.tree.DefaultTreeCellRenderer;
  * @version 1.0
  */
 class AstTreeCellRenderer extends DefaultTreeCellRenderer {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
-	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf,
+			int row, boolean hasFocus) {
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
 		if (value instanceof JavaTreeNode) { // Should always be true
 			JavaTreeNode node = (JavaTreeNode) value;
@@ -30,5 +31,5 @@ class AstTreeCellRenderer extends DefaultTreeCellRenderer {
 		}
 		return this;
 	}
-	
+
 }

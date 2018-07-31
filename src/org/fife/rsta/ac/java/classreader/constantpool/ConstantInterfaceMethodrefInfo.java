@@ -6,17 +6,18 @@
 package org.fife.rsta.ac.java.classreader.constantpool;
 
 /**
- * Class corresponding to a <code>CONSTANT_InterfaceMethodref_info</code> structure.
+ * Class corresponding to a <code>CONSTANT_InterfaceMethodref_info</code>
+ * structure.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 class ConstantInterfaceMethodrefInfo extends ConstantPoolInfo {
-	
+
 	private int classIndex;
-	
+
 	private int nameAndTypeIndex;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -28,15 +29,15 @@ class ConstantInterfaceMethodrefInfo extends ConstantPoolInfo {
 		this.classIndex = classIndex;
 		this.nameAndTypeIndex = nameAndTypeIndex;
 	}
-	
+
 	public int getClassIndex() {
 		return classIndex;
 	}
-	
+
 	public int getNameAndTypeIndex() {
 		return nameAndTypeIndex;
 	}
-	
+
 	/**
 	 * Returns a string representation of this object. Useful for debugging.
 	 *
@@ -44,7 +45,8 @@ class ConstantInterfaceMethodrefInfo extends ConstantPoolInfo {
 	 */
 	@Override
 	public String toString() {
-		return "[ConstantInterfaceMethodrefInfo: " + "classIndex=" + getClassIndex() + "; nameAndTypeIndex=" + getNameAndTypeIndex() + "]";
+		return "[ConstantInterfaceMethodrefInfo: " + "classIndex=" + getClassIndex() + "; nameAndTypeIndex="
+				+ getNameAndTypeIndex() + "]";
 	}
-	
+
 }

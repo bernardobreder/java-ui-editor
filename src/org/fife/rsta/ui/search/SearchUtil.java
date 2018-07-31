@@ -11,14 +11,15 @@ package org.fife.rsta.ui.search;
  * @version 1.0
  */
 class SearchUtil {
-	
+
 	/**
-	 * Formats an error message from a find/replace button enable result for use in a tool tip. This
-	 * assumes the error (if any) came from a <code>PatternSyntaxException</code>.
+	 * Formats an error message from a find/replace button enable result for use in
+	 * a tool tip. This assumes the error (if any) came from a
+	 * <code>PatternSyntaxException</code>.
 	 *
 	 * @param res The result.
-	 * @return The tool tip, or <code>null</code> if no error message was specified in
-	 *         <code>res</code>.
+	 * @return The tool tip, or <code>null</code> if no error message was specified
+	 *         in <code>res</code>.
 	 */
 	public static final String getToolTip(FindReplaceButtonsEnableResult res) {
 		String tooltip = res.getError();
@@ -28,5 +29,5 @@ class SearchUtil {
 		}
 		return tooltip;
 	}
-	
+
 }

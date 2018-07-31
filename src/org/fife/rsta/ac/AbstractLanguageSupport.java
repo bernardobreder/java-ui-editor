@@ -26,47 +26,51 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
  * @version 1.0
  */
 public abstract class AbstractLanguageSupport implements LanguageSupport {
-	
+
 	/**
-	 * Map of all text areas using this language support to their installed {@link AutoCompletion}
-	 * instances. This should be maintained by subclasses by adding to, and removing from, it in
-	 * their {@link #install(org.fife.ui.rsyntaxtextarea.RSyntaxTextArea)} and
+	 * Map of all text areas using this language support to their installed
+	 * {@link AutoCompletion} instances. This should be maintained by subclasses by
+	 * adding to, and removing from, it in their
+	 * {@link #install(org.fife.ui.rsyntaxtextarea.RSyntaxTextArea)} and
 	 * {@link #uninstall(org.fife.ui.rsyntaxtextarea.RSyntaxTextArea)} methods.
 	 */
 	private Map<RSyntaxTextArea, AutoCompletion> textAreaToAutoCompletion;
-	
+
 	/**
 	 * Whether auto-completion is enabled for this language.
 	 */
 	private boolean autoCompleteEnabled;
-	
+
 	/**
-	 * Whether auto-activation for completion choices is enabled for this language. Note that this
-	 * parameter only matters if {@link #autoCompleteEnabled} is <code>true</code>.
+	 * Whether auto-activation for completion choices is enabled for this language.
+	 * Note that this parameter only matters if {@link #autoCompleteEnabled} is
+	 * <code>true</code>.
 	 */
 	private boolean autoActivationEnabled;
-	
+
 	/**
-	 * The delay for auto-activation, in milliseconds. This parameter is only honored if both
-	 * {@link #autoCompleteEnabled} and {@link #autoActivationEnabled} are <code>true</code>.
+	 * The delay for auto-activation, in milliseconds. This parameter is only
+	 * honored if both {@link #autoCompleteEnabled} and
+	 * {@link #autoActivationEnabled} are <code>true</code>.
 	 */
 	private int autoActivationDelay;
-	
+
 	/**
 	 * Whether parameter assistance should be enabled for this language.
 	 */
 	private boolean parameterAssistanceEnabled;
-	
+
 	/**
-	 * Whether the description window is displayed when the completion list window is displayed.
+	 * Whether the description window is displayed when the completion list window
+	 * is displayed.
 	 */
 	private boolean showDescWindow;
-	
+
 	/**
 	 * The default renderer for the completion list.
 	 */
 	private ListCellRenderer renderer;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -77,7 +81,7 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 		autoActivationEnabled = false;
 		autoActivationDelay = 300;
 	}
-	
+
 	/**
 	 * Creates an auto-completion instance pre-configured and usable by most
 	 * <code>LanguageSupport</code>s.
@@ -95,17 +99,18 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 		ac.setShowDescWindow(getShowDescWindow());
 		return ac;
 	}
-	
+
 	/**
-	 * Creates the default cell renderer to use when none is specified. Subclasses can override this
-	 * method if there is a "better" default renderer for a specific language.
+	 * Creates the default cell renderer to use when none is specified. Subclasses
+	 * can override this method if there is a "better" default renderer for a
+	 * specific language.
 	 *
 	 * @return The default renderer for the completion list.
 	 */
 	protected ListCellRenderer createDefaultCompletionCellRenderer() {
 		return new DefaultListCellRenderer();
 	}
-	
+
 	/**
 	 * Attempts to delegate rendering to a Substance cell renderer.
 	 *
@@ -119,7 +124,7 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -127,18 +132,18 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 	public int getAutoActivationDelay() {
 		return autoActivationDelay;
 	}
-	
+
 	/**
 	 * Returns the auto completion instance used by a text area.
 	 *
 	 * @param textArea The text area.
-	 * @return The auto completion instance, or <code>null</code> if none is installed on the text
-	 *         area.
+	 * @return The auto completion instance, or <code>null</code> if none is
+	 *         installed on the text area.
 	 */
 	protected AutoCompletion getAutoCompletionFor(RSyntaxTextArea textArea) {
 		return textAreaToAutoCompletion.get(textArea);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -146,7 +151,7 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 	public ListCellRenderer getDefaultCompletionCellRenderer() {
 		return renderer;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -154,7 +159,7 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 	public boolean getShowDescWindow() {
 		return showDescWindow;
 	}
-	
+
 	/**
 	 * Returns the text areas with this language support currently installed.
 	 *
@@ -163,20 +168,20 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 	protected Set<RSyntaxTextArea> getTextAreas() {
 		return textAreaToAutoCompletion.keySet();
 	}
-	
+
 	/**
-	 * Registers an auto-completion instance. This should be called by subclasses in their
-	 * {@link #install(org.fife.ui.rsyntaxtextarea.RSyntaxTextArea)} methods so that this language
-	 * support can update all of them at once.
+	 * Registers an auto-completion instance. This should be called by subclasses in
+	 * their {@link #install(org.fife.ui.rsyntaxtextarea.RSyntaxTextArea)} methods
+	 * so that this language support can update all of them at once.
 	 *
 	 * @param textArea The text area that just installed the auto completion.
-	 * @param ac The auto completion instance.
+	 * @param ac       The auto completion instance.
 	 * @see #uninstallImpl(RSyntaxTextArea)
 	 */
 	protected void installImpl(RSyntaxTextArea textArea, AutoCompletion ac) {
 		textAreaToAutoCompletion.put(textArea, ac);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -184,7 +189,7 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 	public boolean isAutoActivationEnabled() {
 		return autoActivationEnabled;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -192,7 +197,7 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 	public boolean isAutoCompleteEnabled() {
 		return autoCompleteEnabled;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -200,7 +205,7 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 	public boolean isParameterAssistanceEnabled() {
 		return parameterAssistanceEnabled;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -214,7 +219,7 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 			}
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -227,7 +232,7 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 			}
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -240,7 +245,7 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 			}
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -257,7 +262,7 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 		}
 		renderer = r;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -270,7 +275,7 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 			}
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -283,11 +288,12 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 			}
 		}
 	}
-	
+
 	/**
 	 * Unregisters an textArea. This should be called by subclasses in their
-	 * {@link #uninstall(org.fife.ui.rsyntaxtextarea.RSyntaxTextArea)} methods. This method will
-	 * also call the <code>uninstall</code> method on the <code>AutoCompletion</code>.
+	 * {@link #uninstall(org.fife.ui.rsyntaxtextarea.RSyntaxTextArea)} methods. This
+	 * method will also call the <code>uninstall</code> method on the
+	 * <code>AutoCompletion</code>.
 	 *
 	 * @param textArea The text area.
 	 * @see #installImpl(RSyntaxTextArea, AutoCompletion)
@@ -299,5 +305,5 @@ public abstract class AbstractLanguageSupport implements LanguageSupport {
 		}
 		textAreaToAutoCompletion.remove(textArea);
 	}
-	
+
 }

@@ -14,12 +14,12 @@ package org.fife.rsta.ac.java.rjc.lexer;
  * @version 1.0
  */
 public interface Offset {
-	
+
 	/**
 	 * Returns the offset into the source.
 	 *
 	 * @return The offset.
 	 */
 	public int getOffset();
-	
+
 }

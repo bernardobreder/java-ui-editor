@@ -13,10 +13,10 @@ import java.io.IOException;
 import java.io.StringReader;
 
 /**
- * Object used during copy/paste and DnD operations to represent RTF text. It can return the text
- * being moved as either RTF or plain text. This class is basically the same as
- * <code>java.awt.datatransfer.StringSelection</code>, except that it can also return the text as
- * RTF.
+ * Object used during copy/paste and DnD operations to represent RTF text. It
+ * can return the text being moved as either RTF or plain text. This class is
+ * basically the same as <code>java.awt.datatransfer.StringSelection</code>,
+ * except that it can also return the text as RTF.
  *
  * @author Robert Futrell
  * @version 1.0

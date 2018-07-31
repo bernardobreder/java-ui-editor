@@ -14,50 +14,52 @@ import org.fife.rsta.ac.java.classreader.constantpool.ConstantPoolInfo;
 import org.fife.rsta.ac.java.classreader.constantpool.ConstantStringInfo;
 
 /**
- * The "<code>ConstantValue</code>" attribute, as defined by 4.7.2 of the JVM specification.
+ * The "<code>ConstantValue</code>" attribute, as defined by 4.7.2 of the JVM
+ * specification.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class ConstantValue extends AttributeInfo {
-	
+
 	/**
-	 * An index into the constant pool that gives the constant value represented by this attribute.
+	 * An index into the constant pool that gives the constant value represented by
+	 * this attribute.
 	 */
 	private int constantValueIndex; // u2
-	
+
 	/**
 	 * CConstructor.
 	 *
-	 * @param cf The class file.
-	 * @param constantValueIndex The index into the constant pool that gives the constant value
-	 *            represented by this attribute.
+	 * @param cf                 The class file.
+	 * @param constantValueIndex The index into the constant pool that gives the
+	 *                           constant value represented by this attribute.
 	 */
 	public ConstantValue(ClassFile cf, int constantValueIndex) {
 		super(cf);
 		this.constantValueIndex = constantValueIndex;
 	}
-	
+
 	/**
-	 * Returns the index into the constant pool that gives the constant value represented by this
-	 * attribute.
+	 * Returns the index into the constant pool that gives the constant value
+	 * represented by this attribute.
 	 *
 	 * @return The index.
 	 */
 	public int getConstantValueIndex() {
 		return constantValueIndex;
 	}
-	
+
 	/**
 	 * Returns the constant's value, as a string.
 	 *
 	 * @return The constant's value, as a string.
 	 */
 	public String getConstantValueAsString() {
-		
+
 		ClassFile cf = getClassFile();
 		ConstantPoolInfo cpi = cf.getConstantPoolInfo(getConstantValueIndex());
-		
+
 		if (cpi instanceof ConstantDoubleInfo) {
 			ConstantDoubleInfo cdi = (ConstantDoubleInfo) cpi;
 			double value = cdi.getDoubleValue();
@@ -80,7 +82,7 @@ public class ConstantValue extends AttributeInfo {
 		} else {
 			return "INVALID_CONSTANT_TYPE_" + cpi.toString();
 		}
-		
+
 	}
-	
+
 }

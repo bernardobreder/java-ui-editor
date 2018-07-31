@@ -18,70 +18,73 @@ import org.fife.rsta.ac.java.classreader.attributes.Signature;
 import org.fife.rsta.ac.java.classreader.constantpool.ConstantUtf8Info;
 
 /**
- * Implementation of the "<code>method_info</code>" structure as defined in the JVM specification.
+ * Implementation of the "<code>method_info</code>" structure as defined in the
+ * JVM specification.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class MethodInfo extends MemberInfo implements AccessFlags {
-	
+
 	/**
-	 * An index into the constant pool of a {@link ConstantUtf8Info} structure representing either
-	 * one of the special method names ( " <code>&lt;init&gt;</code>" or "
-	 * <code>&lt;clinit&gt;</code>") or a valid method name in the Java programming language, stored
-	 * as a simple name.
+	 * An index into the constant pool of a {@link ConstantUtf8Info} structure
+	 * representing either one of the special method names ( "
+	 * <code>&lt;init&gt;</code>" or " <code>&lt;clinit&gt;</code>") or a valid
+	 * method name in the Java programming language, stored as a simple name.
 	 */
 	private int nameIndex; // u2
-	
+
 	/**
-	 * An index into the constant pool of a {@link ConstantUtf8Info} structure representing a valid
-	 * method descriptor.
+	 * An index into the constant pool of a {@link ConstantUtf8Info} structure
+	 * representing a valid method descriptor.
 	 */
 	private int descriptorIndex; // u2
-	
+
 	/**
-	 * The <code>Signature</code> attribute, or <code>null</code> if there isn't one for this
-	 * method.
+	 * The <code>Signature</code> attribute, or <code>null</code> if there isn't one
+	 * for this method.
 	 */
 	private Signature signatureAttr;
-	
+
 	/**
-	 * The <code>Code</code> attribute, or <code>null</code> if this method is abstract or native.
+	 * The <code>Code</code> attribute, or <code>null</code> if this method is
+	 * abstract or native.
 	 */
 	private Code codeAttr;
-	
+
 	/**
-	 * All attributes of this method that aren't explicitly covered by the private members
-	 * {@link #signatureAttr} and {@link #codeAttr}.
+	 * All attributes of this method that aren't explicitly covered by the private
+	 * members {@link #signatureAttr} and {@link #codeAttr}.
 	 */
 	private List<AttributeInfo> attributes;
-	
+
 	/**
-	 * The type of all parameters to this method. Note that this cache will be short-lived, as
-	 * classes that take type parameters will pass their type arguments down to individual
-	 * <code>MethodInfo</code>s when doing completions, to ensure types are as correct as possible.
+	 * The type of all parameters to this method. Note that this cache will be
+	 * short-lived, as classes that take type parameters will pass their type
+	 * arguments down to individual <code>MethodInfo</code>s when doing completions,
+	 * to ensure types are as correct as possible.
 	 */
 	private String[] paramTypes;
-	
+
 	/**
 	 * Cached return type.
 	 */
 	private String returnType;
-	
+
 	/**
 	 * Cached string representing the name and parameters for this method.
 	 */
 	private String nameAndParameters;
-	
+
 	/**
 	 * Used in class files to denote constructors.
 	 */
 	private static final String SPECIAL_NAME_CONSTRUCTOR = "<init>";
-	
+
 	public static final String CODE = "Code";
-	
+
 	public static final String EXCEPTIONS = "Exceptions";
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -93,7 +96,7 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 		this.descriptorIndex = descriptorIndex;
 		attributes = new ArrayList<AttributeInfo>(1); // Usually only 0 or 1?
 	}
-	
+
 	/**
 	 * Adds the specified attribute to this field.
 	 *
@@ -102,9 +105,9 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 	private void addAttribute(AttributeInfo info) {
 		attributes.add(info);
 	}
-	
+
 	private void appendParamDescriptors(StringBuilder sb) {
-		
+
 		String[] paramTypes = getParameterTypes();
 		for (int i = 0; i < paramTypes.length; i++) {
 			sb.append(paramTypes[i]).append(" param").append(i);
@@ -112,29 +115,30 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 				sb.append(", ");
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Called internally by {@link ClassFile} whenever its
-	 * {@link ClassFile#setTypeParamsToTypeArgs(Map)} method is called. This clears this method's
-	 * local cache of parameter/return types. They'll be lazily recomputed the next time they are
-	 * needed. This allows this <code>MethodInfo</code> to be used for code completion for instances
-	 * of the same class initialized with different type arguments.
+	 * {@link ClassFile#setTypeParamsToTypeArgs(Map)} method is called. This clears
+	 * this method's local cache of parameter/return types. They'll be lazily
+	 * recomputed the next time they are needed. This allows this
+	 * <code>MethodInfo</code> to be used for code completion for instances of the
+	 * same class initialized with different type arguments.
 	 * <p>
-	 * Note that if this method does not have parameterized arguments or return type, calling this
-	 * method won't affect its behavior.
+	 * Note that if this method does not have parameterized arguments or return
+	 * type, calling this method won't affect its behavior.
 	 */
 	void clearParamTypeInfo() {
 		paramTypes = null;
 		returnType = null;
 	}
-	
+
 	/**
-	 * Creates and returns an array of types of all parameters of this method. If this method takes
-	 * any generic type arguments, these types are grabbed from the parent <code>ClassFile</code>
-	 * instance, whose type argument values should have been initialized via
-	 * {@link ClassFile#setTypeParamsToTypeArgs(Map)}.
+	 * Creates and returns an array of types of all parameters of this method. If
+	 * this method takes any generic type arguments, these types are grabbed from
+	 * the parent <code>ClassFile</code> instance, whose type argument values should
+	 * have been initialized via {@link ClassFile#setTypeParamsToTypeArgs(Map)}.
 	 *
 	 * @return The array of parameter types.
 	 * @see #createParamTypesFromDescriptor()
@@ -147,26 +151,27 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 		}
 		return types;
 	}
-	
+
 	/**
-	 * Creates an array of types of each parameter by looking at the method's descriptor field. This
-	 * technique should work with Java 1.0+, but won't pick up on generic types added in Java 5.
+	 * Creates an array of types of each parameter by looking at the method's
+	 * descriptor field. This technique should work with Java 1.0+, but won't pick
+	 * up on generic types added in Java 5.
 	 *
 	 * @return The parameter types.
 	 * @see #createParamTypesFromTypeSignature()
 	 */
 	private String[] createParamTypesFromDescriptor(boolean qualified) {
-		
+
 		String descriptor = getDescriptor();
 		int rparen = descriptor.indexOf(')');
 		String paramDescriptors = descriptor.substring(1, rparen);
 		// String returnDescriptor = descriptor.substring(rparen+1);
-		
+
 		List<String> paramTypeList = new ArrayList<String>();
 		String type = null;
-		
+
 		while (paramDescriptors.length() > 0) {
-			
+
 			// Can't do lastIndexOf() as there may be > 1 array parameter
 			// in the descriptors.
 			// int braceCount = paramDescriptors.lastIndexOf('[') + 1;
@@ -175,9 +180,9 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 				;
 			}
 			int pos = braceCount;
-			
+
 			switch (paramDescriptors.charAt(pos)) {
-			
+
 			// BaseType
 			case 'B':
 				type = "byte";
@@ -211,51 +216,51 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 				type = "boolean";
 				pos++;
 				break;
-			
+
 			// ObjectType
 			case 'L':
 				String clazz = paramDescriptors.substring(pos + 1, paramDescriptors.indexOf(';'));
 				type = qualified ? clazz.replace('/', '.') : clazz.substring(clazz.lastIndexOf('/') + 1);
 				pos += clazz.length() + 2; // "+2" for the 'L' & semicolon
 				break;
-			
+
 			// Invalid method descriptor
 			default:
 				String temp = "INVALID_TYPE_" + paramDescriptors;
 				type = temp;
 				pos += paramDescriptors.length();
 				break;
-			
+
 			}
-			
+
 			for (int i = 0; i < braceCount; i++) {
 				type += "[]";
 			}
 			paramTypeList.add(type);
-			
+
 			paramDescriptors = paramDescriptors.substring(pos);
-			
+
 		}
-		
+
 		String[] types = new String[paramTypeList.size()];
 		types = paramTypeList.toArray(types);
 		return types;
-		
+
 	}
-	
+
 	/**
-	 * Creates an array of types of each parameter by looking at the method's <code>Signature</code>
-	 * attribute, and querying the parent <code>ClassFile</code> instance for any type argument
-	 * values. This attribute was introduced in Java 5, and is the only way to detect generic
-	 * parameters.
+	 * Creates an array of types of each parameter by looking at the method's
+	 * <code>Signature</code> attribute, and querying the parent
+	 * <code>ClassFile</code> instance for any type argument values. This attribute
+	 * was introduced in Java 5, and is the only way to detect generic parameters.
 	 *
 	 * @return The parameter types.
 	 * @see #createParamTypesFromDescriptor()
 	 */
 	private String[] createParamTypesFromTypeSignature() {
-		
+
 		String[] params = null;
-		
+
 		if (signatureAttr != null) {
 			List<String> paramTypes = signatureAttr.getMethodParamTypes(this, cf, false);
 			if (paramTypes != null) {
@@ -263,11 +268,11 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 				params = paramTypes.toArray(params);
 			}
 		}
-		
+
 		return params;
-		
+
 	}
-	
+
 	/**
 	 * Returns the specified attribute.
 	 *
@@ -277,7 +282,7 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 	public AttributeInfo getAttribute(int index) {
 		return attributes.get(index);
 	}
-	
+
 	/**
 	 * Returns the number of attributes of this field.
 	 *
@@ -286,7 +291,7 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 	public int getAttributeCount() {
 		return attributes.size();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -294,7 +299,7 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 	public String getDescriptor() {
 		return cf.getUtf8ValueFromConstantPool(descriptorIndex);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -306,7 +311,7 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 		}
 		return name;
 	}
-	
+
 	/**
 	 * Returns the name and parameters of this method, in the form
 	 * <code>performAction(String, int, Runnable)</code>.
@@ -314,11 +319,11 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 	 * @return The name and parameters of this method.
 	 */
 	public String getNameAndParameters() {
-		
+
 		if (nameAndParameters == null) {
-			
+
 			StringBuilder sb = new StringBuilder(getName());
-			
+
 			sb.append('(');
 			int paramCount = getParameterCount();
 			for (int i = 0; i < paramCount; i++) {
@@ -328,15 +333,15 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 				}
 			}
 			sb.append(')');
-			
+
 			nameAndParameters = sb.toString();
-			
+
 		}
-		
+
 		return nameAndParameters;
-		
+
 	}
-	
+
 	/**
 	 * Returns the number of parameters this method takes.
 	 *
@@ -350,10 +355,10 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 		}
 		return paramTypes.length;
 	}
-	
+
 	/**
-	 * If debugging was enabled during compilation, this method returns the name of the given
-	 * parameter to this method. Otherwise, <code>null</code> is returned.
+	 * If debugging was enabled during compilation, this method returns the name of
+	 * the given parameter to this method. Otherwise, <code>null</code> is returned.
 	 *
 	 * @param index The index of the parameter.
 	 * @return The name of the parameter, or <code>null</code>.
@@ -366,14 +371,16 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Returns a string representing the type of a parameter to this method.
 	 *
-	 * @param index The index of the parameter.
-	 * @param fullyQualified Whether the returned type should be fully qualified. Note that if fully
-	 *            qualified information is not available for the parameters to this method, this
-	 *            parameter will be ignored (but I'm not sure that ever happens).
+	 * @param index          The index of the parameter.
+	 * @param fullyQualified Whether the returned type should be fully qualified.
+	 *                       Note that if fully qualified information is not
+	 *                       available for the parameters to this method, this
+	 *                       parameter will be ignored (but I'm not sure that ever
+	 *                       happens).
 	 * @return The type of the parameter.
 	 * @see #getParameterCount()
 	 * @see #getParameterTypes()
@@ -391,10 +398,10 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 		}
 		return type;
 	}
-	
+
 	/**
-	 * Returns an array if strings representing the types of all parameters to this method. If this
-	 * method takes no parameters, a zero-length array is returned.
+	 * Returns an array if strings representing the types of all parameters to this
+	 * method. If this method takes no parameters, a zero-length array is returned.
 	 *
 	 * @return The array. These types will likely be fully qualified.
 	 * @see #getParameterCount()
@@ -406,7 +413,7 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 		}
 		return paramTypes.clone();
 	}
-	
+
 	/**
 	 * Returns the return type of this method.
 	 *
@@ -426,30 +433,31 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 		}
 		return returnType;
 	}
-	
+
 	/**
-	 * Returns the return type of this method, as determined by a snippet of the method descriptor.
-	 * This should work with all class files created in Java 1.0+, but won't discover the generic
-	 * types added in Java 5.
+	 * Returns the return type of this method, as determined by a snippet of the
+	 * method descriptor. This should work with all class files created in Java
+	 * 1.0+, but won't discover the generic types added in Java 5.
 	 *
 	 * @return The return type of this method.
 	 * @see #getReturnTypeStringFromTypeSignature()
 	 */
 	/*
-	 * TODO: This is identical to FieldInfo.getTypeString(), except for the 'V' case. It is also
-	 * very similar to #getParameterTypes(). Try to refactor common code from these methods.
+	 * TODO: This is identical to FieldInfo.getTypeString(), except for the 'V'
+	 * case. It is also very similar to #getParameterTypes(). Try to refactor common
+	 * code from these methods.
 	 */
 	private String getReturnTypeStringFromDescriptor(boolean qualified) {
-		
+
 		String descriptor = getDescriptor();
 		int rparen = descriptor.indexOf(')');
 		descriptor = descriptor.substring(rparen + 1); // return type desc.
 		StringBuilder sb = new StringBuilder();
-		
+
 		int braceCount = descriptor.lastIndexOf('[') + 1;
-		
+
 		switch (descriptor.charAt(braceCount)) {
-		
+
 		// BaseType
 		case 'B':
 			sb.append("byte");
@@ -478,32 +486,33 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 		case 'V':
 			sb.append("void");
 			break;
-		
+
 		// ObjectType
 		case 'L':
 			String clazz = descriptor.substring(braceCount + 1, descriptor.length() - 1);
 			clazz = qualified ? clazz.replace('/', '.') : clazz.substring(clazz.lastIndexOf('/') + 1);
 			sb.append(clazz);
 			break;
-		
+
 		// Invalid field descriptor
 		default:
 			sb.append("UNSUPPORTED_TYPE_").append(descriptor);
 			break;
-		
+
 		}
-		
+
 		for (int i = 0; i < braceCount; i++) {
 			sb.append("[]");
 		}
-		
+
 		return sb.toString();
-		
+
 	}
-	
+
 	/**
-	 * Returns the return type of this method, as determined by the <code>Signature</code> attribute
-	 * that was added in Java 5. This allows us to check for generic types.
+	 * Returns the return type of this method, as determined by the
+	 * <code>Signature</code> attribute that was added in Java 5. This allows us to
+	 * check for generic types.
 	 *
 	 * @return The return type of this method.
 	 * @see #getReturnTypeStringFromDescriptor()
@@ -513,32 +522,33 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 		if (signatureAttr != null) {
 			retType = signatureAttr.getMethodReturnType(this, cf, qualified);
 		}
-		
+
 		return retType;
-		
+
 	}
-	
+
 	/**
-	 * Returns the signature of this method, as determined from its method descriptor.
+	 * Returns the signature of this method, as determined from its method
+	 * descriptor.
 	 *
 	 * @return The signature of this method.
 	 */
 	public String getSignature() {
-		
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		// Return type.
 		if (!isConstructor()) { // Don't print "void" return type.
 			sb.append(getReturnTypeString(false));
 			sb.append(' ');
 		}
-		
+
 		// Method name and param list.
 		sb.append(getName());
 		sb.append('(');
 		appendParamDescriptors(sb);
 		sb.append(')');
-		
+
 		// "throws" clause.
 		for (AttributeInfo ai : attributes) {
 			if (ai instanceof Exceptions) { // At most 1 Exceptions attribute
@@ -552,11 +562,11 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 				}
 			}
 		}
-		
+
 		return sb.toString();
-		
+
 	}
-	
+
 	/**
 	 * Returns whether this method is abstract.
 	 *
@@ -565,7 +575,7 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 	public boolean isAbstract() {
 		return (getAccessFlags() & ACC_ABSTRACT) > 0;
 	}
-	
+
 	/**
 	 * Returns whether this method is a constructor.
 	 *
@@ -575,7 +585,7 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 		String name = cf.getUtf8ValueFromConstantPool(nameIndex);
 		return SPECIAL_NAME_CONSTRUCTOR.equals(name);
 	}
-	
+
 	/**
 	 * Returns whether this method is native.
 	 *
@@ -584,7 +594,7 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 	public boolean isNative() {
 		return (getAccessFlags() & ACC_NATIVE) > 0;
 	}
-	
+
 	/**
 	 * Returns whether this method is static.
 	 *
@@ -594,7 +604,7 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 	public boolean isStatic() {
 		return (getAccessFlags() & ACC_STATIC) > 0;
 	}
-	
+
 	/**
 	 * Reads a <code>MethodInfo</code> from an input stream.
 	 *
@@ -621,28 +631,28 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 		}
 		return mi;
 	}
-	
+
 	/**
 	 * Reads an attribute for this method from the specified input stream.
 	 *
 	 * @param in The input stream to read from.
-	 * @return The attribute read, possibly <code>null</code> if it was known to be unimportant for
-	 *         our purposes.
+	 * @return The attribute read, possibly <code>null</code> if it was known to be
+	 *         unimportant for our purposes.
 	 * @throws IOException If an IO error occurs.
 	 */
 	private AttributeInfo readAttribute(DataInputStream in) throws IOException {
-		
+
 		AttributeInfo ai = null;
-		
+
 		int attributeNameIndex = in.readUnsignedShort();
 		int attributeLength = in.readInt();
-		
+
 		String attrName = cf.getUtf8ValueFromConstantPool(attributeNameIndex);
-		
+
 		if (CODE.equals(attrName)) { // 4.7.3
 			ai = Code.read(this, in);
 		}
-		
+
 		else if (EXCEPTIONS.equals(attrName)) { // 4.7.4
 			int exceptionCount = in.readUnsignedShort();
 			int[] exceptionIndexTable = null;
@@ -655,9 +665,9 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 			Exceptions e = new Exceptions(this, exceptionIndexTable);
 			ai = e;
 		}
-		
+
 		// TODO: Handle other Attribute types.
-		
+
 		// Attributes common to all members, or unhandled attributes.
 		else {
 			ai = super.readAttribute(in, attrName, attributeLength);
@@ -665,9 +675,9 @@ public class MethodInfo extends MemberInfo implements AccessFlags {
 			// System.out.println("-------------- " + ai.getName());
 			// }
 		}
-		
+
 		return ai;
-		
+
 	}
-	
+
 }

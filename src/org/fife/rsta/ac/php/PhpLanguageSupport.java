@@ -28,17 +28,17 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
  * @version 1.0
  */
 public class PhpLanguageSupport extends AbstractMarkupLanguageSupport {
-	
+
 	/**
 	 * The completion provider. This is shared amongst all PHP text areas.
 	 */
 	private PhpCompletionProvider provider;
-	
+
 	/**
 	 * A cached set of tags that require closing tags.
 	 */
 	private static Set<String> tagsToClose = new HashSet<String>();
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -48,7 +48,7 @@ public class PhpLanguageSupport extends AbstractMarkupLanguageSupport {
 		setShowDescWindow(true);
 		tagsToClose = HtmlLanguageSupport.getTagsToClose();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -56,7 +56,7 @@ public class PhpLanguageSupport extends AbstractMarkupLanguageSupport {
 	protected ListCellRenderer createDefaultCompletionCellRenderer() {
 		return new HtmlCellRenderer();
 	}
-	
+
 	/**
 	 * Lazily creates the shared completion provider instance for PHP.
 	 *
@@ -68,23 +68,23 @@ public class PhpLanguageSupport extends AbstractMarkupLanguageSupport {
 		}
 		return provider;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void install(RSyntaxTextArea textArea) {
-		
+
 		PhpCompletionProvider provider = getProvider();
 		AutoCompletion ac = createAutoCompletion(provider);
 		ac.install(textArea);
 		installImpl(textArea, ac);
 		installKeyboardShortcuts(textArea);
-		
+
 		textArea.setToolTipSupplier(null);
-		
+
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -92,7 +92,7 @@ public class PhpLanguageSupport extends AbstractMarkupLanguageSupport {
 	protected boolean shouldAutoCloseTag(String tag) {
 		return tagsToClose.contains(tag.toLowerCase());
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -101,5 +101,5 @@ public class PhpLanguageSupport extends AbstractMarkupLanguageSupport {
 		uninstallImpl(textArea);
 		uninstallKeyboardShortcuts(textArea);
 	}
-	
+
 }

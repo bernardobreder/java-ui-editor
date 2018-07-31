@@ -20,34 +20,34 @@ import javax.swing.text.JTextComponent;
 import org.fife.rsta.ui.search.AbstractSearchDialog;
 
 /**
- * A panel meant to be displayed alongside a text component, that can display assistance icons for
- * that text component.
+ * A panel meant to be displayed alongside a text component, that can display
+ * assistance icons for that text component.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 public class AssistanceIconPanel extends DecorativeIconPanel implements PropertyChangeListener {
-	
+
 	/**
-	 * The tool tip text for the light bulb icon. It is assumed that access to this field is
-	 * single-threaded (on the EDT).
+	 * The tool tip text for the light bulb icon. It is assumed that access to this
+	 * field is single-threaded (on the EDT).
 	 */
 	private static String ASSISTANCE_AVAILABLE;
-	
+
 	/**
 	 * Constructor.
 	 *
-	 * @param comp The component to listen to. This can be <code>null</code> to create a "filler"
-	 *            icon panel for alignment purposes.
+	 * @param comp The component to listen to. This can be <code>null</code> to
+	 *             create a "filler" icon panel for alignment purposes.
 	 */
 	public AssistanceIconPanel(JComponent comp) {
-		
+
 		// null can be passed to make a "filler" icon panel for alignment
 		// purposes.
 		if (comp != null) {
-			
+
 			ComponentListener listener = new ComponentListener();
-			
+
 			if (comp instanceof JComboBox) {
 				JComboBox combo = (JComboBox) comp;
 				Component c = combo.getEditor().getEditorComponent();
@@ -58,16 +58,16 @@ public class AssistanceIconPanel extends DecorativeIconPanel implements Property
 			} else { // Usually a JTextComponent
 				comp.addFocusListener(listener);
 			}
-			
+
 			comp.addPropertyChangeListener(ContentAssistable.ASSISTANCE_IMAGE, this);
-			
+
 		}
-		
+
 	}
-	
+
 	/**
-	 * Returns the "Content Assist Available" tool tip text for the light bulb icon. It is assumed
-	 * that this method is only called on the EDT.
+	 * Returns the "Content Assist Available" tool tip text for the light bulb icon.
+	 * It is assumed that this method is only called on the EDT.
 	 *
 	 * @return The text.
 	 */
@@ -77,10 +77,10 @@ public class AssistanceIconPanel extends DecorativeIconPanel implements Property
 		}
 		return ASSISTANCE_AVAILABLE;
 	}
-	
+
 	/**
-	 * Called when the property {@link ContentAssistable#ASSISTANCE_IMAGE} is fired by the component
-	 * we are listening to.
+	 * Called when the property {@link ContentAssistable#ASSISTANCE_IMAGE} is fired
+	 * by the component we are listening to.
 	 *
 	 * @param e The change event.
 	 */
@@ -89,13 +89,13 @@ public class AssistanceIconPanel extends DecorativeIconPanel implements Property
 		Image img = (Image) e.getNewValue();
 		setAssistanceEnabled(img);
 	}
-	
+
 	/**
-	 * A hook for applications to initialize this panel, if the component we're listening to already
-	 * has content assist enabled.
+	 * A hook for applications to initialize this panel, if the component we're
+	 * listening to already has content assist enabled.
 	 *
-	 * @param img The image to display, or <code>null</code> if content assist is not currently
-	 *            available.
+	 * @param img The image to display, or <code>null</code> if content assist is
+	 *            not currently available.
 	 */
 	public void setAssistanceEnabled(Image img) {
 		if (img == null) {
@@ -106,12 +106,12 @@ public class AssistanceIconPanel extends DecorativeIconPanel implements Property
 			setToolTipText(getAssistanceAvailableText());
 		}
 	}
-	
+
 	/**
 	 * Listens for events in the text component we're annotating.
 	 */
 	private class ComponentListener implements FocusListener {
-		
+
 		/**
 		 * Called when the combo box or text component gains focus.
 		 *
@@ -121,7 +121,7 @@ public class AssistanceIconPanel extends DecorativeIconPanel implements Property
 		public void focusGained(FocusEvent e) {
 			setShowIcon(true);
 		}
-		
+
 		/**
 		 * Called when the combo box or text component loses focus.
 		 *
@@ -131,7 +131,7 @@ public class AssistanceIconPanel extends DecorativeIconPanel implements Property
 		public void focusLost(FocusEvent e) {
 			setShowIcon(false);
 		}
-		
+
 	}
-	
+
 }

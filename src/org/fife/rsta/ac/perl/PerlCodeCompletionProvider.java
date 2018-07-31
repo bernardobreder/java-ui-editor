@@ -14,23 +14,23 @@ import org.fife.ui.autocomplete.DefaultCompletionProvider;
  * @version 1.0
  */
 class PerlCodeCompletionProvider extends DefaultCompletionProvider {
-	
+
 	private PerlCompletionProvider parent;
-	
+
 	public PerlCodeCompletionProvider(PerlCompletionProvider parent) {
 		this.parent = parent;
 	}
-	
+
 	@Override
 	public char getParameterListEnd() {
 		return parent.getParameterListEnd();
 	}
-	
+
 	@Override
 	public char getParameterListStart() {
 		return parent.getParameterListStart();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -38,5 +38,5 @@ class PerlCodeCompletionProvider extends DefaultCompletionProvider {
 	public boolean isValidChar(char ch) {
 		return super.isValidChar(ch) || ch == '@' || ch == '$' || ch == '%';
 	}
-	
+
 }

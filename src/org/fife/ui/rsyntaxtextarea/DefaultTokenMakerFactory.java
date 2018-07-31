@@ -6,22 +6,23 @@
 package org.fife.ui.rsyntaxtextarea;
 
 /**
- * The default implementation of <code>TokenMakerFactory</code>. This factory can create
- * {@link TokenMaker}s for all languages known to {@link RSyntaxTextArea}.
+ * The default implementation of <code>TokenMakerFactory</code>. This factory
+ * can create {@link TokenMaker}s for all languages known to
+ * {@link RSyntaxTextArea}.
  *
  * @author Robert Futrell
  * @version 1.0
  */
 class DefaultTokenMakerFactory extends AbstractTokenMakerFactory implements SyntaxConstants {
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void initTokenMakerMap() {
-		
+
 		String pkg = "org.fife.ui.rsyntaxtextarea.modes.";
-		
+
 		putMapping(SYNTAX_STYLE_NONE, pkg + "PlainTextTokenMaker");
 		putMapping(SYNTAX_STYLE_ACTIONSCRIPT, pkg + "ActionScriptTokenMaker");
 		putMapping(SYNTAX_STYLE_ASSEMBLER_X86, pkg + "AssemblerX86TokenMaker");
@@ -62,7 +63,7 @@ class DefaultTokenMakerFactory extends AbstractTokenMakerFactory implements Synt
 		putMapping(SYNTAX_STYLE_VISUAL_BASIC, pkg + "VisualBasicTokenMaker");
 		putMapping(SYNTAX_STYLE_WINDOWS_BATCH, pkg + "WindowsBatchTokenMaker");
 		putMapping(SYNTAX_STYLE_XML, pkg + "XMLTokenMaker");
-		
+
 	}
-	
+
 }
