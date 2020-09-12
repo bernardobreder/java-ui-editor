@@ -1,7 +1,10 @@
 /*
- * 08/13/2004 RTextAreaEditorKit.java - The editor kit used by RTextArea. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 08/13/2004
+ *
+ * RTextAreaEditorKit.java - The editor kit used by RTextArea.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -45,9 +48,10 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
  * @author Robert Futrell
  * @version 0.1
  */
-// FIXME: Replace Utilities calls with custom versions (in RSyntaxUtilities) to
+// FIXME:  Replace Utilities calls with custom versions (in RSyntaxUtilities) to
 // cut down on all of the modelToViews, as each call causes
 // a getTokenList => expensive!
+@SuppressWarnings({ "checkstyle:constantname" })
 public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	/**
@@ -306,7 +310,7 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 	 *
 	 * @param in  The stream to read from
 	 * @param doc The destination for the insertion.
-	 * @param pos The location in the document to place the content >= 0.
+	 * @param pos The location in the document to place the content &gt;= 0.
 	 * @exception IOException          on any I/O error
 	 * @exception BadLocationException if pos represents an invalid location within
 	 *                                 the document.
@@ -459,7 +463,6 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 	public static class BeginLineAction extends RecordableTextAction {
 
 		private Segment currentLine = new Segment(); // For speed.
-
 		private boolean select;
 
 		public BeginLineAction(String name, boolean select) {
@@ -531,7 +534,7 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 		}
 
-		private final int getFirstNonWhitespacePos() {
+		private int getFirstNonWhitespacePos() {
 			int offset = currentLine.offset;
 			int end = offset + currentLine.count - 1;
 			int pos = offset;
@@ -850,7 +853,7 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 		public void actionPerformedImpl(ActionEvent e, RTextArea textArea) {
 
 			boolean beep = true;
-			if ((textArea != null) && (textArea.isEditable())) {
+			if (textArea != null && textArea.isEditable()) {
 				try {
 					Document doc = textArea.getDocument();
 					Caret caret = textArea.getCaret();
@@ -879,8 +882,9 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 			if (beep) {
 				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 			}
-
-			textArea.requestFocusInWindow();
+			if (textArea != null) {
+				textArea.requestFocusInWindow();
+			}
 
 		}
 
@@ -904,7 +908,7 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 		public void actionPerformedImpl(ActionEvent e, RTextArea textArea) {
 
 			boolean beep = true;
-			if ((textArea != null) && (textArea.isEditable())) {
+			if (textArea != null && textArea.isEditable()) {
 				try {
 					Document doc = textArea.getDocument();
 					Caret caret = textArea.getCaret();
@@ -996,6 +1000,11 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 		@Override
 		public void actionPerformedImpl(ActionEvent e, RTextArea textArea) {
 
+			if (!textArea.isEditable() || !textArea.isEnabled()) {
+				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+				return;
+			}
+
 			try {
 
 				// We use the elements instead of calling getLineOfOffset(),
@@ -1033,11 +1042,8 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 	public static class DumbCompleteWordAction extends RecordableTextAction {
 
 		private int lastWordStart;
-
 		private int lastDot;
-
 		private int searchOffs;
-
 		private String lastPrefix;
 
 		public DumbCompleteWordAction() {
@@ -1059,24 +1065,26 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 					return;
 				}
 
-				int curWordStart = Utilities.getWordStart(textArea, dot - 1);
+				int curWordStart = getWordStart(textArea, dot);
 
 				if (lastWordStart != curWordStart || dot != lastDot) {
 					lastPrefix = textArea.getText(curWordStart, dot - curWordStart);
 					// Utilities.getWordStart() treats spans of whitespace and
 					// single non-letter chars as "words."
-					if (lastPrefix.length() == 0 || !Character.isLetter(lastPrefix.charAt(lastPrefix.length() - 1))) {
+					if (!isAcceptablePrefix(lastPrefix)) {
 						UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 						return;
 					}
 					lastWordStart = dot - lastPrefix.length();
-					searchOffs = lastWordStart;
+//					searchOffs = lastWordStart;
+//searchOffs = getWordStart(textArea, lastWordStart);
+					searchOffs = Math.max(lastWordStart - 1, 0);
 				}
 
 				while (searchOffs > 0) {
-					int wordStart = 0;
+					int wordStart;
 					try {
-						wordStart = Utilities.getPreviousWord(textArea, searchOffs);
+						wordStart = getPreviousWord(textArea, searchOffs);
 					} catch (BadLocationException ble) {
 						// No more words. Sometimes happens for example if the
 						// document starts off with whitespace - then searchOffs
@@ -1087,7 +1095,7 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 						UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 						break;
 					}
-					int end = Utilities.getWordEnd(textArea, wordStart);
+					int end = getWordEnd(textArea, wordStart);
 					String word = textArea.getText(wordStart, end - wordStart);
 					searchOffs = wordStart;
 					if (word.startsWith(lastPrefix)) {
@@ -1106,6 +1114,31 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 		@Override
 		public final String getMacroID() {
 			return getName();
+		}
+
+		protected int getPreviousWord(RTextArea textArea, int offs) throws BadLocationException {
+			return Utilities.getPreviousWord(textArea, offs);
+		}
+
+		protected int getWordEnd(RTextArea textArea, int offs) throws BadLocationException {
+			return Utilities.getWordEnd(textArea, offs);
+		}
+
+		protected int getWordStart(RTextArea textArea, int offs) throws BadLocationException {
+			return Utilities.getWordStart(textArea, offs);
+		}
+
+		/**
+		 * <code>Utilities.getWordStart()</code> treats spans of whitespace and single
+		 * non-letter chars as "words." This method is used to filter that kind of thing
+		 * out - non-words should not be suggested by this action.
+		 *
+		 * @param prefix The prefix characters before the caret.
+		 * @return Whether the prefix could be part of a "word" in the context of the
+		 *         text area's current content.
+		 */
+		protected boolean isAcceptablePrefix(String prefix) {
+			return prefix.length() > 0 && Character.isLetter(prefix.charAt(prefix.length() - 1));
 		}
 
 	}
@@ -1497,19 +1530,35 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 		@Override
 		public void actionPerformedImpl(ActionEvent e, RTextArea textArea) {
+
 			if (!textArea.isEditable() || !textArea.isEnabled()) {
 				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 				return;
 			}
+
 			try {
-				int caret = textArea.getCaretPosition();
+
+				int dot = textArea.getCaretPosition();
+				int mark = textArea.getCaret().getMark();
 				Document doc = textArea.getDocument();
 				Element root = doc.getDefaultRootElement();
-				int line = root.getElementIndex(caret);
-				if (moveAmt == -1 && line > 0) {
-					moveLineUp(textArea, line);
-				} else if (moveAmt == 1 && line < root.getElementCount() - 1) {
-					moveLineDown(textArea, line);
+				int startLine = root.getElementIndex(Math.min(dot, mark));
+				int endLine = root.getElementIndex(Math.max(dot, mark));
+
+				// If we're moving more than one line, only move the last line
+				// if they've selected more than one char in it.
+				int moveCount = endLine - startLine + 1;
+				if (moveCount > 1) {
+					Element elem = root.getElement(endLine);
+					if (dot == elem.getStartOffset() || mark == elem.getStartOffset()) {
+						moveCount--;
+					}
+				}
+
+				if (moveAmt == -1 && startLine > 0) {
+					moveLineUp(textArea, startLine, moveCount);
+				} else if (moveAmt == 1 && endLine < root.getElementCount() - 1) {
+					moveLineDown(textArea, startLine, moveCount);
 				} else {
 					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 					return;
@@ -1527,47 +1576,94 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 			return getName();
 		}
 
-		private final void moveLineDown(RTextArea textArea, int line) throws BadLocationException {
+		private void moveLineDown(RTextArea textArea, int line, int lineCount) throws BadLocationException {
+
+			// If we'd be moving lines past the end of the document, stop.
+			// We could perhaps just decide to move the lines to the end of the
+			// file, but this just keeps things simple.
+//			if (textArea.getLineCount() - line < lineCount) {
+//				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+//				return;
+//			}
+
 			Document doc = textArea.getDocument();
 			Element root = doc.getDefaultRootElement();
 			Element elem = root.getElement(line);
 			int start = elem.getStartOffset();
+
+			int endLine = line + lineCount - 1;
+			elem = root.getElement(endLine);
 			int end = elem.getEndOffset();
-			int caret = textArea.getCaretPosition();
-			int caretOffset = caret - start;
-			String text = doc.getText(start, end - start);
-			doc.remove(start, end - start);
-			Element elem2 = root.getElement(line); // not "line+1" - removed.
-			// int start2 = elem2.getStartOffset();
-			int end2 = elem2.getEndOffset();
-			doc.insertString(end2, text, null);
-			elem = root.getElement(line + 1);
-			textArea.setCaretPosition(elem.getStartOffset() + caretOffset);
+
+			textArea.beginAtomicEdit();
+			try {
+
+				String text = doc.getText(start, end - start);
+				doc.remove(start, end - start);
+
+				int insertLine = Math.min(line + 1, textArea.getLineCount());
+				boolean newlineInserted = false;
+				if (insertLine == textArea.getLineCount()) {
+					textArea.append("\n");
+					newlineInserted = true;
+				}
+
+				int insertOffs = textArea.getLineStartOffset(insertLine);
+				doc.insertString(insertOffs, text, null);
+				textArea.setSelectionStart(insertOffs);
+				textArea.setSelectionEnd(insertOffs + text.length() - 1);
+
+				if (newlineInserted) {
+					doc.remove(doc.getLength() - 1, 1);
+				}
+
+			} finally {
+				textArea.endAtomicEdit();
+			}
+
 		}
 
-		private final void moveLineUp(RTextArea textArea, int line) throws BadLocationException {
+		private void moveLineUp(RTextArea textArea, int line, int moveCount) throws BadLocationException {
+
 			Document doc = textArea.getDocument();
 			Element root = doc.getDefaultRootElement();
-			int lineCount = root.getElementCount();
 			Element elem = root.getElement(line);
 			int start = elem.getStartOffset();
-			int end = line == lineCount - 1 ? elem.getEndOffset() - 1 : elem.getEndOffset();
-			int caret = textArea.getCaretPosition();
-			int caretOffset = caret - start;
-			String text = doc.getText(start, end - start);
-			if (line == lineCount - 1) {
-				start--; // Remove previous line's ending \n
+
+			int endLine = line + moveCount - 1;
+			elem = root.getElement(endLine);
+			int end = elem.getEndOffset();
+			int lineCount = textArea.getLineCount();
+			boolean movingLastLine = false;
+			if (endLine == lineCount - 1) {
+				movingLastLine = true;
+				end--;
 			}
-			doc.remove(start, end - start);
-			Element elem2 = root.getElement(line - 1);
-			int start2 = elem2.getStartOffset();
-			// int end2 = elem2.getEndOffset();
-			if (line == lineCount - 1) {
-				text += '\n';
+
+			int insertLine = Math.max(line - 1, 0);
+
+			textArea.beginAtomicEdit();
+			try {
+
+				String text = doc.getText(start, end - start);
+				if (movingLastLine) {
+					text += '\n';
+				}
+				doc.remove(start, end - start);
+
+				int insertOffs = textArea.getLineStartOffset(insertLine);
+				doc.insertString(insertOffs, text, null);
+				textArea.setSelectionStart(insertOffs);
+				int selEnd = insertOffs + text.length() - 1;
+				textArea.setSelectionEnd(selEnd);
+				if (movingLastLine) { // Remove the artifically-added newline
+					doc.remove(doc.getLength() - 1, 1);
+				}
+
+			} finally {
+				textArea.endAtomicEdit();
 			}
-			doc.insertString(start2, text, null);
-			// caretOffset = Math.min(start2+caretOffset, end2-1);
-			textArea.setCaretPosition(start2 + caretOffset);
+
 		}
 
 	}
@@ -1631,8 +1727,7 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 					int curLine = textArea.getCaretLineNumber();
 
 					if (forward) {
-						for (int i = 0; i < bookmarks.length; i++) {
-							GutterIconInfo bookmark = bookmarks[i];
+						for (GutterIconInfo bookmark : bookmarks) {
 							int offs = bookmark.getMarkedOffset();
 							int line = textArea.getLineOfOffset(offs);
 							if (line > curLine) {
@@ -1704,6 +1799,9 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 				}
 			}
 			SearchContext context = new SearchContext(selectedText);
+			if (!textArea.getMarkAllOnOccurrenceSearches()) {
+				context.setMarkAll(false);
+			}
 			if (!SearchEngine.find(textArea, context).wasFound()) {
 				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 			}
@@ -1724,7 +1822,6 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 	public static class NextVisualPositionAction extends RecordableTextAction {
 
 		private boolean select;
-
 		private int direction;
 
 		public NextVisualPositionAction(String nm, boolean select, int dir) {
@@ -1867,10 +1964,9 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 	static class PageAction extends RecordableTextAction {
 
 		private boolean select;
-
 		private boolean left;
 
-		public PageAction(String name, boolean left, boolean select) {
+		PageAction(String name, boolean left, boolean select) {
 			super(name);
 			this.select = select;
 			this.left = left;
@@ -1994,6 +2090,9 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 				}
 			}
 			SearchContext context = new SearchContext(selectedText);
+			if (!textArea.getMarkAllOnOccurrenceSearches()) {
+				context.setMarkAll(false);
+			}
 			context.setSearchForward(false);
 			if (!SearchEngine.find(textArea, context).wasFound()) {
 				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
@@ -2165,7 +2264,6 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 	public static class SelectLineAction extends RecordableTextAction {
 
 		private Action start;
-
 		private Action end;
 
 		public SelectLineAction() {
@@ -2193,7 +2291,6 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 	public static class SelectWordAction extends RecordableTextAction {
 
 		protected Action start;
-
 		protected Action end;
 
 		public SelectWordAction() {
@@ -2444,7 +2541,6 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 	public static class VerticalPageAction extends RecordableTextAction {
 
 		private boolean select;
-
 		private int direction;
 
 		public VerticalPageAction(String name, int direction, boolean select) {

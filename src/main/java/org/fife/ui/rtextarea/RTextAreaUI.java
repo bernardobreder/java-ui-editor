@@ -1,6 +1,10 @@
 /*
- * 04/25/2007 RTextAreaUI.java - UI used by instances of RTextArea. This library is distributed
- * under a modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 04/25/2007
+ *
+ * RTextAreaUI.java - UI used by instances of RTextArea.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -33,6 +37,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Caret;
 import javax.swing.text.EditorKit;
 import javax.swing.text.Element;
+import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Keymap;
 import javax.swing.text.PlainView;
@@ -51,14 +56,12 @@ import javax.swing.text.WrappedPlainView;
 public class RTextAreaUI extends BasicTextAreaUI {
 
 	private static final String SHARED_ACTION_MAP_NAME = "RTextAreaUI.actionMap";
-
 	private static final String SHARED_INPUT_MAP_NAME = "RTextAreaUI.inputMap";
 
 	protected RTextArea textArea; // The text area for which we are the UI.
 
-	private static final EditorKit defaultKit = new RTextAreaEditorKit();
-
-	private static final TransferHandler defaultTransferHandler = new RTATextTransferHandler();
+	private static final EditorKit DEFAULT_KIT = new RTextAreaEditorKit();
+	private static final TransferHandler DEFAULT_TRANSFER_HANDLER = new RTATextTransferHandler();
 
 	private static final String RTEXTAREA_KEYMAP_NAME = "RTextAreaKeymap";
 
@@ -187,6 +190,11 @@ public class RTextAreaUI extends BasicTextAreaUI {
 		return caret;
 	}
 
+	@Override
+	protected Highlighter createHighlighter() {
+		return new RTextAreaHighlighter();
+	}
+
 	/**
 	 * Creates the keymap for this text area. This takes the super class's keymap,
 	 * but sets the default keystroke to be RTextAreaEditorKit's
@@ -215,6 +223,7 @@ public class RTextAreaUI extends BasicTextAreaUI {
 	 * Creates a default action map. This action map contains actions for all basic
 	 * text area work - cut, copy, paste, select, caret motion, etc.
 	 * <p>
+	 *
 	 * This isn't named <code>createActionMap()</code> because there is a
 	 * package-private member by that name in <code>BasicTextAreaUI</code>, and some
 	 * compilers will give warnings that we are not overriding that method since it
@@ -229,8 +238,7 @@ public class RTextAreaUI extends BasicTextAreaUI {
 		ActionMap map = new ActionMapUIResource();
 		Action[] actions = textArea.getActions();
 		int n = actions.length;
-		for (int i = 0; i < n; i++) {
-			Action a = actions[i];
+		for (Action a : actions) {
 			map.put(a.getValue(Action.NAME), a);
 		}
 
@@ -264,7 +272,7 @@ public class RTextAreaUI extends BasicTextAreaUI {
 	 */
 	@Override
 	public EditorKit getEditorKit(JTextComponent tc) {
-		return defaultKit;
+		return DEFAULT_KIT;
 	}
 
 	/**
@@ -279,6 +287,7 @@ public class RTextAreaUI extends BasicTextAreaUI {
 	/**
 	 * Returns an action map to use by a text area.
 	 * <p>
+	 *
 	 * This method is not named <code>getActionMap()</code> because there is a
 	 * package-private method in <code>BasicTextAreaUI</code> with that name. Thus,
 	 * creating a new method with that name causes certain compilers to issue
@@ -311,6 +320,7 @@ public class RTextAreaUI extends BasicTextAreaUI {
 	/**
 	 * Get the InputMap to use for the UI.
 	 * <p>
+	 *
 	 * This method is not named <code>getInputMap()</code> because there is a
 	 * package-private method in <code>BasicTextAreaUI</code> with that name. Thus,
 	 * creating a new method with that name causes certain compilers to issue
@@ -366,7 +376,7 @@ public class RTextAreaUI extends BasicTextAreaUI {
 		// rules and doesn't set properties needed by custom BasicTextAreaUI's.
 		correctNimbusDefaultProblems(editor);
 
-		editor.setTransferHandler(defaultTransferHandler);
+		editor.setTransferHandler(DEFAULT_TRANSFER_HANDLER);
 
 	}
 
@@ -428,11 +438,7 @@ public class RTextAreaUI extends BasicTextAreaUI {
 			g.fillRect(r.x, r.y, r.width, r.height);
 		}
 
-		Rectangle visibleRect = textArea.getVisibleRect();
-
-		paintLineHighlights(g);
-		paintCurrentLineHighlight(g, visibleRect);
-		paintMarginLine(g, visibleRect);
+		paintEditorAugmentations(g);
 
 	}
 
@@ -478,6 +484,19 @@ public class RTextAreaUI extends BasicTextAreaUI {
 	}
 
 	/**
+	 * Paints editor augmentations added by RTextArea: highlighted lines, current
+	 * line highlight, and margin line.
+	 *
+	 * @param g The graphics context with which to paint.
+	 */
+	protected void paintEditorAugmentations(Graphics g) {
+		Rectangle visibleRect = textArea.getVisibleRect();
+		paintLineHighlights(g);
+		paintCurrentLineHighlight(g, visibleRect);
+		paintMarginLine(g, visibleRect);
+	}
+
+	/**
 	 * Paints any line highlights.
 	 *
 	 * @param g The graphics context.
@@ -504,14 +523,25 @@ public class RTextAreaUI extends BasicTextAreaUI {
 		}
 	}
 
+	@Override
+	protected void paintSafely(Graphics g) {
+		// Paint editor augmentations if editor is not opaque because
+		// paintBackground() is not called in this case
+		if (!textArea.isOpaque()) {
+			paintEditorAugmentations(g);
+		}
+		super.paintSafely(g);
+	}
+
 	/**
 	 * Returns the y-coordinate of the specified line.
 	 * <p>
-	 * The default implementation is equivalent to:
 	 *
+	 * The default implementation is equivalent to:
+	 * 
 	 * <pre>
 	 * int startOffs = textArea.getLineStartOffset(line);
-	 * return yForLineContaining(startOffs);</code>
+	 * return yForLineContaining(startOffs);
 	 * </pre>
 	 *
 	 * Subclasses that can calculate this value more quickly than traditional
@@ -534,12 +564,13 @@ public class RTextAreaUI extends BasicTextAreaUI {
 	/**
 	 * Returns the y-coordinate of the line containing an offset.
 	 * <p>
-	 * The default implementation is equivalent to:
 	 *
+	 * The default implementation is equivalent to:
+	 * 
 	 * <pre>
 	 * int line = textArea.getLineOfOffset(offs);
 	 * int startOffs = textArea.getLineStartOffset(line);
-	 * return modelToView(startOffs).y;</code>
+	 * return modelToView(startOffs).y;
 	 * </pre>
 	 *
 	 * Subclasses that can calculate this value more quickly than traditional

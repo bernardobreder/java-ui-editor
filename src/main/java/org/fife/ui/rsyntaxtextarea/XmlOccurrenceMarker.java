@@ -1,7 +1,10 @@
 /*
- * 03/09/2013 XmlOccurrenceMarker - Marks occurrences of the current token for XML. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 03/09/2013
+ *
+ * XmlOccurrenceMarker - Marks occurrences of the current token for XML.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -22,28 +25,18 @@ import org.fife.ui.rtextarea.SmartHighlightPainter;
 public class XmlOccurrenceMarker implements OccurrenceMarker {
 
 	private static final char[] CLOSE_TAG_START = { '<', '/' };
-
 	private static final char[] TAG_SELF_CLOSE = { '/', '>' };
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Token getTokenToMark(RSyntaxTextArea textArea) {
 		return HtmlOccurrenceMarker.getTagNameTokenForCaretOffset(textArea, this);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isValidType(RSyntaxTextArea textArea, Token t) {
 		return textArea.getMarkOccurrencesOfTokenType(t.getType());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void markOccurrences(RSyntaxDocument doc, Token t, RSyntaxTextAreaHighlighter h, SmartHighlightPainter p) {
 
@@ -127,7 +120,7 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 			// tag we found originally; if it's not on this line, keep going
 			// to the previous line.
 
-			List<Entry> openCloses = new ArrayList<Entry>();
+			List<Entry> openCloses = new ArrayList<>();
 			boolean inPossibleMatch = false;
 			t = doc.getTokenListForLine(curLine);
 			final int endBefore = tokenOffs - 2; // Stop before "</".
@@ -200,11 +193,10 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 	 */
 	private static class Entry {
 
-		public boolean open;
+		private boolean open;
+		private Token t;
 
-		public Token t;
-
-		public Entry(boolean open, Token t) {
+		Entry(boolean open, Token t) {
 			this.open = open;
 			this.t = t;
 		}

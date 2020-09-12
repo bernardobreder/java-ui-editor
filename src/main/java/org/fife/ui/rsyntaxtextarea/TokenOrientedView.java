@@ -1,7 +1,11 @@
 /*
- * 08/06/2004 TokenOrientedView.java - An interface for the syntax-highlighting token- oriented
- * views for token-oriented methods. This library is distributed under a modified BSD license. See
- * the included RSyntaxTextArea.License.txt file for details.
+ * 08/06/2004
+ *
+ * TokenOrientedView.java - An interface for the syntax-highlighting token-
+ * oriented views for token-oriented methods.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -10,6 +14,7 @@ package org.fife.ui.rsyntaxtextarea;
  * token-oriented methods. This way callers won't need to know what specific
  * class a view is an instance of to access its tokens.
  * <p>
+ *
  * Currently, this interface is only useful for obtaining token lists for
  * "physical lines" (i.e., a word-wrapped view's logical lines may be
  * represented as several physical lines, thus getting the "physical line" above
@@ -32,7 +37,7 @@ public interface TokenOrientedView {
 	 *         this one. If no physical line is above the one containing
 	 *         <code>offset</code>, <code>null</code> is returned.
 	 */
-	public Token getTokenListForPhysicalLineAbove(int offset);
+	Token getTokenListForPhysicalLineAbove(int offset);
 
 	/**
 	 * Returns a token list for the <i>physical</i> line below the physical line
@@ -46,6 +51,6 @@ public interface TokenOrientedView {
 	 *         this one. If no physical line is after the one containing
 	 *         <code>offset</code>, <code>null</code> is returned.
 	 */
-	public Token getTokenListForPhysicalLineBelow(int offset);
+	Token getTokenListForPhysicalLineBelow(int offset);
 
 }

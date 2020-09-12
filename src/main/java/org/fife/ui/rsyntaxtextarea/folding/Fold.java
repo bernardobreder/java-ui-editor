@@ -1,7 +1,10 @@
 /*
- * 10/08/2011 Fold.java - A foldable region of text in an RSyntaxTextArea instance. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 10/08/2011
+ *
+ * Fold.java - A foldable region of text in an RSyntaxTextArea instance.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.folding;
 
@@ -17,10 +20,12 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 /**
  * Information about a foldable region.
  * <p>
+ *
  * A <code>Fold</code> has zero or more children, and <code>Folds</code> thus
  * form a hierarchical structure, with "parent" folds containing the info about
  * any "child" folds they contain.
  * <p>
+ *
  * Fold regions are denoted by a starting and ending offset, but the actual
  * folding is done on a per-line basis, so <code>Fold</code> instances provide
  * methods for retrieving both starting and ending offsets and lines. The
@@ -33,27 +38,18 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 public class Fold implements Comparable<Fold> {
 
 	private int type;
-
 	private RSyntaxTextArea textArea;
-
 	private Position startOffs;
-
 	private Position endOffs;
-
 	private Fold parent;
-
 	private List<Fold> children;
-
 	private boolean collapsed;
-
 	private int childCollapsedLineCount;
 
 	private int lastStartOffs = -1;
-
 	private int cachedStartLine;
 
 	private int lastEndOffs = -1;
-
 	private int cachedEndLine;
 
 	public Fold(int type, RSyntaxTextArea textArea, int startOffs) throws BadLocationException {
@@ -75,7 +71,7 @@ public class Fold implements Comparable<Fold> {
 		Fold child = new Fold(type, textArea, startOffs);
 		child.parent = this;
 		if (children == null) {
-			children = new ArrayList<Fold>();
+			children = new ArrayList<>();
 		}
 		children.add(child);
 		return child;
@@ -191,6 +187,7 @@ public class Fold implements Comparable<Fold> {
 	 * collapsed, this method returns {@link #getLineCount()}, otherwise it returns
 	 * the sum of all collapsed lines of all child folds of this one.
 	 * <p>
+	 *
 	 * The value returned is cached, so this method returns quickly and shouldn't
 	 * affect performance.
 	 *
@@ -255,6 +252,7 @@ public class Fold implements Comparable<Fold> {
 	 * Java, this might be the line containing the closing curly brace of a code
 	 * block.
 	 * <p>
+	 *
 	 * The value returned by this method will automatically update as the text
 	 * area's contents are modified, to track the ending line of the code block.
 	 *
@@ -276,6 +274,7 @@ public class Fold implements Comparable<Fold> {
 	 * Returns the end offset of this fold. For example, in languages such as C and
 	 * Java, this might be the offset of the closing curly brace of a code block.
 	 * <p>
+	 *
 	 * The value returned by this method will automatically update as the text
 	 * area's contents are modified, to track the ending offset of the code block.
 	 *
@@ -346,6 +345,7 @@ public class Fold implements Comparable<Fold> {
 	 * Returns the starting line of this fold region. This is the only line in the
 	 * fold region that is not hidden when a fold is collapsed.
 	 * <p>
+	 *
 	 * The value returned by this method will automatically update as the text
 	 * area's contents are modified, to track the starting line of the code block.
 	 *
@@ -368,6 +368,7 @@ public class Fold implements Comparable<Fold> {
 	 * such as C and Java, this would be the offset of the opening curly brace of a
 	 * code block.
 	 * <p>
+	 *
 	 * The value returned by this method will automatically update as the text
 	 * area's contents are modified, to track the starting offset of the code block.
 	 *

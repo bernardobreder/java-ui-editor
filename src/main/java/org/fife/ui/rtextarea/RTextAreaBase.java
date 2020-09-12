@@ -1,6 +1,10 @@
 /*
- * 04/07/2005 RTextAreaBase.java - The base class for an RTextArea. This library is distributed
- * under a modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 04/07/2005
+ *
+ * RTextAreaBase.java - The base class for an RTextArea.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -32,6 +36,7 @@ import javax.swing.text.StyleContext;
  * This is the base class for <code>RTextArea</code>; basically it's just an
  * extension of <code>javax.swing.JTextArea</code> adding a bunch of properties.
  * <p>
+ *
  * This class is only supposed to be overridden by <code>RTextArea</code>.
  *
  * @author Robert Futrell
@@ -39,37 +44,23 @@ import javax.swing.text.StyleContext;
  */
 public abstract class RTextAreaBase extends JTextArea {
 
-	/** Propriedade de fundo de imagem */
 	public static final String BACKGROUND_IMAGE_PROPERTY = "background.image";
-
 	public static final String CURRENT_LINE_HIGHLIGHT_COLOR_PROPERTY = "RTA.currentLineHighlightColor";
-
 	public static final String CURRENT_LINE_HIGHLIGHT_FADE_PROPERTY = "RTA.currentLineHighlightFade";
-
 	public static final String HIGHLIGHT_CURRENT_LINE_PROPERTY = "RTA.currentLineHighlight";
-
 	public static final String ROUNDED_SELECTION_PROPERTY = "RTA.roundedSelection";
 
 	private boolean tabsEmulatedWithSpaces; // If true, tabs will be expanded to spaces.
 
 	private boolean highlightCurrentLine; // If true, the current line is highlighted.
-
 	private Color currentLineColor; // The color used to highlight the current line.
-
 	private boolean marginLineEnabled; // If true, paint a "margin line."
-
 	private Color marginLineColor; // The color used to paint the margin line.
-
 	private int marginLineX; // The x-location of the margin line.
-
 	private int marginSizeInChars; // How many 'm' widths the margin line is over.
-
 	private boolean fadeCurrentLineHighlight; // "Fade effect" for current line highlight.
-
 	private boolean roundedSelectionEdges;
-
 	private int previousCaretY;
-
 	int currentCaretY; // Used to know when to rehighlight current line.
 
 	private BackgroundPainterStrategy backgroundPainter; // Paints the background.
@@ -77,13 +68,9 @@ public abstract class RTextAreaBase extends JTextArea {
 	private RTAMouseListener mouseListener;
 
 	private static final Color DEFAULT_CARET_COLOR = new ColorUIResource(255, 51, 51);
-
 	private static final Color DEFAULT_CURRENT_LINE_HIGHLIGHT_COLOR = new Color(255, 255, 170);
-
 	private static final Color DEFAULT_MARGIN_LINE_COLOR = new Color(255, 224, 224);
-
 	private static final int DEFAULT_TAB_SIZE = 4;
-
 	private static final int DEFAULT_MARGIN_LINE_POSITION = 80;
 
 	/**
@@ -170,32 +157,29 @@ public abstract class RTextAreaBase extends JTextArea {
 	private void addCurrentLineHighlightListeners() {
 		boolean add = true;
 		MouseMotionListener[] mouseMotionListeners = getMouseMotionListeners();
-		for (int i = 0; i < mouseMotionListeners.length; i++) {
-			if (mouseMotionListeners[i] == mouseListener) {
+		for (MouseMotionListener mouseMotionListener : mouseMotionListeners) {
+			if (mouseMotionListener == mouseListener) {
 				add = false;
 				break;
 			}
 		}
-		if (add == true) {
+		if (add) {
 			// System.err.println("Adding mouse motion listener!");
 			addMouseMotionListener(mouseListener);
 		}
 		MouseListener[] mouseListeners = getMouseListeners();
-		for (int i = 0; i < mouseListeners.length; i++) {
-			if (mouseListeners[i] == mouseListener) {
+		for (MouseListener listener : mouseListeners) {
+			if (listener == mouseListener) {
 				add = false;
 				break;
 			}
 		}
-		if (add == true) {
+		if (add) {
 			// System.err.println("Adding mouse listener!");
 			addMouseListener(mouseListener);
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void addNotify() {
 		super.addNotify();
@@ -203,23 +187,16 @@ public abstract class RTextAreaBase extends JTextArea {
 		// highlight y-offset after the text area is sized. This seems to be
 		// the best way to do it.
 		if (getCaretPosition() != 0) {
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					System.out.println("Yo");
-					possiblyUpdateCurrentLineHighlightLocation();
-				}
-			});
+			SwingUtilities.invokeLater(this::possiblyUpdateCurrentLineHighlightLocation);
 		}
 	}
 
 	/*
 	 * TODO: Figure out why RTextArea doesn't work with RTL orientation!
 	 */
-	// public void applyComponentOrientation(ComponentOrientation orientation) {
-	// super.applyComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-	// }
+//	public void applyComponentOrientation(ComponentOrientation orientation) {
+//		super.applyComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+//	}
 
 	/**
 	 * Converts all instances of a number of spaces equal to a tab size into a tab
@@ -237,12 +214,12 @@ public abstract class RTextAreaBase extends JTextArea {
 
 		int caretPosition = getCaretPosition();
 		int tabSize = getTabSize();
-		String tabInSpaces = "";
+		StringBuilder stringBuilder = new StringBuilder();
 		for (int i = 0; i < tabSize; i++) {
-			tabInSpaces += " ";
+			stringBuilder.append(" ");
 		}
 		String text = getText();
-		setText(text.replaceAll(tabInSpaces, "\t"));
+		setText(text.replaceAll(stringBuilder.toString(), "\t"));
 		int newDocumentLength = getDocument().getLength();
 
 		// Place the caret back in its proper position.
@@ -359,8 +336,8 @@ public abstract class RTextAreaBase extends JTextArea {
 			return null;
 		}
 		return (backgroundPainter instanceof ImageBackgroundPainterStrategy)
-				? (Object) ((ImageBackgroundPainterStrategy) backgroundPainter).getMasterImage()
-				: (Object) ((ColorBackgroundPainterStrategy) backgroundPainter).getColor();
+				? ((ImageBackgroundPainterStrategy) backgroundPainter).getMasterImage()
+				: ((ColorBackgroundPainterStrategy) backgroundPainter).getColor();
 	}
 
 	/**
@@ -393,6 +370,15 @@ public abstract class RTextAreaBase extends JTextArea {
 	}
 
 	/**
+	 * Returns the y-offset of the caret.
+	 *
+	 * @return The y-offset of the caret.
+	 */
+	protected int getCurrentCaretY() {
+		return currentCaretY;
+	}
+
+	/**
 	 * Returns the color being used to highlight the current line. Note that if
 	 * highlighting the current line is turned off, you will not be seeing this
 	 * highlight.
@@ -411,7 +397,7 @@ public abstract class RTextAreaBase extends JTextArea {
 	 *
 	 * @return The default caret color.
 	 */
-	public static final Color getDefaultCaretColor() {
+	public static Color getDefaultCaretColor() {
 		return DEFAULT_CARET_COLOR;
 	}
 
@@ -422,7 +408,7 @@ public abstract class RTextAreaBase extends JTextArea {
 	 *
 	 * @return The default color for highlighting the current line.
 	 */
-	public static final Color getDefaultCurrentLineHighlightColor() {
+	public static Color getDefaultCurrentLineHighlightColor() {
 		return DEFAULT_CURRENT_LINE_HIGHLIGHT_COLOR;
 	}
 
@@ -431,7 +417,7 @@ public abstract class RTextAreaBase extends JTextArea {
 	 *
 	 * @return The default font.
 	 */
-	public static final Font getDefaultFont() {
+	public static Font getDefaultFont() {
 
 		// Use StyleContext to get a composite font for better Asian language
 		// support; see Sun bug S282887.
@@ -466,7 +452,7 @@ public abstract class RTextAreaBase extends JTextArea {
 	 *
 	 * @return The default foreground color.
 	 */
-	public static final Color getDefaultForeground() {
+	public static Color getDefaultForeground() {
 		return Color.BLACK;
 	}
 
@@ -477,7 +463,7 @@ public abstract class RTextAreaBase extends JTextArea {
 	 * @see #getMarginLineColor()
 	 * @see #setMarginLineColor(Color)
 	 */
-	public static final Color getDefaultMarginLineColor() {
+	public static Color getDefaultMarginLineColor() {
 		return DEFAULT_MARGIN_LINE_COLOR;
 	}
 
@@ -488,7 +474,7 @@ public abstract class RTextAreaBase extends JTextArea {
 	 * @see #getMarginLinePosition
 	 * @see #setMarginLinePosition
 	 */
-	public static final int getDefaultMarginLinePosition() {
+	public static int getDefaultMarginLinePosition() {
 		return DEFAULT_MARGIN_LINE_POSITION;
 	}
 
@@ -497,7 +483,7 @@ public abstract class RTextAreaBase extends JTextArea {
 	 *
 	 * @return The default tab size.
 	 */
-	public static final int getDefaultTabSize() {
+	public static int getDefaultTabSize() {
 		return DEFAULT_TAB_SIZE;
 	}
 
@@ -727,16 +713,16 @@ public abstract class RTextAreaBase extends JTextArea {
 
 		// No line wrap - we can simply check the line number (quicker).
 		else {
-			// Document doc = getDocument();
-			// if (doc!=null) {
-			// Element map = doc.getDefaultRootElement();
-			// int caretLine = map.getElementIndex(dot);
-			// Rectangle alloc = ((RTextAreaUI)getUI()).
-			// getVisibleEditorRect();
-			// if (alloc!=null)
-			// currentCaretY = alloc.y + caretLine*lineHeight;
-			// }
-			// Modified for code folding requirements
+//			Document doc = getDocument();
+//			if (doc!=null) {
+//				Element map = doc.getDefaultRootElement();
+//				int caretLine = map.getElementIndex(dot);
+//				Rectangle alloc = ((RTextAreaUI)getUI()).
+//											getVisibleEditorRect();
+//				if (alloc!=null)
+//					currentCaretY = alloc.y + caretLine*lineHeight;
+//			}
+// Modified for code folding requirements
 			try {
 				Rectangle temp = modelToView(dot);
 				if (temp != null) {
@@ -774,7 +760,7 @@ public abstract class RTextAreaBase extends JTextArea {
 		// "line" could change - not to a different logical line, but a
 		// different physical one. So, here we force a repaint of the current
 		// line's highlight if necessary.
-		if (e.getID() == ComponentEvent.COMPONENT_RESIZED && getLineWrap() == true && getHighlightCurrentLine()) {
+		if (e.getID() == ComponentEvent.COMPONENT_RESIZED && getLineWrap() && getHighlightCurrentLine()) {
 			previousCaretY = -1; // So we are sure to repaint.
 			fireCaretUpdate(mouseListener);
 		}
@@ -785,13 +771,15 @@ public abstract class RTextAreaBase extends JTextArea {
 
 	/**
 	 * Sets the background color of this text editor. Note that this is equivalent
-	 * to calling <code>setBackgroundObject(bg)</code>. NOTE: the opaque property is
-	 * set to <code>true</code> when the background is set to a color (by this
-	 * method). When an image is used for the background, opaque is set to false.
-	 * This is because we perform better when setOpaque is true, but if we use an
-	 * image for the background when opaque is true, we get on-screen garbage when
-	 * the user scrolls via the arrow keys. Thus we need setOpaque to be false in
-	 * that case.
+	 * to calling <code>setBackgroundObject(bg)</code>.
+	 * <p>
+	 *
+	 * NOTE: the opaque property is set to <code>true</code> when the background is
+	 * set to a color with 1.0 alpha (by this method). When an image is used for the
+	 * background, opaque is set to false. This is because we perform better when
+	 * setOpaque is true, but if we use an image for the background when opaque is
+	 * true, we get on-screen garbage when the user scrolls via the arrow keys. Thus
+	 * we need setOpaque to be false in that case.
 	 * <p>
 	 * You never have to change the opaque property yourself; it is always done for
 	 * you.
@@ -806,7 +794,7 @@ public abstract class RTextAreaBase extends JTextArea {
 		} else { // Was an image painter...
 			backgroundPainter = new ColorBackgroundPainterStrategy(bg);
 		}
-		setOpaque(true);
+		setOpaque(bg == null || bg.getAlpha() == 0xff);
 		firePropertyChange("background", oldBG, bg);
 		repaint();
 	}
@@ -815,6 +803,7 @@ public abstract class RTextAreaBase extends JTextArea {
 	 * Sets this image as the background image. This method fires a property change
 	 * event of type {@link #BACKGROUND_IMAGE_PROPERTY}.
 	 * <p>
+	 *
 	 * NOTE: the opaque property is set to <code>true</code> when the background is
 	 * set to a color. When an image is used for the background (by this method),
 	 * opaque is set to false. This is because we perform better when setOpaque is
@@ -865,12 +854,12 @@ public abstract class RTextAreaBase extends JTextArea {
 	 * TODO: Figure out why RTextArea doesn't work with RTL (e.g. Arabic) and fix
 	 * it!
 	 */
-	// public void setComponentOrientation(ComponentOrientation o) {
-	// if (!o.isLeftToRight()) {
-	// o = ComponentOrientation.LEFT_TO_RIGHT;
-	// }
-	// super.setComponentOrientation(o);
-	// }
+//	public void setComponentOrientation(ComponentOrientation o) {
+//		if (!o.isLeftToRight()) {
+//			o = ComponentOrientation.LEFT_TO_RIGHT;
+//		}
+//		super.setComponentOrientation(o);
+//	}
 
 	/**
 	 * Sets the color to use to highlight the current line. Note that if
@@ -1145,7 +1134,11 @@ public abstract class RTextAreaBase extends JTextArea {
 		return ((RTextAreaUI) getUI()).yForLineContaining(offs);
 	}
 
-	protected class RTAMouseListener extends CaretEvent implements MouseListener, MouseMotionListener, FocusListener {
+	/**
+	 * Listens for mouse events in this component.
+	 */
+	protected static class RTAMouseListener extends CaretEvent
+			implements MouseListener, MouseMotionListener, FocusListener {
 
 		RTAMouseListener(RTextAreaBase textArea) {
 			super(textArea);
@@ -1198,7 +1191,6 @@ public abstract class RTextAreaBase extends JTextArea {
 		}
 
 		protected int dot;
-
 		protected int mark;
 
 	}

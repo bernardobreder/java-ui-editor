@@ -1,6 +1,10 @@
 /*
- * 12/23/2012 JsonFoldParser.java - Fold parser for JSON. This library is distributed under a
- * modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 12/23/2012
+ *
+ * JsonFoldParser.java - Fold parser for JSON.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.folding;
 
@@ -15,8 +19,9 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
- * The fold parser for JSON. Objects (<code>"{ ... }</code>") and arrays (
- * <code>"[ ... ]"</code>) that span multiple lines are considered fold regions.
+ * The fold parser for JSON. Objects (<code>"{ ... }</code>") and arrays
+ * (<code>"[ ... ]"</code>) that span multiple lines are considered fold
+ * regions.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -24,7 +29,6 @@ import org.fife.ui.rsyntaxtextarea.TokenTypes;
 public class JsonFoldParser implements FoldParser {
 
 	private static final Object OBJECT_BLOCK = new Object();
-
 	private static final Object ARRAY_BLOCK = new Object();
 
 	/**
@@ -33,8 +37,8 @@ public class JsonFoldParser implements FoldParser {
 	@Override
 	public List<Fold> getFolds(RSyntaxTextArea textArea) {
 
-		Stack<Object> blocks = new Stack<Object>();
-		List<Fold> folds = new ArrayList<Fold>();
+		Stack<Object> blocks = new Stack<>();
+		List<Fold> folds = new ArrayList<>();
 
 		Fold currentFold = null;
 		int lineCount = textArea.getLineCount();
@@ -60,8 +64,8 @@ public class JsonFoldParser implements FoldParser {
 						if (currentFold != null) {
 							currentFold.setEndOffset(t.getOffset());
 							Fold parentFold = currentFold.getParent();
-							// System.out.println("... Adding regular fold at " + t.offset +
-							// ", parent==" + parentFold);
+							// System.out.println("... Adding regular fold at " + t.offset + ", parent==" +
+							// parentFold);
 							// Don't add fold markers for single-line blocks
 							if (currentFold.isOnSingleLine()) {
 								if (!currentFold.removeFromParent()) {
@@ -86,8 +90,8 @@ public class JsonFoldParser implements FoldParser {
 						if (currentFold != null) {
 							currentFold.setEndOffset(t.getOffset());
 							Fold parentFold = currentFold.getParent();
-							// System.out.println("... Adding regular fold at " + t.offset +
-							// ", parent==" + parentFold);
+							// System.out.println("... Adding regular fold at " + t.offset + ", parent==" +
+							// parentFold);
 							// Don't add fold markers for single-line blocks
 							if (currentFold.isOnSingleLine()) {
 								if (!currentFold.removeFromParent()) {
@@ -119,7 +123,7 @@ public class JsonFoldParser implements FoldParser {
 	 * @return Whether the token is the left bracket token.
 	 * @see #isRightBracket(Token)
 	 */
-	private static final boolean isLeftBracket(Token t) {
+	private static boolean isLeftBracket(Token t) {
 		return t.getType() == TokenTypes.SEPARATOR && t.isSingleChar('[');
 	}
 
@@ -130,7 +134,7 @@ public class JsonFoldParser implements FoldParser {
 	 * @return Whether the token is the right bracket token.
 	 * @see #isLeftBracket(Token)
 	 */
-	private static final boolean isRightBracket(Token t) {
+	private static boolean isRightBracket(Token t) {
 		return t.getType() == TokenTypes.SEPARATOR && t.isSingleChar(']');
 	}
 
@@ -142,7 +146,7 @@ public class JsonFoldParser implements FoldParser {
 	 * @param value The value to check for.
 	 * @return Whether the value was found on top of the stack.
 	 */
-	private static final boolean popOffTop(Stack<Object> stack, Object value) {
+	private static boolean popOffTop(Stack<Object> stack, Object value) {
 		if (stack.size() > 0 && stack.peek() == value) {
 			stack.pop();
 			return true;

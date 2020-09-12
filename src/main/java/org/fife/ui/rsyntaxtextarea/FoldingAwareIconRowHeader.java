@@ -1,7 +1,11 @@
 /*
- * 03/07/2012 FoldingAwareIconRowHeader - Icon row header that paints itself correctly even when
- * code folding is enabled. This library is distributed under a modified BSD license. See the
- * included RSyntaxTextArea.License.txt file for details.
+ * 03/07/2012
+ *
+ * FoldingAwareIconRowHeader - Icon row header that paints itself correctly
+ * even when code folding is enabled.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -195,7 +199,7 @@ public class FoldingAwareIconRowHeader extends IconRowHeader {
 		// costly. It's cheaper to just grab the child views' bounds.
 
 		RSyntaxTextArea rsta = (RSyntaxTextArea) textArea;
-		// boolean currentLineHighlighted = textArea.getHighlightCurrentLine();
+//		boolean currentLineHighlighted = textArea.getHighlightCurrentLine();
 		Document doc = textArea.getDocument();
 		Element root = doc.getDefaultRootElement();
 		int topPosition = textArea.viewToModel(new Point(visibleRect.x, visibleRect.y));

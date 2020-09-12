@@ -1,7 +1,10 @@
 /*
- * 03/16/2013 DefaultTokenPainter - Standard implementation of a token painter. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 03/16/2013
+ *
+ * DefaultTokenPainter - Standard implementation of a token painter.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -32,7 +35,7 @@ class DefaultTokenPainter implements TokenPainter {
 	 */
 	private static char[] tabBuf;
 
-	public DefaultTokenPainter() {
+	DefaultTokenPainter() {
 		bgRect = new Rectangle2D.Float();
 	}
 
@@ -51,6 +54,15 @@ class DefaultTokenPainter implements TokenPainter {
 	public float paint(Token token, Graphics2D g, float x, float y, RSyntaxTextArea host, TabExpander e,
 			float clipStart) {
 		return paintImpl(token, g, x, y, host, e, clipStart, false, false);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public float paint(Token token, Graphics2D g, float x, float y, RSyntaxTextArea host, TabExpander e,
+			float clipStart, boolean paintBG) {
+		return paintImpl(token, g, x, y, host, e, clipStart, !paintBG, false);
 	}
 
 	/**
@@ -114,10 +126,14 @@ class DefaultTokenPainter implements TokenPainter {
 		}
 
 		nextX = x + fm.charsWidth(text, flushIndex, flushLen);
+		java.awt.Rectangle r = host.getMatchRectangle();
 
 		if (flushLen > 0 && nextX >= clipStart) {
 			if (bg != null) {
 				paintBackground(x, y, nextX - x, fm.getHeight(), g, fm.getAscent(), host, bg);
+				if (token.length() == 1 && r != null && r.x == x) {
+					((RSyntaxTextAreaUI) host.getUI()).paintMatchedBracketImpl(g, host, r);
+				}
 			}
 			g.setColor(fg);
 			g.drawChars(text, flushIndex, flushLen, (int) x, (int) y);

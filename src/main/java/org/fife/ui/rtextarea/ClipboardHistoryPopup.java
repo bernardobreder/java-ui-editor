@@ -1,7 +1,10 @@
 /*
- * 08/16/2014 ClipboardHistoryPopup.java - Shows clipboard history in a popup window. This library
- * is distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file
- * for details.
+ * 08/16/2014
+ *
+ * ClipboardHistoryPopup.java - Shows clipboard history in a popup window.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -52,9 +55,7 @@ class ClipboardHistoryPopup extends JWindow {
 	private RTextArea textArea;
 
 	private ChoiceList list;
-
-	private Listener listener;
-
+	private transient Listener listener;
 	private boolean prevCaretAlwaysVisible;
 
 	/**
@@ -70,7 +71,7 @@ class ClipboardHistoryPopup extends JWindow {
 	 * @param parent   The parent window containing <code>textArea</code>.
 	 * @param textArea The text area to paste into.
 	 */
-	public ClipboardHistoryPopup(Window parent, RTextArea textArea) {
+	ClipboardHistoryPopup(Window parent, RTextArea textArea) {
 
 		super(parent);
 		this.textArea = textArea;
@@ -114,10 +115,10 @@ class ClipboardHistoryPopup extends JWindow {
 	 * Inserts the selected item into the editor and disposes of this popup.
 	 */
 	private void insertSelectedItem() {
-		Object lvp = list.getSelectedValue();
+		LabelValuePair lvp = list.getSelectedValue();
 		if (lvp != null) {
 			listener.uninstallAndHide();
-			String text = ((LabelValuePair) lvp).value;
+			String text = lvp.value;
 			textArea.replaceSelection(text);
 			ClipboardHistory.get().add(text); // Move this item to the top
 		}
@@ -148,7 +149,7 @@ class ClipboardHistoryPopup extends JWindow {
 	 */
 	private void setLocation() {
 
-		Rectangle r = null;
+		Rectangle r;
 		try {
 			r = textArea.modelToView(textArea.getCaretPosition());
 		} catch (Exception e) {
@@ -197,16 +198,12 @@ class ClipboardHistoryPopup extends JWindow {
 		super.setVisible(visible);
 		updateTextAreaCaret(visible);
 		if (visible) {
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					requestFocus();
-					if (list.getModel().getSize() > 0) {
-						list.setSelectedIndex(0);
-					}
-					list.requestFocusInWindow();
+			SwingUtilities.invokeLater(() -> {
+				requestFocus();
+				if (list.getModel().getSize() > 0) {
+					list.setSelectedIndex(0);
 				}
+				list.requestFocusInWindow();
 			});
 		}
 	}
@@ -247,11 +244,10 @@ class ClipboardHistoryPopup extends JWindow {
 	 */
 	private class Listener extends WindowAdapter implements ComponentListener {
 
-		public Listener() {
+		Listener() {
 
 			addWindowFocusListener(this);
 			list.addMouseListener(new MouseAdapter() {
-
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					if (e.getClickCount() == 2) {
@@ -261,7 +257,6 @@ class ClipboardHistoryPopup extends JWindow {
 			});
 			list.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "onEnter");
 			list.getActionMap().put("onEnter", new AbstractAction() {
-
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					insertSelectedItem();
@@ -336,10 +331,10 @@ class ClipboardHistoryPopup extends JWindow {
 	/**
 	 * The list component used in this popup.
 	 */
-	private static class ChoiceList extends JList {
+	private static final class ChoiceList extends JList<LabelValuePair> {
 
 		private ChoiceList() {
-			super(new DefaultListModel());
+			super(new DefaultListModel<>());
 			setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			installKeyboardActions();
 		}
@@ -351,7 +346,6 @@ class ClipboardHistoryPopup extends JWindow {
 
 			im.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "onDown");
 			am.put("onDown", new AbstractAction() {
-
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					int index = (getSelectedIndex() + 1) % getModel().getSize();
@@ -362,7 +356,6 @@ class ClipboardHistoryPopup extends JWindow {
 
 			im.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "onUp");
 			am.put("onUp", new AbstractAction() {
-
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					int index = getSelectedIndex() - 1;
@@ -377,7 +370,7 @@ class ClipboardHistoryPopup extends JWindow {
 		}
 
 		private void setContents(List<String> contents) {
-			DefaultListModel model = (DefaultListModel) getModel();
+			DefaultListModel<LabelValuePair> model = (DefaultListModel<LabelValuePair>) getModel();
 			model.clear();
 			for (String str : contents) {
 				model.addElement(new LabelValuePair(str));
@@ -394,13 +387,12 @@ class ClipboardHistoryPopup extends JWindow {
 	 */
 	private static class LabelValuePair {
 
-		public String label;
-
-		public String value;
+		private String label;
+		private String value;
 
 		private static final int LABEL_MAX_LENGTH = 50;
 
-		public LabelValuePair(String value) {
+		LabelValuePair(String value) {
 			this.label = this.value = value;
 			int newline = label.indexOf('\n');
 			boolean multiLine = false;

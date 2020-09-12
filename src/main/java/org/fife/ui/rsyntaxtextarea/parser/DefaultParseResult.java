@@ -1,7 +1,10 @@
 /*
- * 07/27/2009 DefaultParseResult.java - A basic implementation of a ParseResult. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 07/27/2009
+ *
+ * DefaultParseResult.java - A basic implementation of a ParseResult.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.parser;
 
@@ -19,20 +22,15 @@ import java.util.List;
 public class DefaultParseResult implements ParseResult {
 
 	private Parser parser;
-
 	private int firstLineParsed;
-
 	private int lastLineParsed;
-
 	private List<ParserNotice> notices;
-
 	private long parseTime;
-
 	private Exception error;
 
 	public DefaultParseResult(Parser parser) {
 		this.parser = parser;
-		notices = new ArrayList<ParserNotice>();
+		notices = new ArrayList<>();
 	}
 
 	/**
@@ -90,16 +88,16 @@ public class DefaultParseResult implements ParseResult {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long getParseTime() {
-		return parseTime;
+	public Parser getParser() {
+		return parser;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Parser getParser() {
-		return parser;
+	public long getParseTime() {
+		return parseTime;
 	}
 
 	/**
@@ -109,16 +107,6 @@ public class DefaultParseResult implements ParseResult {
 	 */
 	public void setError(Exception e) {
 		this.error = e;
-	}
-
-	/**
-	 * Sets the amount of time it took for this parser to parse the document.
-	 *
-	 * @param time The amount of time, in milliseconds.
-	 * @see #getParseTime()
-	 */
-	public void setParseTime(long time) {
-		parseTime = time;
 	}
 
 	/**
@@ -132,6 +120,16 @@ public class DefaultParseResult implements ParseResult {
 	public void setParsedLines(int first, int last) {
 		firstLineParsed = first;
 		lastLineParsed = last;
+	}
+
+	/**
+	 * Sets the amount of time it took for this parser to parse the document.
+	 *
+	 * @param time The amount of time, in milliseconds.
+	 * @see #getParseTime()
+	 */
+	public void setParseTime(long time) {
+		parseTime = time;
 	}
 
 }

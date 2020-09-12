@@ -1,7 +1,11 @@
 /*
- * 08/26/2004 TokenMap.java - Similar to a Map in Java, only designed specifically for
- * org.fife.ui.rsyntaxtextarea.Tokens. This library is distributed under a modified BSD license. See
- * the included RSyntaxTextArea.License.txt file for details.
+ * 08/26/2004
+ *
+ * TokenMap.java - Similar to a Map in Java, only designed specifically for
+ * org.fife.ui.rsyntaxtextarea.Tokens.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -12,6 +16,7 @@ import javax.swing.text.Segment;
  * class is designed for the quick lookup of tokens, as it can compare
  * <code>Segment</code>s without the need to allocate a new string.
  * <p>
+ *
  * The <code>org.fife.ui.rsyntaxtextarea</code> package uses this class to help
  * identify reserved words in programming languages. An instance of
  * {@link TokenMaker} will create and initialize an instance of this class
@@ -26,9 +31,7 @@ import javax.swing.text.Segment;
 public class TokenMap {
 
 	private int size;
-
 	private TokenMapToken[] tokenMap;
-
 	private boolean ignoreCase;
 
 	private static final int DEFAULT_TOKEN_MAP_SIZE = 52;
@@ -127,7 +130,7 @@ public class TokenMap {
 		 */
 
 		// If matches are case-sensitive (C, C++, Java, etc.)...
-		if (ignoreCase == false) {
+		if (!ignoreCase) {
 
 			mainLoop: while (token != null) {
 				if (token.length == length1) {
@@ -185,7 +188,7 @@ public class TokenMap {
 	 * @param length The last character in the text to hash.
 	 * @return The hash code.
 	 */
-	private final int getHashCode(char[] text, int offset, int length) {
+	private int getHashCode(char[] text, int offset, int length) {
 		return (RSyntaxUtilities.toLowerCase(text[offset]) + RSyntaxUtilities.toLowerCase(text[offset + length - 1]))
 				% size;
 	}
@@ -235,19 +238,15 @@ public class TokenMap {
 	 * {@link Token} class, but it's basically a 1-1 correspondence for reserved
 	 * words, etc.
 	 */
-	private static class TokenMapToken {
+	private static final class TokenMapToken {
 
-		char[] text;
+		private char[] text;
+		private int offset;
+		private int length;
+		private int tokenType;
+		private TokenMapToken nextToken;
 
-		int offset;
-
-		int length;
-
-		int tokenType;
-
-		TokenMapToken nextToken;
-
-		TokenMapToken(char[] text, int tokenType) {
+		private TokenMapToken(char[] text, int tokenType) {
 			this.text = text;
 			this.offset = 0;
 			this.length = text.length;

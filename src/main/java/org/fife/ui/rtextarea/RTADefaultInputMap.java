@@ -1,11 +1,13 @@
 /*
- * 08/19/2004 RTADefaultInputMap.java - The default input map for RTextAreas. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 08/19/2004
+ *
+ * RTADefaultInputMap.java - The default input map for RTextAreas.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
-import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
@@ -34,6 +36,7 @@ import javax.swing.text.DefaultEditorKit;
  * <li>etc.
  * </ul>
  */
+@SuppressWarnings({ "checkstyle:linelength" })
 public class RTADefaultInputMap extends InputMap {
 
 	/**
@@ -43,21 +46,23 @@ public class RTADefaultInputMap extends InputMap {
 
 		super();
 
-		int defaultModifier = getDefaultModifier();
-		// int ctrl = InputEvent.CTRL_MASK;
-		int alt = InputEvent.ALT_MASK;
-		int shift = InputEvent.SHIFT_MASK;
+		int defaultModifier = RTextArea.getDefaultModifier();
+		// int ctrl = InputEvent.CTRL_DOWN_MASK;
+		int alt = InputEvent.ALT_DOWN_MASK;
+		int shift = InputEvent.SHIFT_DOWN_MASK;
 		boolean isOSX = RTextArea.isOSX();
 		int moveByWordMod = isOSX ? alt : defaultModifier;
 
 		put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
 				isOSX ? DefaultEditorKit.beginAction : DefaultEditorKit.beginLineAction);
-		put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, shift), DefaultEditorKit.selectionBeginLineAction);
+		put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, shift),
+				isOSX ? DefaultEditorKit.selectionBeginAction : DefaultEditorKit.selectionBeginLineAction);
 		put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, defaultModifier), DefaultEditorKit.beginAction);
 		put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, defaultModifier | shift), DefaultEditorKit.selectionBeginAction);
 		put(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0),
 				isOSX ? DefaultEditorKit.endAction : DefaultEditorKit.endLineAction);
-		put(KeyStroke.getKeyStroke(KeyEvent.VK_END, shift), DefaultEditorKit.selectionEndLineAction);
+		put(KeyStroke.getKeyStroke(KeyEvent.VK_END, shift),
+				isOSX ? DefaultEditorKit.selectionEndAction : DefaultEditorKit.selectionEndLineAction);
 		put(KeyStroke.getKeyStroke(KeyEvent.VK_END, defaultModifier), DefaultEditorKit.endAction);
 		put(KeyStroke.getKeyStroke(KeyEvent.VK_END, defaultModifier | shift), DefaultEditorKit.selectionEndAction);
 
@@ -128,6 +133,10 @@ public class RTADefaultInputMap extends InputMap {
 		if (isOSX) {
 			put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, defaultModifier), DefaultEditorKit.beginLineAction);
 			put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, defaultModifier), DefaultEditorKit.endLineAction);
+			put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, defaultModifier | shift),
+					DefaultEditorKit.selectionBeginLineAction);
+			put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, defaultModifier | shift),
+					DefaultEditorKit.selectionEndLineAction);
 		}
 
 		/* NOTE: Currently, macros aren't part of the default input map for */
@@ -145,16 +154,6 @@ public class RTADefaultInputMap extends InputMap {
 		 * RTextAreaEditorKit.rtaPlaybackLastMacroAction);
 		 */
 
-	}
-
-	/**
-	 * Returns the default modifier key for a system. For example, on Windows this
-	 * would be the CTRL key (<code>InputEvent.CTRL_MASK</code>).
-	 *
-	 * @return The default modifier key.
-	 */
-	protected static final int getDefaultModifier() {
-		return Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 	}
 
 }

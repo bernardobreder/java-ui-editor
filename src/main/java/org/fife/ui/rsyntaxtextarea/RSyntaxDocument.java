@@ -1,7 +1,11 @@
 /*
- * 10/16/2004 RSyntaxDocument.java - A document capable of syntax highlighting, used by
- * RSyntaxTextArea. This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 10/16/2004
+ *
+ * RSyntaxDocument.java - A document capable of syntax highlighting, used by
+ * RSyntaxTextArea.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -27,10 +31,12 @@ import org.fife.util.DynamicIntArray;
  * attribute associated with it that determines how syntax highlighting is done
  * (i.e., what language is being highlighted).
  * <p>
+ *
  * Instances of <code>RSyntaxTextArea</code> will only accept instances of
  * <code>RSyntaxDocument</code>, since it is this document that keeps track of
  * syntax highlighting. All others will cause an exception to be thrown.
  * <p>
+ *
  * To change the language being syntax highlighted at any time, you merely have
  * to call {@link #setSyntaxStyle}. Other than that, this document can be
  * treated like any other save one caveat: all <code>DocumentEvent</code>s of
@@ -68,11 +74,8 @@ public class RSyntaxDocument extends RDocument implements Iterable<Token>, Synta
 	protected transient DynamicIntArray lastTokensOnLines;
 
 	private transient int lastLine = -1;
-
 	private transient Token cachedTokenList;
-
 	private transient int useCacheCount = 0;
-
 	private transient int tokenRetrievalCount = 0;
 
 	private transient Segment s;
@@ -98,11 +101,11 @@ public class RSyntaxDocument extends RDocument implements Iterable<Token>, Synta
 	 * tab size set to 5.
 	 *
 	 * @param tmf         The <code>TokenMakerFactory</code> for this document. If
-	 *                    this is <code>null</code> , a default factory is used.
+	 *                    this is <code>null</code>, a default factory is used.
 	 * @param syntaxStyle The syntax highlighting scheme to use.
 	 */
 	public RSyntaxDocument(TokenMakerFactory tmf, String syntaxStyle) {
-		putProperty(tabSizeAttribute, Integer.valueOf(5));
+		putProperty(tabSizeAttribute, 5);
 		lastTokensOnLines = new DynamicIntArray(400);
 		lastTokensOnLines.add(Token.NULL); // Initial (empty) line.
 		s = new Segment();
@@ -222,8 +225,7 @@ public class RSyntaxDocument extends RDocument implements Iterable<Token>, Synta
 			// System.err.println("... added: " + numAdded + ", removed: " +
 			// removed.length);
 
-			lastTokensOnLines.removeRange(line, endBefore); // Removing values for lines
-															// [line-(endBefore-1)].
+			lastTokensOnLines.removeRange(line, endBefore); // Removing values for lines [line-(endBefore-1)].
 			// System.err.println("--------- lastTokensOnLines.size() == " +
 			// lastTokensOnLines.getSize());
 
@@ -280,8 +282,8 @@ public class RSyntaxDocument extends RDocument implements Iterable<Token>, Synta
 	}
 
 	/**
-	 * Returns whether the current programming language uses curly braces ('
-	 * <code>{</code>' and ' <code>}</code>') to denote code blocks.
+	 * Returns whether the current programming language uses curly braces
+	 * ('<code>{</code>' and '<code>}</code>') to denote code blocks.
 	 *
 	 * @param languageIndex The language index at the offset in question. Since some
 	 *                      <code>TokenMaker</code>s effectively have nested
@@ -362,12 +364,22 @@ public class RSyntaxDocument extends RDocument implements Iterable<Token>, Synta
 	}
 
 	/**
+	 * Returns the syntax style being used.
+	 *
+	 * @return The syntax style.
+	 * @see #setSyntaxStyle(String)
+	 */
+	public String getSyntaxStyle() {
+		return syntaxStyle;
+	}
+
+	/**
 	 * Returns a token list for the specified segment of text representing the
 	 * specified line number. This method is basically a wrapper for
 	 * <code>tokenMaker.getTokenList</code> that takes into account the last token
 	 * on the previous line to assure token accuracy.
 	 *
-	 * @param line The line number of <code>text</code> in the document, >= 0.
+	 * @param line The line number of <code>text</code> in the document, &gt;= 0.
 	 * @return A token list representing the specified line.
 	 */
 	public final Token getTokenListForLine(int line) {
@@ -429,6 +441,7 @@ public class RSyntaxDocument extends RDocument implements Iterable<Token>, Synta
 	 * undefined if this document is modified while the iterator is being iterated
 	 * through, so this should only be used on the EDT.
 	 * <p>
+	 *
 	 * The <code>remove()</code> method of the returned iterator will throw an
 	 * <code>UnsupportedOperationException</code>.
 	 *
@@ -470,7 +483,7 @@ public class RSyntaxDocument extends RDocument implements Iterable<Token>, Synta
 	 *
 	 * @param line The line number you want to get.
 	 */
-	private final void setSharedSegment(int line) {
+	private void setSharedSegment(int line) {
 
 		Element map = getDefaultRootElement();
 		// int numLines = map.getElementCount();
@@ -502,6 +515,7 @@ public class RSyntaxDocument extends RDocument implements Iterable<Token>, Synta
 	 *                 not known or supported by this document, then
 	 *                 {@link SyntaxConstants#SYNTAX_STYLE_NONE} is used.
 	 * @see #setSyntaxStyle(TokenMaker)
+	 * @see #getSyntaxStyle()
 	 */
 	public void setSyntaxStyle(String styleKey) {
 		tokenMaker = tokenMakerFactory.getTokenMaker(styleKey);
@@ -520,13 +534,14 @@ public class RSyntaxDocument extends RDocument implements Iterable<Token>, Synta
 	public void setSyntaxStyle(TokenMaker tokenMaker) {
 		this.tokenMaker = tokenMaker;
 		updateSyntaxHighlightingInformation();
+		this.syntaxStyle = "text/unknown"; // TODO: Make me public?
 	}
 
 	/**
 	 * Sets the token maker factory used by this document.
 	 *
 	 * @param tmf The <code>TokenMakerFactory</code> for this document. If this is
-	 *            <code>null</code> , a default factory is used.
+	 *            <code>null</code>, a default factory is used.
 	 */
 	public void setTokenMakerFactory(TokenMakerFactory tmf) {
 		tokenMakerFactory = tmf != null ? tmf : TokenMakerFactory.getDefaultInstance();
@@ -604,6 +619,7 @@ public class RSyntaxDocument extends RDocument implements Iterable<Token>, Synta
 	 * After this, a changed update is fired to let listeners know that the
 	 * document's structure has changed.
 	 * <p>
+	 *
 	 * This is called internally whenever the syntax style changes.
 	 */
 	private void updateSyntaxHighlightingInformation() {

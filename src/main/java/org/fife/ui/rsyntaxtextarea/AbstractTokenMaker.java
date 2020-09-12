@@ -1,7 +1,10 @@
 /*
- * 11/07/2004 AbstractTokenMaker.java - An abstract implementation of TokenMaker. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 11/07/2004
+ *
+ * AbstractTokenMaker.java - An abstract implementation of TokenMaker.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -13,6 +16,7 @@ package org.fife.ui.rsyntaxtextarea;
  * <p>
  *
  * @see Token
+ *
  * @author Robert Futrell
  * @version 0.2
  */

@@ -1,7 +1,11 @@
 /*
- * 08/06/2004 Style.java - A set of traits for a particular token type to use while painting. This
- * library is distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt
- * file for details.
+ * 08/06/2004
+ *
+ * Style.java - A set of traits for a particular token type to use while
+ * painting.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -15,6 +19,7 @@ import javax.swing.JPanel;
  * The color and style information for a token type. Each token type in an
  * <code>RSyntaxTextArea</code> has a corresponding <code>Style</code>; this
  * <code>Style</code> tells us the following things:
+ *
  * <ul>
  * <li>What foreground color to use for tokens of this type.</li>
  * <li>What background color to use.</li>
@@ -25,23 +30,19 @@ import javax.swing.JPanel;
  * @author Robert Futrell
  * @version 0.6
  */
+@SuppressWarnings({ "checkstyle:visibilitymodifier" })
 public class Style implements Cloneable {
 
 	public static final Color DEFAULT_FOREGROUND = Color.BLACK;
-
 	public static final Color DEFAULT_BACKGROUND = null;
-
 	public static final Font DEFAULT_FONT = null;
 
 	public Color foreground;
-
 	public Color background;
-
 	public boolean underline;
-
 	public Font font;
 
-	FontMetrics fontMetrics;
+	public FontMetrics fontMetrics;
 
 	/**
 	 * Creates a new style defaulting to black foreground, no background, and no
@@ -94,9 +95,7 @@ public class Style implements Cloneable {
 		background = bg;
 		this.font = font;
 		this.underline = underline;
-		this.fontMetrics = font == null ? null : new JPanel().getFontMetrics(font); // Default, no
-																					// rendering
-																					// hints!
+		this.fontMetrics = font == null ? null : new JPanel().getFontMetrics(font); // Default, no rendering hints!
 	}
 
 	/**
@@ -113,7 +112,7 @@ public class Style implements Cloneable {
 	 */
 	@Override
 	public Object clone() {
-		Style clone = null;
+		Style clone;
 		try {
 			clone = (Style) super.clone();
 		} catch (CloneNotSupportedException cnse) { // Never happens
@@ -150,6 +149,7 @@ public class Style implements Cloneable {
 	/**
 	 * Computes the hash code to use when adding this syntax scheme to hash tables.
 	 * <p>
+	 *
 	 * This method is implemented, since {@link #equals(Object)} is implemented, to
 	 * keep FindBugs happy.
 	 *

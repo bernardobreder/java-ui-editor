@@ -4,7 +4,7 @@
  * XMLTokenMaker.java - Generates tokens for XML syntax highlighting.
  * 
  * This library is distributed under a modified BSD license.  See the included
- * RSyntaxTextArea.License.txt file for details.
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.modes;
 
@@ -345,7 +345,7 @@ import org.fife.ui.rsyntaxtextarea.*;
 	 *
 	 * All internal variables are reset, the old input stream 
 	 * <b>cannot</b> be reused (internal buffer is discarded and lost).
-	 * Lexical state is set to <tt>YY_INITIAL</tt>.
+	 * Lexical state is set to <code>YY_INITIAL</code>.
 	 *
 	 * @param reader   the new input stream 
 	 */

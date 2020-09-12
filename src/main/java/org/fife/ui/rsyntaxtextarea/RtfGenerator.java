@@ -1,6 +1,10 @@
 /*
- * 07/28/2008 RtfGenerator.java - Generates RTF via a simple Java API. This library is distributed
- * under a modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 07/28/2008
+ *
+ * RtfGenerator.java - Generates RTF via a simple Java API.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -15,6 +19,7 @@ import org.fife.ui.rtextarea.RTextArea;
 /**
  * Generates RTF text via a simple Java API.
  * <p>
+ *
  * The following RTF features are supported:
  * <ul>
  * <li>Fonts
@@ -22,6 +27,7 @@ import org.fife.ui.rtextarea.RTextArea;
  * <li>Foreground and background colors
  * <li>Bold, italic, and underline
  * </ul>
+ *
  * The RTF generated isn't really "optimized," but it will do, especially for
  * small amounts of text, such as what's common when copy-and-pasting. It tries
  * to be sufficient for the use case of copying syntax highlighted code:
@@ -31,26 +37,19 @@ import org.fife.ui.rtextarea.RTextArea;
  * </ul>
  *
  * @author Robert Futrell
- * @version 1.0
+ * @version 1.1
  */
 public class RtfGenerator {
 
+	private Color mainBG;
 	private List<Font> fontList;
-
 	private List<Color> colorList;
-
 	private StringBuilder document;
-
 	private boolean lastWasControlWord;
-
 	private int lastFontIndex;
-
 	private int lastFGIndex;
-
 	private boolean lastBold;
-
 	private boolean lastItalic;
-
 	private int lastFontSize;
 
 	/**
@@ -69,9 +68,10 @@ public class RtfGenerator {
 	/**
 	 * Constructor.
 	 */
-	public RtfGenerator() {
-		fontList = new ArrayList<Font>(1); // Usually only 1.
-		colorList = new ArrayList<Color>(1); // Usually only 1.
+	public RtfGenerator(Color mainBG) {
+		this.mainBG = mainBG;
+		fontList = new ArrayList<>(1); // Usually only 1.
+		colorList = new ArrayList<>(1); // Usually only 1.
 		document = new StringBuilder();
 		reset();
 	}
@@ -82,7 +82,7 @@ public class RtfGenerator {
 	 * @see #appendToDoc(String, Font, Color, Color)
 	 */
 	public void appendNewline() {
-		document.append("\\par");
+		document.append("\\line");
 		document.append('\n'); // Just for ease of reading RTF.
 		lastWasControlWord = false;
 	}
@@ -244,7 +244,8 @@ public class RtfGenerator {
 
 	/**
 	 * Appends some text to a buffer, with special care taken for special characters
-	 * as defined by the RTF spec:
+	 * as defined by the RTF spec.
+	 *
 	 * <ul>
 	 * <li>All tab characters are replaced with the string "<code>\tab</code>"
 	 * <li>'\', '{' and '}' are changed to "\\", "\{" and "\}"
@@ -253,7 +254,7 @@ public class RtfGenerator {
 	 * @param text The text to append (with tab chars substituted).
 	 * @param sb   The buffer to append to.
 	 */
-	private final void escapeAndAdd(StringBuilder sb, String text) {
+	private void escapeAndAdd(StringBuilder sb, String text) {
 		int count = text.length();
 		for (int i = 0; i < count; i++) {
 			char ch = text.charAt(i);
@@ -276,7 +277,12 @@ public class RtfGenerator {
 				sb.append('\\').append(ch);
 				break;
 			default:
-				sb.append(ch);
+				if (ch <= 127) {
+					sb.append(ch);
+				} else {
+					// Trailing space for delimiter
+					sb.append("\\u").append((int) ch).append(' ');
+				}
 				break;
 			}
 		}
@@ -285,6 +291,7 @@ public class RtfGenerator {
 	/**
 	 * Returns a font point size, adjusted for the current screen resolution.
 	 * <p>
+	 *
 	 * Java2D assumes 72 dpi. On systems with larger dpi (Windows, GTK, etc.), font
 	 * rendering will appear too small if we simply return a Java "Font" object's
 	 * getSize() value. We need to adjust it for the screen resolution.
@@ -344,6 +351,7 @@ public class RtfGenerator {
 	 * checks for a font by its family name; its attributes such as bold and italic
 	 * are ignored.
 	 * <p>
+	 *
 	 * If the font is not in the list, it is added, and its new index is returned.
 	 *
 	 * @param list The list (possibly) containing the font.
@@ -374,7 +382,7 @@ public class RtfGenerator {
 		// just search for a monospaced font on the system.
 		String monoFamilyName = getMonospacedFontFamily();
 
-		sb.append("{\\fonttbl{\\f0\\fnil\\fcharset0 " + monoFamilyName + ";}");
+		sb.append("{\\fonttbl{\\f0\\fnil\\fcharset0 ").append(monoFamilyName).append(";}");
 		for (int i = 0; i < fontList.size(); i++) {
 			Font f = fontList.get(i);
 			String familyName = f.getFamily();
@@ -396,7 +404,7 @@ public class RtfGenerator {
 	 *
 	 * @return The monospaced font family to use.
 	 */
-	private static final String getMonospacedFontFamily() {
+	private static String getMonospacedFontFamily() {
 		String family = RTextArea.getDefaultFont().getFamily();
 		if ("Monospaced".equals(family)) {
 			family = "Courier";
@@ -410,6 +418,9 @@ public class RtfGenerator {
 	 * @return The RTF document, as a <code>String</code>.
 	 */
 	public String getRtf() {
+
+		// Add background to the color table before adding it to our buffer
+		int mainBGIndex = getColorIndex(colorList, mainBG);
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
@@ -425,6 +436,12 @@ public class RtfGenerator {
 		sb.append(getColorTableRtf()).append('\n');
 
 		// Content
+		int bgIndex = mainBGIndex + 1;
+		sb.append("\\cb").append(bgIndex).append(' ');
+		lastWasControlWord = true;
+		if (document.length() > 0) {
+			document.append("\\line"); // Forced line break
+		}
 		sb.append(document);
 
 		sb.append("}");

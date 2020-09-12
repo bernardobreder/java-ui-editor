@@ -1,7 +1,11 @@
 /*
- * 02/17/2009 Gutter.java - Manages line numbers, icons, etc. on the left-hand side of an RTextArea.
- * This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 02/17/2009
+ *
+ * Gutter.java - Manages line numbers, icons, etc. on the left-hand side of
+ * an RTextArea.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -36,6 +40,7 @@ import org.fife.ui.rsyntaxtextarea.folding.FoldManager;
  * displays optional information such as line numbers, fold regions, and icons
  * (for bookmarks, debugging breakpoints, error markers, etc.).
  * <p>
+ *
  * Icons can be added on a per-line basis to visually mark syntax errors, lines
  * with breakpoints set on them, etc. To add icons to the gutter, you must first
  * call {@link RTextScrollPane#setIconRowHeaderEnabled(boolean)} on the parent
@@ -45,6 +50,7 @@ import org.fife.ui.rsyntaxtextarea.folding.FoldManager;
  * {@link #addOffsetTrackingIcon(int, Icon)}, respectively. To remove an icon
  * you've added, use {@link #removeTrackingIcon(GutterIconInfo)}.
  * <p>
+ *
  * In addition to support for arbitrary per-line icons, this component also has
  * built-in support for displaying icons representing "bookmarks;" that is,
  * lines a user can cycle through via F2 and Shift+F2. Bookmarked lines are
@@ -53,7 +59,7 @@ import org.fife.ui.rsyntaxtextarea.folding.FoldManager;
  *
  * <pre>
  * Gutter gutter = scrollPane.getGutter();
- * gutter.setBookmarkIcon(new ImageIcon(&quot;bookmark.png&quot;));
+ * gutter.setBookmarkIcon(new ImageIcon("bookmark.png"));
  * gutter.setBookmarkingEnabled(true);
  * </pre>
  *
@@ -105,6 +111,12 @@ public class Gutter extends JPanel {
 	private boolean iconRowHeaderInheritsGutterBackground;
 
 	/**
+	 * Optional additional spacing between the line number component and the fold
+	 * indicator component.
+	 */
+	private int spacingBetweenLineNumbersAndFoldIndicator;
+
+	/**
 	 * Shows lines that are code-foldable.
 	 */
 	private FoldIndicator foldIndicator;
@@ -112,7 +124,7 @@ public class Gutter extends JPanel {
 	/**
 	 * Listens for events in our text area.
 	 */
-	private TextAreaListener listener;
+	private transient TextAreaListener listener;
 
 	/**
 	 * Constructor.
@@ -246,6 +258,18 @@ public class Gutter extends JPanel {
 	}
 
 	/**
+	 * Returns the background color used by the (default) fold icons when they are
+	 * armed.
+	 *
+	 * @return The background color.
+	 * @see #setArmedFoldBackground(Color)
+	 * @see #getFoldBackground()
+	 */
+	public Color getArmedFoldBackground() {
+		return foldIndicator.getFoldIconArmedBackground();
+	}
+
+	/**
 	 * Returns the icon to use for bookmarks.
 	 *
 	 * @return The icon to use for bookmarks. If this is <code>null</code>,
@@ -261,6 +285,7 @@ public class Gutter extends JPanel {
 	 * Returns the bookmarks known to this gutter.
 	 *
 	 * @return The bookmarks. If there are no bookmarks, an empty array is returned.
+	 * @see #toggleBookmark(int)
 	 */
 	public GutterIconInfo[] getBookmarks() {
 		return iconArea.getBookmarks();
@@ -363,6 +388,20 @@ public class Gutter extends JPanel {
 	}
 
 	/**
+	 * Returns the additional spacing between the line number list and fold
+	 * indicator. By default this is a small amount; if you want something larger,
+	 * you can increase it. Note this value takes effect whether or not both line
+	 * numbers and the fold indicator are enabled, so use it only when both are
+	 * enabled.
+	 *
+	 * @return The additional spacing.
+	 * @see #setSpacingBetweenLineNumbersAndFoldIndicator(int)
+	 */
+	public int getSpacingBetweenLineNumbersAndFoldIndicator() {
+		return spacingBetweenLineNumbersAndFoldIndicator;
+	}
+
+	/**
 	 * Returns the tracking icons at the specified view position.
 	 *
 	 * @param p The view position.
@@ -416,6 +455,16 @@ public class Gutter extends JPanel {
 	}
 
 	/**
+	 * Removes all tracking icons.
+	 *
+	 * @see #removeTrackingIcon(GutterIconInfo)
+	 * @see #addOffsetTrackingIcon(int, Icon)
+	 */
+	public void removeAllTrackingIcons() {
+		iconArea.removeAllTrackingIcons();
+	}
+
+	/**
 	 * Removes the specified tracking icon.
 	 *
 	 * @param tag A tag for an icon in the gutter, as returned from either
@@ -427,16 +476,6 @@ public class Gutter extends JPanel {
 	 */
 	public void removeTrackingIcon(GutterIconInfo tag) {
 		iconArea.removeTrackingIcon(tag);
-	}
-
-	/**
-	 * Removes all tracking icons.
-	 *
-	 * @see #removeTrackingIcon(GutterIconInfo)
-	 * @see #addOffsetTrackingIcon(int, Icon)
-	 */
-	public void removeAllTrackingIcons() {
-		iconArea.removeAllTrackingIcons();
 	}
 
 	/**
@@ -461,6 +500,19 @@ public class Gutter extends JPanel {
 	 */
 	private void setActiveLineRange(int startLine, int endLine) {
 		iconArea.setActiveLineRange(startLine, endLine);
+	}
+
+	/**
+	 * Sets the background color used by the (default) fold icons when they are
+	 * armed.
+	 *
+	 * @param bg The new background color. If this is {@code null}, then armed fold
+	 *           icons will not render with a special color.
+	 * @see #getArmedFoldBackground()
+	 * @see #setFoldBackground(Color)
+	 */
+	public void setArmedFoldBackground(Color bg) {
+		foldIndicator.setFoldIconArmedBackground(bg);
 	}
 
 	/**
@@ -506,11 +558,17 @@ public class Gutter extends JPanel {
 	 */
 	@Override
 	public void setComponentOrientation(ComponentOrientation o) {
-		// Reuse the border to preserve its color.
-		if (o.isLeftToRight()) {
-			((GutterBorder) getBorder()).setEdges(0, 0, 0, 1);
-		} else {
-			((GutterBorder) getBorder()).setEdges(0, 1, 0, 0);
+
+		// Some LaFs might do fun stuff, resulting in this method being called
+		// before a border is installed.
+
+		if (getBorder() instanceof GutterBorder) {
+			// Reuse the border to preserve its color.
+			if (o.isLeftToRight()) {
+				((GutterBorder) getBorder()).setEdges(0, 0, 0, 1);
+			} else {
+				((GutterBorder) getBorder()).setEdges(0, 1, 0, 0);
+			}
 		}
 		super.setComponentOrientation(o);
 	}
@@ -551,6 +609,7 @@ public class Gutter extends JPanel {
 	 *
 	 * @param bg The new background color.
 	 * @see #getFoldBackground()
+	 * @see #setArmedFoldBackground(Color)
 	 */
 	public void setFoldBackground(Color bg) {
 		if (bg == null) {
@@ -687,6 +746,24 @@ public class Gutter extends JPanel {
 	}
 
 	/**
+	 * Sets additional spacing between the line number list and fold indicator. By
+	 * default this is a small amount; if you want something larger, you can
+	 * increase it. Note this value takes effect whether or not both line numbers
+	 * and the fold indicator are enabled, so use it only when both are enabled.
+	 *
+	 * @param spacing The additional spacing. This should be {@code >= 0}.
+	 * @see #getSpacingBetweenLineNumbersAndFoldIndicator()
+	 */
+	public void setSpacingBetweenLineNumbersAndFoldIndicator(int spacing) {
+		if (spacing != spacingBetweenLineNumbersAndFoldIndicator) {
+			spacingBetweenLineNumbersAndFoldIndicator = spacing;
+			foldIndicator.setAdditionalLeftMargin(spacing);
+			revalidate();
+			repaint();
+		}
+	}
+
+	/**
 	 * Sets the text area being displayed. This will clear any tracking icons
 	 * currently displayed.
 	 *
@@ -738,27 +815,28 @@ public class Gutter extends JPanel {
 	 * @return Whether a bookmark is now at the specified line.
 	 * @throws BadLocationException If <code>line</code> is an invalid line number
 	 *                              in the text area.
+	 * @see #getBookmarks()
 	 */
 	public boolean toggleBookmark(int line) throws BadLocationException {
 		return iconArea.toggleBookmark(line);
 	}
 
-	// public void setUI(ComponentUI ui) {
-	//
-	// Border gutterBorder = getBorder();
-	//
-	// super.setUI(ui);
-	//
-	// // Some LaFs, such as WebLookAndFeel, override borders even when
-	// // they aren't UIResources.
-	// Border border = getBorder();
-	// if (border != gutterBorder) {
-	// setBorder(gutterBorder);
-	// }
-	//
-	// }
-	//
-	//
+//	public void setUI(ComponentUI ui) {
+//
+//		Border gutterBorder = getBorder();
+//
+//		super.setUI(ui);
+//
+//		// Some LaFs, such as WebLookAndFeel, override borders even when
+//		// they aren't UIResources.
+//		Border border = getBorder();
+//		if (border != gutterBorder) {
+//			setBorder(gutterBorder);
+//		}
+//
+//	}
+//
+//
 	@Override
 	public void setBorder(Border border) {
 		if (border instanceof GutterBorder) {
@@ -769,10 +847,9 @@ public class Gutter extends JPanel {
 	/**
 	 * The border used by the gutter.
 	 */
-	private static class GutterBorder extends EmptyBorder {
+	public static class GutterBorder extends EmptyBorder {
 
 		private Color color;
-
 		private Rectangle visibleRect;
 
 		public GutterBorder(int top, int left, int bottom, int right) {
@@ -818,16 +895,16 @@ public class Gutter extends JPanel {
 	/**
 	 * Listens for the text area resizing.
 	 */
-	/*
-	 * This is necessary to keep child components the same height as the text area.
-	 * The worse case is when the user toggles word-wrap and it changes the height
-	 * of the text area. In that case, if we listen for the "lineWrap" property
-	 * change, we get notified BEFORE the text area decides on its new size, thus we
-	 * cannot resize properly. We listen instead for ComponentEvents so we change
-	 * size after the text area has resized.
-	 */
 	private class TextAreaListener extends ComponentAdapter
 			implements DocumentListener, PropertyChangeListener, ActiveLineRangeListener {
+
+		// This is necessary to keep child components the same height as the text
+		// area. The worse case is when the user toggles word-wrap and it changes
+		// the height of the text area. In that case, if we listen for the
+		// "lineWrap" property change, we get notified BEFORE the text area
+		// decides on its new size, thus we cannot resize properly. We listen
+		// instead for ComponentEvents so we change size after the text area has
+		// resized.
 
 		private boolean installed;
 
@@ -897,7 +974,7 @@ public class Gutter extends JPanel {
 
 			// If they toggle whether code folding is enabled...
 			else if (RSyntaxTextArea.CODE_FOLDING_PROPERTY.equals(name)) {
-				boolean foldingEnabled = ((Boolean) e.getNewValue()).booleanValue();
+				boolean foldingEnabled = (Boolean) e.getNewValue();
 				if (lineNumberList != null) { // Its size depends on folding
 					// lineNumberList.revalidate();
 					lineNumberList.updateCellWidths();

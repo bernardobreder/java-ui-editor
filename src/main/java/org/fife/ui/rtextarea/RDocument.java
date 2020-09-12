@@ -1,6 +1,10 @@
 /*
- * 06/30/2012 RDocument.java - Document class used by RTextAreas. This library is distributed under
- * a modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 06/30/2012
+ *
+ * RDocument.java - Document class used by RTextAreas.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 

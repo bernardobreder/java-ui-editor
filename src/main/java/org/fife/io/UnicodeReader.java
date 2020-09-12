@@ -1,18 +1,22 @@
 /*
- * 09/23/2004 UnicodeReader.java - A reader for Unicode input streams that is capable of discerning
- * which particular encoding is being used via the BOM. This library is distributed under a modified
- * BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 09/23/2004
+ *
+ * UnicodeReader.java - A reader for Unicode input streams that is capable of
+ * discerning which particular encoding is being used via the BOM.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.io;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PushbackInputStream;
 import java.io.Reader;
+import java.nio.charset.Charset;
 
 /**
  * A reader capable of identifying Unicode streams by their BOMs. This class
@@ -28,15 +32,18 @@ import java.io.Reader;
  * used for reading. The user can specify this default encoding, or a system
  * default will be used.
  * <p>
+ *
  * For optimum performance, it is recommended that you wrap all instances of
  * <code>UnicodeReader</code> with a <code>java.io.BufferedReader</code>.
  * <p>
+ *
  * This class is mostly ripped off from the workaround in the description of
  * Java Bug 4508058.
  *
  * @author Robert Futrell
  * @version 0.9
  */
+@SuppressWarnings({ "checkstyle:magicnumber" })
 public class UnicodeReader extends Reader {
 
 	/**
@@ -64,14 +71,12 @@ public class UnicodeReader extends Reader {
 	 * there is no recognized BOM, then a system default encoding is used.
 	 *
 	 * @param file The file from which you want to read.
-	 * @throws IOException           If an error occurs when checking for/reading
-	 *                               the BOM.
-	 * @throws FileNotFoundException If the file does not exist, is a directory, or
-	 *                               cannot be opened for reading.
-	 * @throws SecurityException     If a security manager exists and its checkRead
-	 *                               method denies read access to the file.
+	 * @throws IOException       If an error occurs when checking for/reading the
+	 *                           BOM.
+	 * @throws SecurityException If a security manager exists and its checkRead
+	 *                           method denies read access to the file.
 	 */
-	public UnicodeReader(String file) throws IOException, FileNotFoundException, SecurityException {
+	public UnicodeReader(String file) throws IOException {
 		this(new File(file));
 	}
 
@@ -83,14 +88,12 @@ public class UnicodeReader extends Reader {
 	 * there is no recognized BOM, then a system default encoding is used.
 	 *
 	 * @param file The file from which you want to read.
-	 * @throws IOException           If an error occurs when checking for/reading
-	 *                               the BOM.
-	 * @throws FileNotFoundException If the file does not exist, is a directory, or
-	 *                               cannot be opened for reading.
-	 * @throws SecurityException     If a security manager exists and its checkRead
-	 *                               method denies read access to the file.
+	 * @throws IOException       If an error occurs when checking for/reading the
+	 *                           BOM.
+	 * @throws SecurityException If a security manager exists and its checkRead
+	 *                           method denies read access to the file.
 	 */
-	public UnicodeReader(File file) throws IOException, FileNotFoundException, SecurityException {
+	public UnicodeReader(File file) throws IOException {
 		this(new FileInputStream(file));
 	}
 
@@ -104,16 +107,32 @@ public class UnicodeReader extends Reader {
 	 * @param file            The file from which you want to read.
 	 * @param defaultEncoding The encoding to use if no BOM is found. If this value
 	 *                        is <code>null</code>, a system default is used.
-	 * @throws IOException           If an error occurs when checking for/reading
-	 *                               the BOM.
-	 * @throws FileNotFoundException If the file does not exist, is a directory, or
-	 *                               cannot be opened for reading.
-	 * @throws SecurityException     If a security manager exists and its checkRead
-	 *                               method denies read access to the file.
+	 * @throws IOException       If an error occurs when checking for/reading the
+	 *                           BOM.
+	 * @throws SecurityException If a security manager exists and its checkRead
+	 *                           method denies read access to the file.
 	 */
-	public UnicodeReader(File file, String defaultEncoding)
-			throws IOException, FileNotFoundException, SecurityException {
+	public UnicodeReader(File file, String defaultEncoding) throws IOException {
 		this(new FileInputStream(file), defaultEncoding);
+	}
+
+	/**
+	 * This utility constructor is here because you will usually use a
+	 * <code>UnicodeReader</code> on files.
+	 * <p>
+	 * Creates a reader using the encoding specified by the BOM in the file; if
+	 * there is no recognized BOM, then a specified default encoding is used.
+	 *
+	 * @param file           The file from which you want to read.
+	 * @param defaultCharset The encoding to use if no BOM is found. If this value
+	 *                       is <code>null</code>, a system default is used.
+	 * @throws IOException       If an error occurs when checking for/reading the
+	 *                           BOM.
+	 * @throws SecurityException If a security manager exists and its checkRead
+	 *                           method denies read access to the file.
+	 */
+	public UnicodeReader(File file, Charset defaultCharset) throws IOException {
+		this(new FileInputStream(file), defaultCharset != null ? defaultCharset.name() : null);
 	}
 
 	/**
@@ -124,7 +143,7 @@ public class UnicodeReader extends Reader {
 	 * @throws IOException If an error occurs when checking for/reading the BOM.
 	 */
 	public UnicodeReader(InputStream in) throws IOException {
-		this(in, null);
+		this(in, (String) null);
 	}
 
 	/**
@@ -139,6 +158,20 @@ public class UnicodeReader extends Reader {
 	 */
 	public UnicodeReader(InputStream in, String defaultEncoding) throws IOException {
 		init(in, defaultEncoding);
+	}
+
+	/**
+	 * Creates a reader using the encoding specified by the BOM in the file; if
+	 * there is no recognized BOM, then <code>defaultEncoding</code> is used.
+	 *
+	 * @param in             The input stream from which to read.
+	 * @param defaultCharset The encoding to use if no recognized BOM is found. If
+	 *                       this value is <code>null</code>, a system default is
+	 *                       used.
+	 * @throws IOException If an error occurs when checking for/reading the BOM.
+	 */
+	public UnicodeReader(InputStream in, Charset defaultCharset) throws IOException {
+		init(in, defaultCharset.name());
 	}
 
 	/**
@@ -174,7 +207,7 @@ public class UnicodeReader extends Reader {
 
 		PushbackInputStream tempIn = new PushbackInputStream(in, BOM_SIZE);
 
-		byte bom[] = new byte[BOM_SIZE];
+		byte[] bom = new byte[BOM_SIZE];
 		int n, unread;
 		n = tempIn.read(bom, 0, bom.length);
 
@@ -234,6 +267,7 @@ public class UnicodeReader extends Reader {
 	 * @param cbuf The buffer into which to read.
 	 * @param off  The offset at which to start storing characters.
 	 * @param len  The maximum number of characters to read.
+	 *
 	 * @return The number of characters read, or <code>-1</code> if the end of the
 	 *         stream has been reached.
 	 */

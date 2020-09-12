@@ -1,25 +1,26 @@
 /*
- * 08/11/2009 TaskTagParser.java - Parser that scans code comments for task tags. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 08/11/2009
+ *
+ * TaskTagParser.java - Parser that scans code comments for task tags.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.parser;
 
 import java.awt.Color;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import javax.swing.text.Element;
 
-import org.fife.ui.rsyntaxtextarea.ErrorStrip;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Token;
 
 /**
- * Parser that identifies "task tags," such as "<code>TODO</code>", "
- * <code>FIXME</code>", etc. in source code comments.
+ * Parser that identifies "task tags," such as "<code>TODO</code>",
+ * "<code>FIXME</code>", etc. in source code comments.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -27,17 +28,15 @@ import org.fife.ui.rsyntaxtextarea.Token;
 public class TaskTagParser extends AbstractParser {
 
 	private DefaultParseResult result;
-
-	private String DEFAULT_TASK_PATTERN = "TODO|FIXME|HACK";
-
+	private static final String DEFAULT_TASK_PATTERN = "TODO|FIXME|HACK";
 	private Pattern taskPattern;
 
 	private static final Color COLOR = new Color(48, 150, 252);
 
 	/**
 	 * Creates a new task parser. The default parser treats the following
-	 * identifiers in comments as task definitions: "<code>TODO</code>", "
-	 * <code>FIXME</code>", and "<code>HACK</code>".
+	 * identifiers in comments as task definitions: "<code>TODO</code>",
+	 * "<code>FIXME</code>", and "<code>HACK</code>".
 	 */
 	public TaskTagParser() {
 		result = new DefaultParseResult(this);
@@ -95,11 +94,11 @@ public class TaskTagParser extends AbstractParser {
 				t = t.getNextToken();
 			}
 
-			if (start > -1) {
+			if (start > -1 && text != null) { // "text != null" just for Sonar
 				text = text.substring(start);
 				// TODO: Strip off end of MLC's if they're there.
 				int len = text.length();
-				TaskNotice pn = new TaskNotice(this, text, line, offs, len);
+				TaskNotice pn = new TaskNotice(this, text, line + 1, offs, len);
 				pn.setLevel(ParserNotice.Level.INFO);
 				pn.setShowInEditor(false);
 				pn.setColor(COLOR);
@@ -114,15 +113,15 @@ public class TaskTagParser extends AbstractParser {
 
 	/**
 	 * Sets the pattern of task identifiers. You will usually want this to be a list
-	 * of words "or'ed" together, such as " <code>TODO|FIXME|HACK|REMIND</code>".
+	 * of words "or'ed" together, such as "<code>TODO|FIXME|HACK|REMIND</code>".
 	 *
 	 * @param pattern The pattern. A value of <code>null</code> or an empty string
 	 *                effectively disables task parsing.
-	 * @throws PatternSyntaxException If <code>pattern</code> is an invalid regular
-	 *                                expression.
+	 * @throws java.util.regex.PatternSyntaxException If <code>pattern</code> is an
+	 *                                                invalid regular expression.
 	 * @see #getTaskPattern()
 	 */
-	public void setTaskPattern(String pattern) throws PatternSyntaxException {
+	public void setTaskPattern(String pattern) {
 		if (pattern == null || pattern.length() == 0) {
 			taskPattern = null;
 		} else {
@@ -132,7 +131,8 @@ public class TaskTagParser extends AbstractParser {
 
 	/**
 	 * A parser notice that signifies a task. This class is here so we can treat
-	 * tasks specially and show them in the {@link ErrorStrip} even though they are
+	 * tasks specially and show them in the
+	 * {@link org.fife.ui.rsyntaxtextarea.ErrorStrip} even though they are
 	 * <code>INFO</code>-level and marked as "don't show in editor."
 	 */
 	public static class TaskNotice extends DefaultParserNotice {

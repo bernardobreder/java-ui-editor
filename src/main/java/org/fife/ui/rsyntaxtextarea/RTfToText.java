@@ -1,7 +1,10 @@
 /*
- * 07/28/2008 RtfToText.java - Returns the plain text version of RTF documents. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 07/28/2008
+ *
+ * RtfToText.java - Returns the plain text version of RTF documents.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -14,26 +17,24 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Gets the plain text version of RTF documents.
  * <p>
- * This is used by <code>RtfTransferable</code> to return the plain text version
- * of the transferable when the receiver does not support RTF.
+ *
+ * This is used by <code>StyledTextTransferable</code> to return the plain text
+ * version of the transferable when the receiver does not support RTF.
  *
  * @author Robert Futrell
  * @version 1.0
  */
-class RtfToText {
+final class RtfToText {
 
 	private Reader r;
-
 	private StringBuilder sb;
-
 	private StringBuilder controlWord;
-
 	private int blockCount;
-
 	private boolean inControlWord;
 
 	/**
@@ -145,13 +146,28 @@ class RtfToText {
 	 */
 	private void endControlWord() {
 		String word = controlWord.toString();
-		if ("par".equals(word)) {
+		if ("par".equals(word) || "line".equals(word)) {
 			sb.append('\n');
 		} else if ("tab".equals(word)) {
 			sb.append('\t');
+		} else if (isUnicodeEscape(word)) {
+			sb.append((char) Integer.valueOf(word.substring(1)).intValue());
 		}
 		controlWord.setLength(0);
 		inControlWord = false;
+	}
+
+	private static boolean isUnicodeEscape(String controlWord) {
+		if (controlWord.startsWith("u") && controlWord.length() > 1) {
+			for (int i = 1; i < controlWord.length(); i++) {
+				char ch = controlWord.charAt(i);
+				if (ch < '0' || ch > '9') {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -187,7 +203,7 @@ class RtfToText {
 	 * @throws IOException If an IO error occurs.
 	 */
 	public static String getPlainText(InputStream in) throws IOException {
-		return getPlainText(new InputStreamReader(in, "US-ASCII"));
+		return getPlainText(new InputStreamReader(in, StandardCharsets.US_ASCII));
 	}
 
 	/**

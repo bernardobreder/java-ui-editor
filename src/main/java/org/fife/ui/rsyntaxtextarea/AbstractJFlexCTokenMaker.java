@@ -1,7 +1,11 @@
 /*
- * 01/25/2009 AbstractJFlexCTokenMaker.java - Base class for token makers that use curly braces to
- * denote code blocks, such as C, C++, Java, Perl, etc. This library is distributed under a modified
- * BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 01/25/2009
+ *
+ * AbstractJFlexCTokenMaker.java - Base class for token makers that use curly
+ * braces to denote code blocks, such as C, C++, Java, Perl, etc.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -18,6 +22,7 @@ import org.fife.ui.rtextarea.RTextArea;
 /**
  * Base class for JFlex-based token makers using C-style syntax. This class
  * knows how to:
+ *
  * <ul>
  * <li>Auto-indent after opening braces and parens
  * <li>Automatically close multi-line and documentation comments

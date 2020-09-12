@@ -1,7 +1,10 @@
 /*
- * 02/19/2006 SearchEngine.java - Handles find/replace operations in an RTextArea. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 02/19/2006
+ *
+ * SearchEngine.java - Handles find/replace operations in an RTextArea.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -24,6 +27,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
  * A singleton class that can perform advanced find/replace operations in an
  * {@link RTextArea}. Simply create a {@link SearchContext} and call one of the
  * following methods:
+ *
  * <ul>
  * <li>{@link #find(JTextArea, SearchContext)}
  * <li>{@link #replace(RTextArea, SearchContext)}
@@ -35,7 +39,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
  * @version 1.0
  * @see SearchContext
  */
-public class SearchEngine {
+public final class SearchEngine {
 
 	/**
 	 * Private constructor to prevent instantiation.
@@ -68,7 +72,7 @@ public class SearchEngine {
 			if (doMarkAll) {
 				// Force "mark all" event to be broadcast so listeners know to
 				// clear their mark-all markers. The RSTA already cleared its
-				// highlights above, but cleraMarkAllHighlights() doesn't firs
+				// highlights above, but cleraMarkAllHighlights() doesn't fire
 				// an event itself for performance reasons.
 				List<DocumentRange> emptyRangeList = Collections.emptyList();
 				((RTextArea) textArea).markAll(emptyRangeList);
@@ -85,7 +89,7 @@ public class SearchEngine {
 		int start = forward ? Math.max(c.getDot(), c.getMark()) : Math.min(c.getDot(), c.getMark());
 
 		String findIn = getFindInText(textArea, start, forward);
-		if (findIn == null || findIn.length() == 0) {
+		if (!context.getSearchWrap() && (findIn == null || findIn.length() == 0)) {
 			return new SearchResult();
 		}
 
@@ -94,7 +98,7 @@ public class SearchEngine {
 			markAllCount = markAllImpl((RTextArea) textArea, context).getMarkedCount();
 		}
 
-		SearchResult result = SearchEngine.findImpl(findIn, context);
+		SearchResult result = SearchEngine.findImpl(findIn == null ? "" : findIn, context);
 		if (result.wasFound() && !result.getMatchRange().isZeroLength()) {
 			// Without this, if JTextArea isn't in focus, selection
 			// won't appear selected.
@@ -103,6 +107,36 @@ public class SearchEngine {
 				result.getMatchRange().translate(start);
 			}
 			RSyntaxUtilities.selectAndPossiblyCenter(textArea, result.getMatchRange(), true);
+		} else if (context.getSearchWrap() && !result.wasFound()) {
+			if (forward) {
+				start = 0;
+			} else {
+				start = textArea.getDocument().getLength() - 1;
+			}
+
+			findIn = getFindInText(textArea, start, forward);
+
+			if (findIn == null || findIn.length() == 0) {
+				SearchResult emptyResult = new SearchResult();
+				emptyResult.setWrapped(true);
+				return emptyResult;
+			}
+
+			if (doMarkAll) {
+				markAllCount = markAllImpl((RTextArea) textArea, context).getMarkedCount();
+			}
+
+			result = SearchEngine.findImpl(findIn, context);
+			result.setWrapped(true);
+			if (result.wasFound() && !result.getMatchRange().isZeroLength()) {
+				// Without this, if JTextArea isn't in focus, selection
+				// won't appear selected.
+				textArea.getCaret().setSelectionVisible(true);
+				if (forward) {
+					result.getMatchRange().translate(start);
+				}
+				RSyntaxUtilities.selectAndPossiblyCenter(textArea, result.getMatchRange(), true);
+			}
 		}
 
 		result.setMarkedCount(markAllCount);
@@ -153,8 +187,7 @@ public class SearchEngine {
 						start += regExPos.x + 1;
 					}
 				}
-			} while (start < findIn.length() && regExPos != null && range == null);// while
-																					// (emptyMatchFound);
+			} while (start < findIn.length() && regExPos != null && range == null);// while (emptyMatchFound);
 		}
 
 		if (range != null) {
@@ -220,6 +253,7 @@ public class SearchEngine {
 	 * is used to get the locations of all regular-expression matches, and possibly
 	 * their replacement strings.
 	 * <p>
+	 *
 	 * Returns either:
 	 * <ul>
 	 * <li>A list of points representing the starting and ending positions of all
@@ -227,6 +261,7 @@ public class SearchEngine {
 	 * <li>A list of <code>RegExReplaceInfo</code>s describing the matches found by
 	 * the matcher and the replacement strings for each.
 	 * </ul>
+	 *
 	 * If <code>replacement</code> is <code>null</code>, this method call is assumed
 	 * to be part of a "find" operation and points are returned. If if is
 	 * non-<code>null</code>, it is assumed to be part of a "replace" operation and
@@ -236,7 +271,7 @@ public class SearchEngine {
 	 * @param m          The matcher.
 	 * @param replaceStr The string to replace matches with. This is a "template"
 	 *                   string and can contain captured group references in the
-	 *                   form " <code>${digit}</code>".
+	 *                   form "<code>${digit}</code>".
 	 * @return A list of result objects.
 	 * @throws IndexOutOfBoundsException If <code>replaceStr</code> references an
 	 *                                   invalid group (less than zero or greater
@@ -260,6 +295,7 @@ public class SearchEngine {
 	 * Searches <code>searchIn</code> for an occurrence of <code>searchFor</code>
 	 * either forwards or backwards, matching case or not.
 	 * <p>
+	 *
 	 * Most clients will have no need to call this method directly.
 	 *
 	 * @param searchFor The string to look for.
@@ -274,7 +310,7 @@ public class SearchEngine {
 	 * @return The starting position of a match, or <code>-1</code> if no match was
 	 *         found.
 	 */
-	public static final int getNextMatchPos(String searchFor, String searchIn, boolean forward, boolean matchCase,
+	public static int getNextMatchPos(String searchFor, String searchIn, boolean forward, boolean matchCase,
 			boolean wholeWord) {
 
 		// Make our variables lower case if we're ignoring case.
@@ -302,8 +338,8 @@ public class SearchEngine {
 	 * @return The location of the next match, or <code>-1</code> if no match was
 	 *         found.
 	 */
-	private static final int getNextMatchPosImpl(String searchFor, String searchIn, boolean goForward,
-			boolean matchCase, boolean wholeWord) {
+	private static int getNextMatchPosImpl(String searchFor, String searchIn, boolean goForward, boolean matchCase,
+			boolean wholeWord) {
 
 		if (wholeWord) {
 			int len = searchFor.length();
@@ -464,17 +500,19 @@ public class SearchEngine {
 	 * specified matcher has just found a match, and that you want to get the string
 	 * with which to replace that match.
 	 * <p>
+	 *
 	 * Escapes simply insert the escaped character, except for <code>\n</code> and
 	 * <code>\t</code>, which insert a newline and tab respectively. Substrings of
 	 * the form <code>$\d+</code> are considered to be matched groups. To include a
 	 * literal dollar sign in your template, escape it (i.e. <code>\$</code>).
 	 * <p>
+	 *
 	 * Most clients will have no need to call this method directly.
 	 *
 	 * @param m        The matcher.
-	 * @param template The template for the replacement string. For example, "
-	 *                 <code>foo</code> " would yield the replacement string "
-	 *                 <code>foo</code>", while " <code>$1 is the greatest</code>"
+	 * @param template The template for the replacement string. For example,
+	 *                 "<code>foo</code>" would yield the replacement string
+	 *                 "<code>foo</code>", while "<code>$1 is the greatest</code>"
 	 *                 would yield different values depending on the value of the
 	 *                 first captured group in the match.
 	 * @return The string to replace the match with.
@@ -563,7 +601,7 @@ public class SearchEngine {
 	 * <code>substr(searchIn, startPos, startPos+searchStringLength)</code> are
 	 * <em>not</em> letters or digits.
 	 */
-	private static final boolean isWholeWord(CharSequence searchIn, int offset, int len) {
+	private static boolean isWholeWord(CharSequence searchIn, int offset, int len) {
 
 		boolean wsBefore, wsAfter;
 
@@ -572,6 +610,7 @@ public class SearchEngine {
 		} catch (IndexOutOfBoundsException e) {
 			wsBefore = true;
 		}
+
 		try {
 			wsAfter = !Character.isLetterOrDigit(searchIn.charAt(offset + len));
 		} catch (IndexOutOfBoundsException e) {
@@ -588,11 +627,11 @@ public class SearchEngine {
 	 * original dot and mark's selection.
 	 *
 	 * @param textArea The text area.
-	 * @param forward  Whether the search will be forward through the document (
-	 *                 <code>false</code> means backward).
+	 * @param forward  Whether the search will be forward through the document
+	 *                 (<code>false</code> means backward).
 	 * @return The new dot and mark position.
 	 */
-	private static final int makeMarkAndDotEqual(JTextArea textArea, boolean forward) {
+	private static int makeMarkAndDotEqual(JTextArea textArea, boolean forward) {
 		Caret c = textArea.getCaret();
 		int val = forward ? Math.min(c.getDot(), c.getMark()) : Math.max(c.getDot(), c.getMark());
 		c.setDot(val);
@@ -612,12 +651,12 @@ public class SearchEngine {
 	 *                 been checked and returns <code>true</code>.
 	 * @return The results of the operation.
 	 */
-	public static final SearchResult markAll(RTextArea textArea, SearchContext context) {
+	public static SearchResult markAll(RTextArea textArea, SearchContext context) {
 		textArea.clearMarkAllHighlights();
-		// if (context.getMarkAll()) {
+//		if (context.getMarkAll()) {
 		return markAllImpl(textArea, context);
-		// }
-		// return new SearchResult();
+//		}
+//		return new SearchResult();
 	}
 
 	/**
@@ -633,7 +672,7 @@ public class SearchEngine {
 	 *                 been checked and returns <code>true</code>.
 	 * @return The results of the operation.
 	 */
-	private static final SearchResult markAllImpl(RTextArea textArea, SearchContext context) {
+	private static SearchResult markAllImpl(RTextArea textArea, SearchContext context) {
 
 		String toMark = context.getSearchFor();
 		int markAllCount = 0;
@@ -642,7 +681,7 @@ public class SearchEngine {
 		if (context.getMarkAll() && toMark != null && toMark.length() > 0
 		/* && !toMark.equals(markedWord) */) {
 
-			List<DocumentRange> highlights = new ArrayList<DocumentRange>();
+			List<DocumentRange> highlights = new ArrayList<>();
 			context = context.clone();
 			context.setSearchForward(true);
 			context.setMarkAll(false);
@@ -710,7 +749,7 @@ public class SearchEngine {
 	 * @see #replace(RTextArea, SearchContext)
 	 * @see #find(JTextArea, SearchContext)
 	 */
-	private static SearchResult regexReplace(RTextArea textArea, SearchContext context) throws PatternSyntaxException {
+	private static SearchResult regexReplace(RTextArea textArea, SearchContext context) {
 
 		// Be smart about what position we're "starting" at. For example,
 		// if they are searching backwards and there is a selection such that
@@ -796,7 +835,7 @@ public class SearchEngine {
 	 * @see #replaceAll(RTextArea, SearchContext)
 	 * @see #find(JTextArea, SearchContext)
 	 */
-	public static SearchResult replace(RTextArea textArea, SearchContext context) throws PatternSyntaxException {
+	public static SearchResult replace(RTextArea textArea, SearchContext context) {
 
 		// Always clear previous "mark all" highlights
 		if (context.getMarkAll()) {
@@ -876,7 +915,7 @@ public class SearchEngine {
 	 * @see #replace(RTextArea, SearchContext)
 	 * @see #find(JTextArea, SearchContext)
 	 */
-	public static SearchResult replaceAll(RTextArea textArea, SearchContext context) throws PatternSyntaxException {
+	public static SearchResult replaceAll(RTextArea textArea, SearchContext context) {
 
 		// Always clear previous "mark all" highlights
 		if (context.getMarkAll()) {
@@ -900,18 +939,36 @@ public class SearchEngine {
 		int count = 0;
 		textArea.beginAtomicEdit();
 		try {
+
 			int oldOffs = textArea.getCaretPosition();
 			textArea.setCaretPosition(0);
 			SearchResult res = SearchEngine.replace(textArea, context);
+
 			while (res.wasFound()) {
+
 				lastFound = res;
 				count++;
+
+				// Protect against regexes that can match 0-length strings,
+				// such as ".*" and "(?=a). See:
+				// https://github.com/bobbylight/RSyntaxTextArea/issues/107
+				if (res.getMatchRange().isZeroLength()) {
+					if (res.getMatchRange().getStartOffset() == textArea.getDocument().getLength()) {
+						break;
+					} else { // End of a line
+						textArea.setCaretPosition(textArea.getCaretPosition() + 1);
+					}
+				}
+
 				res = SearchEngine.replace(textArea, context);
+
 			}
+
 			if (lastFound == null) { // If nothing was found, don't move the caret
 				textArea.setCaretPosition(oldOffs);
 				lastFound = new SearchResult();
 			}
+
 		} finally {
 			textArea.endAtomicEdit();
 		}

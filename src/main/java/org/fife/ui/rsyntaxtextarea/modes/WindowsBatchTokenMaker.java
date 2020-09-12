@@ -1,7 +1,10 @@
 /*
- * 03/07/2004 WindowsBatchTokenMaker.java - Scanner for Windows batch files. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 03/07/2004
+ *
+ * WindowsBatchTokenMaker.java - Scanner for Windows batch files.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.modes;
 
@@ -21,10 +24,9 @@ import org.fife.ui.rsyntaxtextarea.TokenMap;
  */
 public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 
-	protected final String operators = "@:*<>=?";
+	private static final String OPERATORS = "@:*<>=?";
 
 	private int currentTokenStart;
-
 	private int currentTokenType;
 
 	private VariableType varType;
@@ -55,9 +57,8 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 		// really is...
 		case Token.IDENTIFIER:
 			int value = wordsToHighlight.get(segment, start, end);
-			if (value != -1) {
+			if (value != -1)
 				tokenType = value;
-			}
 			break;
 		}
 
@@ -257,7 +258,7 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 		currentTokenStart = offset;
 		currentTokenType = startTokenType;
 
-		// beginning:
+//beginning:
 		for (int i = offset; i < end; i++) {
 
 			char c = array[i];
@@ -321,7 +322,7 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 						break;
 					}
 
-					int indexOf = operators.indexOf(c, 0);
+					int indexOf = OPERATORS.indexOf(c, 0);
 					if (indexOf > -1) {
 						addToken(text, currentTokenStart, i, Token.OPERATOR, newStartOffset + currentTokenStart);
 						currentTokenType = Token.NULL;
@@ -400,7 +401,7 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 						break;
 					}
 
-					int indexOf = operators.indexOf(c, 0);
+					int indexOf = OPERATORS.indexOf(c, 0);
 					if (indexOf > -1) {
 						addToken(text, currentTokenStart, i, Token.OPERATOR, newStartOffset + currentTokenStart);
 						currentTokenType = Token.NULL;
@@ -481,7 +482,7 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 						break;
 					}
 
-					int indexOf = operators.indexOf(c);
+					int indexOf = OPERATORS.indexOf(c);
 					if (indexOf > -1) {
 						addToken(text, currentTokenStart, i - 1, Token.IDENTIFIER, newStartOffset + currentTokenStart);
 						addToken(text, i, i, Token.OPERATOR, newStartOffset + i);
@@ -538,14 +539,10 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 						varType = VariableType.DOUBLE_PERCENT_VAR;
 						break;
 					default:
-						if (RSyntaxUtilities.isLetter(c) || c == '_' || c == ' ') { // No tab, just
-																					// space; spaces
-																					// are okay in
-																					// variable
-																					// names.
+						if (RSyntaxUtilities.isLetter(c) || c == '_' || c == ' ') { // No tab, just space; spaces are
+																					// okay in variable names.
 							break;
-						} else if (RSyntaxUtilities.isDigit(c)) { // Single-digit command-line
-																	// argument ("%1").
+						} else if (RSyntaxUtilities.isDigit(c)) { // Single-digit command-line argument ("%1").
 							addToken(text, currentTokenStart, i, Token.VARIABLE, newStartOffset + currentTokenStart);
 							currentTokenType = Token.NULL;
 							break;
@@ -626,8 +623,7 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 	}
 
 	private enum VariableType {
-		BRACKET_VAR, TILDE_VAR, NORMAL_VAR, DOUBLE_PERCENT_VAR; // Escaped '%' var, special
-																// highlighting rules?
+		BRACKET_VAR, TILDE_VAR, NORMAL_VAR, DOUBLE_PERCENT_VAR // Escaped '%' var, special highlighting rules?
 	}
 
 }

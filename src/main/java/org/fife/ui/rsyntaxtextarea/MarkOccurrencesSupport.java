@@ -1,7 +1,11 @@
 /*
- * 01/06/2009 MarkOccurrencesSupport.java - Handles marking all occurrences of the currently
- * selected identifier in a text area. This library is distributed under a modified BSD license. See
- * the included RSyntaxTextArea.License.txt file for details.
+ * 01/06/2009
+ *
+ * MarkOccurrencesSupport.java - Handles marking all occurrences of the
+ * currently selected identifier in a text area.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -27,25 +31,23 @@ import org.fife.ui.rtextarea.SmartHighlightPainter;
 class MarkOccurrencesSupport implements CaretListener, ActionListener {
 
 	private RSyntaxTextArea textArea;
-
 	private Timer timer;
-
 	private SmartHighlightPainter p;
 
 	/**
 	 * The default color used to mark occurrences.
 	 */
-	public static final Color DEFAULT_COLOR = new Color(224, 224, 224);
+	static final Color DEFAULT_COLOR = new Color(224, 224, 224);
 
 	/**
 	 * The default delay.
 	 */
-	private static final int DEFAULT_DELAY_MS = 1000;
+	static final int DEFAULT_DELAY_MS = 1000;
 
 	/**
 	 * Constructor. Creates a listener with a 1 second delay.
 	 */
-	public MarkOccurrencesSupport() {
+	MarkOccurrencesSupport() {
 		this(DEFAULT_DELAY_MS);
 	}
 
@@ -56,7 +58,7 @@ class MarkOccurrencesSupport implements CaretListener, ActionListener {
 	 *              should be scanned for matching occurrences. This should be in
 	 *              milliseconds.
 	 */
-	public MarkOccurrencesSupport(int delay) {
+	MarkOccurrencesSupport(int delay) {
 		this(delay, DEFAULT_COLOR);
 	}
 
@@ -69,7 +71,7 @@ class MarkOccurrencesSupport implements CaretListener, ActionListener {
 	 * @param color The color to use to mark the occurrences. This cannot be
 	 *              <code>null</code>.
 	 */
-	public MarkOccurrencesSupport(int delay, Color color) {
+	MarkOccurrencesSupport(int delay, Color color) {
 		timer = new Timer(delay, this);
 		timer.setRepeats(false);
 		p = new SmartHighlightPainter();
@@ -81,6 +83,7 @@ class MarkOccurrencesSupport implements CaretListener, ActionListener {
 	 * This locates and highlights all occurrences of the identifier at the caret
 	 * position, if any.
 	 * <p>
+	 *
 	 * Callers should not call this method directly, but should rather prefer
 	 * {@link #doMarkOccurrences()} to mark occurrences.
 	 *
@@ -115,6 +118,8 @@ class MarkOccurrencesSupport implements CaretListener, ActionListener {
 					// TODO: Do a textArea.repaint() instead of repainting each
 					// marker as it's added if count is huge
 					occurrencesChanged = true;
+				} else {
+					clear();
 				}
 
 			} finally {
@@ -231,7 +236,7 @@ class MarkOccurrencesSupport implements CaretListener, ActionListener {
 	 * @see #getDelay()
 	 */
 	public void setDelay(int delay) {
-		timer.setDelay(delay);
+		timer.setInitialDelay(delay);
 	}
 
 	/**

@@ -1,7 +1,11 @@
 /*
- * 11/14/2003 RPrintUtilities.java - A collection of static methods useful for printing text from
- * Swing text components. This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 11/14/2003
+ *
+ * RPrintUtilities.java - A collection of static methods useful for printing
+ * text from Swing text components.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.print;
 
@@ -30,20 +34,28 @@ import javax.swing.text.Utilities;
 public abstract class RPrintUtilities {
 
 	private static int currentDocLineNumber; // The line number in the document we are currently on.
-
 	private static int numDocLines; // The number of lines in the current document.
-
 	private static Element rootElement; // The first Element (line) in the current document.
 
 	// The characters at which to break a line if implementing word wrap.
-	private static final char[] breakChars = { ' ', '\t', ',', '.', ';', '?', '!' };
+	private static final char[] BREAK_CHARS = { ' ', '\t', ',', '.', ';', '?', '!' };
 
 	// These variables are 'global' because RPrintTabExpander uses them.
-	private static int xOffset; // The x-offset (for the page margin) when printing.
 
-	private static int tabSizeInSpaces; // The length of a tab, in spaces.
+	/**
+	 * The x-offset (for the page margin) when printing.
+	 */
+	private static int xOffset;
 
-	private static FontMetrics fm; // The metrics of the font currently being used to print.
+	/**
+	 * The length of a tab, in spaces.
+	 */
+	private static int tabSizeInSpaces;
+
+	/**
+	 * The metrics of the font currently being used to print.
+	 */
+	private static FontMetrics fm;
 
 	/**
 	 * Returns the position closest to, but before, position
@@ -63,8 +75,8 @@ public abstract class RPrintUtilities {
 	private static int getLineBreakPoint(String line, final int maxCharsPerLine) {
 
 		int breakPoint = -1;
-		for (int i = 0; i < breakChars.length; i++) {
-			int breakCharPos = line.lastIndexOf(breakChars[i], maxCharsPerLine - 1);
+		for (char breakChar : BREAK_CHARS) {
+			int breakCharPos = line.lastIndexOf(breakChar, maxCharsPerLine - 1);
 			if (breakCharPos > breakPoint) {
 				breakPoint = breakCharPos;
 			}
@@ -85,6 +97,7 @@ public abstract class RPrintUtilities {
 	 * @param pageIndex  The page number to print.
 	 * @param pageFormat The format to print the page with.
 	 * @param tabSize    The number of spaces to expand tabs to.
+	 *
 	 * @see #printDocumentMonospacedWordWrap
 	 */
 	public static int printDocumentMonospaced(Graphics g, Document doc, int fontSize, int pageIndex,
@@ -104,10 +117,10 @@ public abstract class RPrintUtilities {
 		int fontWidth = fm.charWidth('w'); // Any character will do as font is monospaced.
 		int fontHeight = fm.getHeight();
 
-		int MAX_CHARS_PER_LINE = (int) pageFormat.getImageableWidth() / fontWidth;
-		int MAX_LINES_PER_PAGE = (int) pageFormat.getImageableHeight() / fontHeight;
+		int maxCharsPerLine = (int) pageFormat.getImageableWidth() / fontWidth;
+		int maxLinesPerPage = (int) pageFormat.getImageableHeight() / fontHeight;
 
-		final int STARTING_LINE_NUMBER = MAX_LINES_PER_PAGE * pageIndex;
+		final int startingLineNumber = maxLinesPerPage * pageIndex;
 
 		// The (x,y) coordinate to print at (in pixels, not characters).
 		// Since y is the baseline of where we'll start printing (not the top-left
@@ -137,8 +150,7 @@ public abstract class RPrintUtilities {
 			}
 
 			// Get rid of newlines, because they end up as boxes if you don't; this is a
-			// monospaced
-			// font.
+			// monospaced font.
 			curLineString = curLineString.replaceAll("\n", "");
 
 			// Replace tabs with how many spaces they should be.
@@ -148,40 +160,40 @@ public abstract class RPrintUtilities {
 				int tabIndex = curLineString.indexOf('\t');
 				while (tabIndex > -1) {
 					int spacesNeeded = tabSizeInSpaces - (tabIndex % tabSizeInSpaces);
-					String replacementString = "";
+					StringBuilder stringBuilder = new StringBuilder();
 					for (int i = 0; i < spacesNeeded; i++) {
-						replacementString += ' ';
+						stringBuilder.append(" ");
 					}
 					// Note that "\t" is actually a regex for this method.
-					curLineString = curLineString.replaceFirst("\t", replacementString);
+					curLineString = curLineString.replaceFirst("\t", stringBuilder.toString());
 					tabIndex = curLineString.indexOf('\t');
 				}
 			}
 
 			// If this document line is too long to fit on one printed line on the page,
-			// break it up into multpile lines.
-			while (curLineString.length() > MAX_CHARS_PER_LINE) {
+			// break it up into multiple lines.
+			while (curLineString.length() > maxCharsPerLine) {
 
 				numPrintedLines++;
-				if (numPrintedLines > STARTING_LINE_NUMBER) {
-					g.drawString(curLineString.substring(0, MAX_CHARS_PER_LINE), xOffset, y);
+				if (numPrintedLines > startingLineNumber) {
+					g.drawString(curLineString.substring(0, maxCharsPerLine), xOffset, y);
 					y += fontHeight;
-					if (numPrintedLines == STARTING_LINE_NUMBER + MAX_LINES_PER_PAGE) {
+					if (numPrintedLines == startingLineNumber + maxLinesPerPage) {
 						return Printable.PAGE_EXISTS;
 					}
 				}
 
-				curLineString = curLineString.substring(MAX_CHARS_PER_LINE, curLineString.length());
+				curLineString = curLineString.substring(maxCharsPerLine, curLineString.length());
 
 			}
 
 			currentDocLineNumber += 1; // We have printed one more line from the document.
 
 			numPrintedLines++;
-			if (numPrintedLines > STARTING_LINE_NUMBER) {
+			if (numPrintedLines > startingLineNumber) {
 				g.drawString(curLineString, xOffset, y);
 				y += fontHeight;
-				if (numPrintedLines == STARTING_LINE_NUMBER + MAX_LINES_PER_PAGE) {
+				if (numPrintedLines == startingLineNumber + maxLinesPerPage) {
 					return Printable.PAGE_EXISTS;
 				}
 			}
@@ -189,9 +201,8 @@ public abstract class RPrintUtilities {
 		}
 
 		// Now, the whole document has been "printed." Decide if this page had any text
-		// on it or
-		// not.
-		if (numPrintedLines > STARTING_LINE_NUMBER) {
+		// on it or not.
+		if (numPrintedLines > startingLineNumber) {
 			return Printable.PAGE_EXISTS;
 		}
 		return Printable.NO_SUCH_PAGE;
@@ -209,6 +220,7 @@ public abstract class RPrintUtilities {
 	 * @param pageIndex  The page number to print.
 	 * @param pageFormat The format to print the page with.
 	 * @param tabSize    The number of spaces to expand tabs to.
+	 *
 	 * @see #printDocumentMonospaced
 	 */
 	public static int printDocumentMonospacedWordWrap(Graphics g, Document doc, int fontSize, int pageIndex,
@@ -228,10 +240,10 @@ public abstract class RPrintUtilities {
 		int fontWidth = fm.charWidth('w'); // Any character will do here, since font is monospaced.
 		int fontHeight = fm.getHeight();
 
-		int MAX_CHARS_PER_LINE = (int) pageFormat.getImageableWidth() / fontWidth;
-		int MAX_LINES_PER_PAGE = (int) pageFormat.getImageableHeight() / fontHeight;
+		int maxCharsPerLine = (int) pageFormat.getImageableWidth() / fontWidth;
+		int maxLinesPerPage = (int) pageFormat.getImageableHeight() / fontHeight;
 
-		final int STARTING_LINE_NUMBER = MAX_LINES_PER_PAGE * pageIndex;
+		final int startingLineNumber = maxLinesPerPage * pageIndex;
 
 		// The (x,y) coordinate to print at (in pixels, not characters).
 		// Since y is the baseline of where we'll start printing (not the top-left
@@ -261,8 +273,7 @@ public abstract class RPrintUtilities {
 			}
 
 			// Remove newlines, because they end up as boxes if you don't; this is a
-			// monospaced
-			// font.
+			// monospaced font.
 			curLineString = curLineString.replaceAll("\n", "");
 
 			// Replace tabs with how many spaces they should be.
@@ -272,27 +283,27 @@ public abstract class RPrintUtilities {
 				int tabIndex = curLineString.indexOf('\t');
 				while (tabIndex > -1) {
 					int spacesNeeded = tabSizeInSpaces - (tabIndex % tabSizeInSpaces);
-					String replacementString = "";
+					StringBuilder stringBuilder = new StringBuilder();
 					for (int i = 0; i < spacesNeeded; i++) {
-						replacementString += ' ';
+						stringBuilder.append(" ");
 					}
 					// Note that "\t" is actually a regex for this method.
-					curLineString = curLineString.replaceFirst("\t", replacementString);
+					curLineString = curLineString.replaceFirst("\t", stringBuilder.toString());
 					tabIndex = curLineString.indexOf('\t');
 				}
 			}
 
 			// If this document line is too long to fit on one printed line on the page,
 			// break it up into multpile lines.
-			while (curLineString.length() > MAX_CHARS_PER_LINE) {
+			while (curLineString.length() > maxCharsPerLine) {
 
-				int breakPoint = getLineBreakPoint(curLineString, MAX_CHARS_PER_LINE) + 1;
+				int breakPoint = getLineBreakPoint(curLineString, maxCharsPerLine) + 1;
 
 				numPrintedLines++;
-				if (numPrintedLines > STARTING_LINE_NUMBER) {
+				if (numPrintedLines > startingLineNumber) {
 					g.drawString(curLineString.substring(0, breakPoint), xOffset, y);
 					y += fontHeight;
-					if (numPrintedLines == STARTING_LINE_NUMBER + MAX_LINES_PER_PAGE) {
+					if (numPrintedLines == startingLineNumber + maxLinesPerPage) {
 						return Printable.PAGE_EXISTS;
 					}
 				}
@@ -304,10 +315,10 @@ public abstract class RPrintUtilities {
 			currentDocLineNumber += 1; // We have printed one more line from the document.
 
 			numPrintedLines++;
-			if (numPrintedLines > STARTING_LINE_NUMBER) {
+			if (numPrintedLines > startingLineNumber) {
 				g.drawString(curLineString, xOffset, y);
 				y += fontHeight;
-				if (numPrintedLines == STARTING_LINE_NUMBER + MAX_LINES_PER_PAGE) {
+				if (numPrintedLines == startingLineNumber + maxLinesPerPage) {
 					return Printable.PAGE_EXISTS;
 				}
 			}
@@ -315,9 +326,8 @@ public abstract class RPrintUtilities {
 		}
 
 		// Now, the whole document has been "printed." Decide if this page had any text
-		// on it or
-		// not.
-		if (numPrintedLines > STARTING_LINE_NUMBER) {
+		// on it or not.
+		if (numPrintedLines > startingLineNumber) {
 			return Printable.PAGE_EXISTS;
 		}
 		return Printable.NO_SUCH_PAGE;
@@ -337,6 +347,7 @@ public abstract class RPrintUtilities {
 	 * @param pageIndex     The page number to print.
 	 * @param pageFormat    The format to print the page with.
 	 * @param tabSize       The number of spaces to convert tabs to.
+	 *
 	 */
 	public static int printDocumentWordWrap(Graphics g, JTextComponent textComponent, Font font, int pageIndex,
 			PageFormat pageFormat, int tabSize) {
@@ -350,10 +361,10 @@ public abstract class RPrintUtilities {
 		fm = g.getFontMetrics();
 		int fontHeight = fm.getHeight();
 
-		final int LINE_LENGTH_IN_PIXELS = (int) pageFormat.getImageableWidth();
-		final int MAX_LINES_PER_PAGE = (int) pageFormat.getImageableHeight() / fontHeight;
+		final int lineLengthInPixels = (int) pageFormat.getImageableWidth();
+		final int maxLinesPerPage = (int) pageFormat.getImageableHeight() / fontHeight;
 
-		final int STARTING_LINE_NUMBER = MAX_LINES_PER_PAGE * pageIndex;
+		final int startingLineNumber = maxLinesPerPage * pageIndex;
 
 		// Create our tab expander.
 		RPrintTabExpander tabExpander = new RPrintTabExpander();
@@ -387,8 +398,7 @@ public abstract class RPrintUtilities {
 			// Put the chars of this line in currentLineSeg, but only starting at our
 			// desired offset
 			// (because this line may be the second part of a wrapped line, so we'd start
-			// after the
-			// part
+			// after the part
 			// that has already been printed).
 			try {
 				doc.getText(currentLineStart + startingOffset, currentLineEnd - (currentLineStart + startingOffset),
@@ -399,20 +409,16 @@ public abstract class RPrintUtilities {
 			}
 
 			// Remove any spaces and/or tabs from the end of the segment (would cause
-			// problems if
-			// you left 'em).
+			// problems if you left 'em).
 			currentLineSeg = removeEndingWhitespace(currentLineSeg);
 
 			// Figger out how long the line is, in pixels.
 			int currentLineLengthInPixels = Utilities.getTabbedTextWidth(currentLineSeg, fm, 0, tabExpander, 0);
 
-			// System.err.println("'" + currentLineSeg + "' - " + currentLineLengthInPixels
-			// + "/" +
-			// LINE_LENGTH_IN_PIXELS);
+//System.err.println("'" + currentLineSeg + "' - " + currentLineLengthInPixels + "/" + LINE_LENGTH_IN_PIXELS);
 			// If it'll fit by itself on a printed line, great.
-			if (currentLineLengthInPixels <= LINE_LENGTH_IN_PIXELS) {
-				currentDocLineNumber += 1; // We (will) have printed one more line from the
-											// document.
+			if (currentLineLengthInPixels <= lineLengthInPixels) {
+				currentDocLineNumber += 1; // We (will) have printed one more line from the document.
 				startingOffset = 0; // Start at the first character in the new document line.
 			}
 
@@ -421,25 +427,24 @@ public abstract class RPrintUtilities {
 
 				// Loop while the current line is too long to fit on a printed line.
 				int currentPos = -1;
-				while (currentLineLengthInPixels > LINE_LENGTH_IN_PIXELS) {
+				while (currentLineLengthInPixels > lineLengthInPixels) {
 
-					// System.err.println("'" + currentLineSeg + "' - " + currentLineLengthInPixels
-					// + "/" + LINE_LENGTH_IN_PIXELS);
+//System.err.println("'" + currentLineSeg + "' - " + currentLineLengthInPixels + "/" + LINE_LENGTH_IN_PIXELS);
 
 					// Remove any spaces and/or tabs from the end of the segment (would cause
 					// problems if you left 'em).
 					currentLineSeg = removeEndingWhitespace(currentLineSeg);
 
-					// currentPos will be the last position in the current text of a
-					// "line break character."
+					// currentPos will be the last position in the current text of a "line break
+					// character."
 					currentPos = -1;
 					String currentLineString = currentLineSeg.toString();
-					for (int i = 0; i < breakChars.length; i++) {
+					for (char breakChar : BREAK_CHARS) {
 						// "+1" below so we include the character on the line.
-						int pos = currentLineString.lastIndexOf(breakChars[i]) + 1;
+						int pos = currentLineString.lastIndexOf(breakChar) + 1;
 						// if (pos>-1 && pos>currentPos)
 						// currentPos = pos;
-						if (pos > 0 && pos > currentPos & pos != currentLineString.length()) {
+						if (pos > 0 && pos > currentPos && pos != currentLineString.length()) {
 							currentPos = pos;
 						}
 					}
@@ -463,7 +468,7 @@ public abstract class RPrintUtilities {
 							}
 							currentLineLengthInPixels = Utilities.getTabbedTextWidth(currentLineSeg, fm, 0, tabExpander,
 									0);
-						} while (currentLineLengthInPixels <= LINE_LENGTH_IN_PIXELS);
+						} while (currentLineLengthInPixels <= lineLengthInPixels);
 						currentPos--;
 
 					}
@@ -483,17 +488,16 @@ public abstract class RPrintUtilities {
 					currentLineLengthInPixels = Utilities.getTabbedTextWidth(currentLineSeg, fm, 0, tabExpander, 0);
 				} // End of while (currentLineLengthInPixels > LINE_LENGTH_IN_PIXELS).
 
-				startingOffset += currentPos; // Where to start (offset from line's start), since
-												// this line wraps.
+				startingOffset += currentPos; // Where to start (offset from line's start), since this line wraps.
 
 			} // End of else.
 
 			numPrintedLines++;
-			if (numPrintedLines > STARTING_LINE_NUMBER) {
+			if (numPrintedLines > startingLineNumber) {
 				// g.drawString(currentLineSeg.toString(), xOffset,y);
 				Utilities.drawTabbedText(currentLineSeg, xOffset, y, g, tabExpander, 0);
 				y += fontHeight;
-				if (numPrintedLines == STARTING_LINE_NUMBER + MAX_LINES_PER_PAGE) {
+				if (numPrintedLines == startingLineNumber + maxLinesPerPage) {
 					return Printable.PAGE_EXISTS;
 				}
 			}
@@ -501,9 +505,8 @@ public abstract class RPrintUtilities {
 		}
 
 		// Now, the whole document has been "printed." Decide if this page had any text
-		// on it or
-		// not.
-		if (numPrintedLines > STARTING_LINE_NUMBER) {
+		// on it or not.
+		if (numPrintedLines > startingLineNumber) {
 			return Printable.PAGE_EXISTS;
 		}
 		return Printable.NO_SUCH_PAGE;
@@ -544,7 +547,7 @@ public abstract class RPrintUtilities {
 			}
 			int tabSizeInPixels = tabSizeInSpaces * fm.charWidth(' ');
 			int ntabs = (((int) x) - xOffset) / tabSizeInPixels;
-			return xOffset + ((ntabs + 1) * tabSizeInPixels);
+			return xOffset + ((ntabs + 1f) * tabSizeInPixels);
 		}
 
 	}

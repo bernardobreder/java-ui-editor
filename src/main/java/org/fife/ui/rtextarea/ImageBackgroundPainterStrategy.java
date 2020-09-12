@@ -1,7 +1,11 @@
 /*
- * 01/22/2005 ImageBackgroundPainterStrategy.java - Renders an RTextAreaBase's background as an
- * image. This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 01/22/2005
+ *
+ * ImageBackgroundPainterStrategy.java - Renders an RTextAreaBase's
+ * background as an image.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -19,6 +23,7 @@ import javax.imageio.ImageIO;
  * image. The image is always stretched to completely fill the
  * <code>RTextAreaBase</code>.
  * <p>
+ *
  * You can set the scaling hint used when stretching/skewing the image to fit in
  * the <code>RTextAreaBase</code>'s background via the
  * <code>setScalingHint</code> method, but keep in mind the more accurate the
@@ -35,11 +40,8 @@ public abstract class ImageBackgroundPainterStrategy implements BackgroundPainte
 	protected MediaTracker tracker;
 
 	private RTextAreaBase textArea;
-
 	private Image master;
-
 	private int oldWidth, oldHeight;
-
 	private int scalingHint;
 
 	/**

@@ -1,5 +1,8 @@
 package org.fife.ui.rsyntaxtextarea;
 
+import java.awt.Color;
+import java.awt.Font;
+
 import javax.swing.text.TabExpander;
 
 /**
@@ -8,33 +11,35 @@ import javax.swing.text.TabExpander;
  * @author Robert Futrell
  * @version 1.0
  */
-public class TokenUtils {
+public final class TokenUtils {
 
 	private TokenUtils() {
+		// Do nothing (comment for Sonar)
 	}
 
 	/**
 	 * Modifies the passed-in token list to start at the specified offset. For
 	 * example, if the token list covered positions 20-60 in the document
 	 * (inclusive) like so:
-	 *
+	 * 
 	 * <pre>
-	 *   [token1] -> [token2] -> [token3] -> [token4]
+	 *   [token1] -&gt; [token2] -&gt; [token3] -&gt; [token4]
 	 *   20     30   31     40   41     50   51     60
 	 * </pre>
-	 *
+	 * 
 	 * and you used this method to make the token list start at position 44, then
 	 * the token list would be modified to be the following:
-	 *
+	 * 
 	 * <pre>
-	 *   [part-of-old-token3] -> [token4]
+	 *   [part-of-old-token3] -&gt; [token4]
 	 *   44                 50   51     60
 	 * </pre>
-	 *
+	 * 
 	 * Tokens that come before the specified position are forever lost, and the
 	 * token containing that position is made to begin at that position if
 	 * necessary. All token types remain the same as they were originally.
 	 * <p>
+	 *
 	 * This method can be useful if you are only interested in part of a token list
 	 * (i.e., the line it represents), but you don't want to modify the token list
 	 * yourself.
@@ -42,8 +47,8 @@ public class TokenUtils {
 	 * @param tokenList The list to make start at the specified position. This
 	 *                  parameter is modified.
 	 * @param pos       The position at which the new token list is to start. If
-	 *                  this position is not in the passed-in token list, returned
-	 *                  token list will either be <code>null</code> or the
+	 *                  this position is not in the passed-in token list, the
+	 *                  returned token list will either be <code>null</code> or the
 	 *                  unpaintable token(s) at the end of the passed-in token list.
 	 * @param e         How to expand tabs.
 	 * @param textArea  The text area from which the token list came.
@@ -63,24 +68,25 @@ public class TokenUtils {
 	 * Modifies the passed-in token list to start at the specified offset. For
 	 * example, if the token list covered positions 20-60 in the document
 	 * (inclusive) like so:
-	 *
+	 * 
 	 * <pre>
-	 *   [token1] -> [token2] -> [token3] -> [token4]
+	 *   [token1] -&gt; [token2] -&gt; [token3] -&gt; [token4]
 	 *   20     30   31     40   41     50   51     60
 	 * </pre>
-	 *
+	 * 
 	 * and you used this method to make the token list start at position 44, then
 	 * the token list would be modified to be the following:
-	 *
+	 * 
 	 * <pre>
-	 *   [part-of-old-token3] -> [token4]
+	 *   [part-of-old-token3] -&gt; [token4]
 	 *   44                 50   51     60
 	 * </pre>
-	 *
+	 * 
 	 * Tokens that come before the specified position are forever lost, and the
 	 * token containing that position is made to begin at that position if
 	 * necessary. All token types remain the same as they were originally.
 	 * <p>
+	 *
 	 * This method can be useful if you are only interested in part of a token list
 	 * (i.e., the line it represents), but you don't want to modify the token list
 	 * yourself.
@@ -88,8 +94,8 @@ public class TokenUtils {
 	 * @param tokenList The list to make start at the specified position. This
 	 *                  parameter is modified.
 	 * @param pos       The position at which the new token list is to start. If
-	 *                  this position is not in the passed-in token list, returned
-	 *                  token list will either be <code>null</code> or the
+	 *                  this position is not in the passed-in token list, the
+	 *                  returned token list will either be <code>null</code> or the
 	 *                  unpaintable token(s) at the end of the passed-in token list.
 	 * @param e         How to expand tabs.
 	 * @param textArea  The text area from which the token list came.
@@ -141,6 +147,84 @@ public class TokenUtils {
 
 	}
 
+	/**
+	 * Returns the length, in characters, of a whitespace token, taking tabs into
+	 * account.
+	 *
+	 * @param t       The token. This should be of type
+	 *                {@link TokenTypes#WHITESPACE}.
+	 * @param tabSize The tab size in the editor.
+	 * @param curOffs The offset of the token in the current line.
+	 * @return The length of the token, in characters.
+	 */
+	public static int getWhiteSpaceTokenLength(Token t, int tabSize, int curOffs) {
+
+		int length = 0;
+
+		for (int i = 0; i < t.length(); i++) {
+			char ch = t.charAt(i);
+			if (ch == '\t') {
+				int newCurOffs = (curOffs + tabSize) / tabSize * tabSize;
+				length += newCurOffs - curOffs;
+				curOffs = newCurOffs;
+			} else {
+				length++;
+				curOffs++;
+			}
+		}
+
+		return length;
+	}
+
+	/**
+	 * Returns whether a token list is {@code null}, empty, or all whitespace.
+	 *
+	 * @param t The token.
+	 * @return Whether the token list starting with that token is {@code null},
+	 *         empty, or all whitespace.
+	 */
+	public static boolean isBlankOrAllWhiteSpace(Token t) {
+
+		while (t != null && t.isPaintable()) {
+			if (!t.isCommentOrWhitespace()) {
+				return false;
+			}
+			t = t.getNextToken();
+		}
+		return true;
+	}
+
+	/**
+	 * Generates HTML that renders a token with the style used in an RSTA instance.
+	 * Note this HTML is not concise. It is a straightforward implementation to be
+	 * used to generate markup used in copy/paste and dnd scenarios.
+	 *
+	 * @param textArea The text area whose styles to use.
+	 * @param token    The token to get equivalent HTML for.
+	 * @return The HTML.
+	 */
+	public static String tokenToHtml(RSyntaxTextArea textArea, Token token) {
+
+		StringBuilder style = new StringBuilder();
+
+		Font font = textArea.getFontForTokenType(token.getType());
+		if (font.isBold()) {
+			style.append("font-weight: bold;");
+		}
+		if (font.isItalic()) {
+			style.append("font-style: italic;");
+		}
+
+		Color c = textArea.getForegroundForToken(token);
+		style.append("color: ").append(HtmlUtil.getHexString(c)).append(";");
+
+		return "<span style=\"" + style + "\">" + HtmlUtil.escapeForHtml(token.getLexeme(), "\n", true) + "</span>";
+	}
+
+	/**
+	 * A sub-list of tokens.
+	 */
+	@SuppressWarnings({ "checkstyle:visibilitymodifier" })
 	public static class TokenSubList {
 
 		/**

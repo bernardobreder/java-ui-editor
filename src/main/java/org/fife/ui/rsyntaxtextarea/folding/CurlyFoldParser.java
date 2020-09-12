@@ -1,7 +1,10 @@
 /*
- * 10/08/2011 CurlyFoldParser.java - Fold parser for languages with C-style syntax. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 10/08/2011
+ *
+ * CurlyFoldParser.java - Fold parser for languages with C-style syntax.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.folding;
 
@@ -12,7 +15,6 @@ import javax.swing.text.BadLocationException;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Token;
-import org.fife.ui.rsyntaxtextarea.TokenMaker;
 
 /**
  * A basic fold parser that can be used for languages such as C, that use curly
@@ -21,17 +23,19 @@ import org.fife.ui.rsyntaxtextarea.TokenMaker;
  * multi-line comments ("<code>/* ... *&#47;</code>") and make them foldable as
  * well.
  * <p>
+ *
  * This parser knows nothing about language semantics; it uses
  * <code>RSyntaxTextArea</code>'s syntax highlighting tokens to identify curly
  * braces. By default, it looks for single-char tokens of type
  * {@link Token#SEPARATOR}, with lexemes '<code>{</code>' or '<code>}</code>'.
- * If your {@link TokenMaker} uses a different token type for curly braces, you
- * should override the {@link #isLeftCurly(Token)} and
- * {@link #isRightCurly(Token)} methods with your own definitions. In theory,
- * you could extend this fold parser to parse languages that use completely
- * different tokens than curly braces to denote foldable regions by overriding
- * those two methods.
+ * If your {@link org.fife.ui.rsyntaxtextarea.TokenMaker} uses a different token
+ * type for curly braces, you should override the {@link #isLeftCurly(Token)}
+ * and {@link #isRightCurly(Token)} methods with your own definitions. In
+ * theory, you could extend this fold parser to parse languages that use
+ * completely different tokens than curly braces to denote foldable regions by
+ * overriding those two methods.
  * <p>
+ *
  * Note also that this class may impose somewhat of a performance penalty on
  * large source files, since it re-parses the entire document each time folds
  * are reevaluated.
@@ -99,7 +103,7 @@ public class CurlyFoldParser implements FoldParser {
 	@Override
 	public List<Fold> getFolds(RSyntaxTextArea textArea) {
 
-		List<Fold> folds = new ArrayList<Fold>();
+		List<Fold> folds = new ArrayList<>();
 
 		Fold currentFold = null;
 		int lineCount = textArea.getLineCount();
@@ -109,6 +113,8 @@ public class CurlyFoldParser implements FoldParser {
 		int lastSeenImportLine = -1;
 		int importGroupStartOffs = -1;
 		int importGroupEndOffs = -1;
+		int lastRightCurlyLine = -1;
+		Fold prevFold = null;
 
 		try {
 
@@ -157,8 +163,7 @@ public class CurlyFoldParser implements FoldParser {
 									currentFold.setEndOffset(mlcEnd);
 									currentFold = currentFold.getParent();
 								}
-								// System.out.println("Ending MLC at: " + mlcEnd + ", parent==" +
-								// currentFold);
+								// System.out.println("Ending MLC at: " + mlcEnd + ", parent==" + currentFold);
 								inMLC = false;
 								mlcStart = 0;
 							}
@@ -200,10 +205,20 @@ public class CurlyFoldParser implements FoldParser {
 
 						}
 
-						if (currentFold == null) {
+						// If a new fold block starts on the same line as the
+						// previous one ends, we treat it as one big block
+						// (e.g. K&R-style "} else {")
+						if (prevFold != null && line == lastRightCurlyLine) {
+							currentFold = prevFold;
+							// Keep currentFold.endOffset where it was, so that
+							// unclosed folds at end of the file work as well
+							// as possible
+							prevFold = null;
+							lastRightCurlyLine = -1;
+						} else if (currentFold == null) { // A top-level fold
 							currentFold = new Fold(FoldType.CODE, textArea, t.getOffset());
 							folds.add(currentFold);
-						} else {
+						} else { // A nested fold
 							currentFold = currentFold.createChild(FoldType.CODE, t.getOffset());
 						}
 
@@ -214,13 +229,19 @@ public class CurlyFoldParser implements FoldParser {
 						if (currentFold != null) {
 							currentFold.setEndOffset(t.getOffset());
 							Fold parentFold = currentFold.getParent();
-							// System.out.println("... Adding regular fold at " + t.offset +
-							// ", parent==" + parentFold);
+							// System.out.println("... Adding regular fold at " + t.offset + ", parent==" +
+							// parentFold);
 							// Don't add fold markers for single-line blocks
 							if (currentFold.isOnSingleLine()) {
 								if (!currentFold.removeFromParent()) {
 									folds.remove(folds.size() - 1);
 								}
+							} else {
+								// Remember the end of the last completed fold,
+								// in case it needs to get merged with the next
+								// one (e.g. K&R "} else {" style)
+								lastRightCurlyLine = line;
+								prevFold = currentFold;
 							}
 							currentFold = parentFold;
 						}

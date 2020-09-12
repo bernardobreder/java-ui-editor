@@ -1,6 +1,10 @@
 /*
- * 08/16/2008 XMLParser.java - Simple XML parser. This library is distributed under a modified BSD
- * license. See the included RSyntaxTextArea.License.txt file for details.
+ * 08/16/2008
+ *
+ * XMLParser.java - Simple XML parser.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.parser;
 
@@ -25,6 +29,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * (though most XML parsers don't really have error recovery and so only can
  * find one error at a time).
  * <p>
+ *
  * This class isn't actually used by RSyntaxTextArea anywhere, but you can
  * install and use it yourself. Doing so is as simple as:
  *
@@ -45,6 +50,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * Also note that a single instance of this class can be installed on multiple
  * instances of <code>RSyntaxTextArea</code>.
  * <p>
+ *
  * For a more complete XML parsing/validation solution, see the <a href=
  * "https://github.com/bobbylight/RSTALanguageSupport">RSTALanguageSupport
  * project</a>'s <code>XmlLanguageSupport</code> class.
@@ -55,9 +61,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class XmlParser extends AbstractParser {
 
 	private SAXParserFactory spf;
-
 	private DefaultParseResult result;
-
 	private EntityResolver entityResolver;
 
 	public XmlParser() {
@@ -157,7 +161,7 @@ public class XmlParser extends AbstractParser {
 	 * Callback notified when errors are found in the XML document. Adds a notice to
 	 * be squiggle-underlined.
 	 */
-	private class Handler extends DefaultHandler {
+	private final class Handler extends DefaultHandler {
 
 		private Document doc;
 

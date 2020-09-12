@@ -1,7 +1,11 @@
 /*
- * 03/09/2013 DefaultOccurrenceMarker - Marks occurrences of the current token for most languages.
- * This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 03/09/2013
+ *
+ * DefaultOccurrenceMarker - Marks occurrences of the current token for most
+ * languages.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -19,9 +23,6 @@ import org.fife.ui.rtextarea.SmartHighlightPainter;
  */
 class DefaultOccurrenceMarker implements OccurrenceMarker {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Token getTokenToMark(RSyntaxTextArea textArea) {
 
@@ -48,17 +49,11 @@ class DefaultOccurrenceMarker implements OccurrenceMarker {
 
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isValidType(RSyntaxTextArea textArea, Token t) {
 		return textArea.getMarkOccurrencesOfTokenType(t.getType());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void markOccurrences(RSyntaxDocument doc, Token t, RSyntaxTextAreaHighlighter h, SmartHighlightPainter p) {
 		markOccurrencesOfToken(doc, t, h, p);
@@ -73,7 +68,7 @@ class DefaultOccurrenceMarker implements OccurrenceMarker {
 	 * @param h   The highlighter to add the highlights to.
 	 * @param p   The painter for the highlights.
 	 */
-	public static final void markOccurrencesOfToken(RSyntaxDocument doc, Token t, RSyntaxTextAreaHighlighter h,
+	public static void markOccurrencesOfToken(RSyntaxDocument doc, Token t, RSyntaxTextAreaHighlighter h,
 			SmartHighlightPainter p) {
 
 		char[] lexeme = t.getLexeme().toCharArray();

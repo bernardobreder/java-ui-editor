@@ -1,6 +1,10 @@
 /*
- * 08/26/2004 TokenMakerBase.java - A base class for token makers. This library is distributed under
- * a modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 08/26/2004
+ *
+ * TokenMakerBase.java - A base class for token makers.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -136,6 +140,7 @@ public abstract class TokenMakerBase implements TokenMaker {
 	 * Returns the closest {@link TokenTypes "standard" token type} for a given
 	 * "internal" token type (e.g. one whose value is <code>&lt; 0</code>).
 	 * <p>
+	 *
 	 * The default implementation returns <code>type</code> always, which denotes
 	 * that a mapping from internal token types to standard token types is not
 	 * defined; subclasses can override.
@@ -149,10 +154,11 @@ public abstract class TokenMakerBase implements TokenMaker {
 	}
 
 	/**
-	 * Returns whether this programming language uses curly braces ('
-	 * <code>{</code>' and ' <code>}</code>') to denote code blocks. The default
-	 * implementation returns <code>false</code> ; subclasses can override this
-	 * method if necessary.
+	 * Returns whether this programming language uses curly braces ('<code>{</code>'
+	 * and '<code>}</code>') to denote code blocks.
+	 *
+	 * The default implementation returns <code>false</code>; subclasses can
+	 * override this method if necessary.
 	 *
 	 * @param languageIndex The language index at the offset in question. Since some
 	 *                      <code>TokenMaker</code>s effectively have nested

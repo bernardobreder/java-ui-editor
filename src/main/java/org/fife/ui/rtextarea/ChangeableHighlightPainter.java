@@ -1,7 +1,11 @@
 /*
- * 11/10/2004 ChangableHighlightPainter.java - A highlight painter whose color you can change. This
- * library is distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt
- * file for details.
+ * 11/10/2004
+ *
+ * ChangeableHighlightPainter.java - A highlight painter whose color you can
+ * change.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -29,6 +33,7 @@ import javax.swing.text.View;
 /**
  * An extension of <code>LayerPainter</code> that allows the user to change
  * several of its properties:
+ *
  * <ul>
  * <li>Its color/fill style (can use a <code>GradientPaint</code>, for
  * example).</li>
@@ -64,7 +69,6 @@ public class ChangeableHighlightPainter extends LayeredHighlighter.LayerPainter 
 	private float alpha;
 
 	private static final int ARCWIDTH = 8;
-
 	private static final int ARCHEIGHT = 8;
 
 	/**
@@ -167,8 +171,8 @@ public class ChangeableHighlightPainter extends LayeredHighlighter.LayerPainter 
 	 * Paints a highlight.
 	 *
 	 * @param g      the graphics context
-	 * @param offs0  the starting model offset >= 0
-	 * @param offs1  the ending model offset >= offs1
+	 * @param offs0  the starting model offset &gt;= 0
+	 * @param offs1  the ending model offset &gt;= offs1
 	 * @param bounds the bounding box for the highlight
 	 * @param c      the editor
 	 */
@@ -234,8 +238,8 @@ public class ChangeableHighlightPainter extends LayeredHighlighter.LayerPainter 
 	 * Paints a portion of a highlight.
 	 *
 	 * @param g      the graphics context
-	 * @param offs0  the starting model offset >= 0
-	 * @param offs1  the ending model offset >= offs1
+	 * @param offs0  the starting model offset &gt;= 0
+	 * @param offs1  the ending model offset &gt;= offs1
 	 * @param bounds the bounding box of the view, which is not necessarily the
 	 *               region to paint.
 	 * @param c      the editor
@@ -339,8 +343,8 @@ public class ChangeableHighlightPainter extends LayeredHighlighter.LayerPainter 
 	 * Deserializes a painter.
 	 *
 	 * @param s The stream to read from.
-	 * @throws ClassNotFoundException
-	 * @throws IOException
+	 * @throws ClassNotFoundException If something bad happens.
+	 * @throws IOException            If an IO error occurs.
 	 */
 	private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
 		s.defaultReadObject();

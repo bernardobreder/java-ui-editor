@@ -1,7 +1,10 @@
 /*
- * 02/11/2009 LineNumberList.java - Renders line numbers in an RTextScrollPane. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 02/11/2009
+ *
+ * LineNumberList.java - Renders line numbers in an RTextScrollPane.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -42,15 +45,11 @@ import org.fife.ui.rsyntaxtextarea.folding.FoldManager;
 public class LineNumberList extends AbstractGutterComponent implements MouseInputListener {
 
 	private int currentLine; // The last line the caret was on.
-
 	private int lastY = -1; // Used to check if caret changes lines when line wrap is enabled.
-
 	private int lastVisibleLine;// Last line index painted.
 
 	private int cellHeight; // Height of a line number "cell" when word wrap is off.
-
 	private int cellWidth; // The width used for all line number cells.
-
 	private int ascent; // The ascent to use when painting line numbers.
 
 	private Map<?, ?> aaHints;
@@ -321,7 +320,7 @@ public class LineNumberList extends AbstractGutterComponent implements MouseInpu
 			fm = ((RSyntaxTextArea) textArea).getFoldManager();
 			topLine += fm.getHiddenLineCountAbove(topLine, true);
 		}
-		final int RHS_BORDER_WIDTH = getRhsBorderWidth();
+		final int rhsBorderWidth = getRhsBorderWidth();
 
 		/*
 		 * // Highlight the current line's line number, if desired. if
@@ -337,7 +336,7 @@ public class LineNumberList extends AbstractGutterComponent implements MouseInpu
 		boolean ltr = getComponentOrientation().isLeftToRight();
 		if (ltr) {
 			FontMetrics metrics = g.getFontMetrics();
-			int rhs = getWidth() - RHS_BORDER_WIDTH;
+			int rhs = getWidth() - rhsBorderWidth;
 			int line = topLine + 1;
 			while (y < visibleRect.y + visibleRect.height + ascent && line <= textArea.getLineCount()) {
 				String number = Integer.toString(line + getLineNumberingStartIndex() - 1);
@@ -365,7 +364,7 @@ public class LineNumberList extends AbstractGutterComponent implements MouseInpu
 			int line = topLine + 1;
 			while (y < visibleRect.y + visibleRect.height && line < textArea.getLineCount()) {
 				String number = Integer.toString(line + getLineNumberingStartIndex() - 1);
-				g.drawString(number, RHS_BORDER_WIDTH, y);
+				g.drawString(number, rhsBorderWidth, y);
 				y += cellHeight;
 				if (fm != null) {
 					Fold fold = fm.getFoldForLine(line - 1);
@@ -442,13 +441,13 @@ public class LineNumberList extends AbstractGutterComponent implements MouseInpu
 		Rectangle visibleEditorRect = ui.getVisibleEditorRect();
 		Rectangle r = LineNumberList.getChildViewBounds(v, topLine, visibleEditorRect);
 		int y = r.y;
-		final int RHS_BORDER_WIDTH = getRhsBorderWidth();
+		final int rhsBorderWidth = getRhsBorderWidth();
 		int rhs;
 		boolean ltr = getComponentOrientation().isLeftToRight();
 		if (ltr) {
-			rhs = width - RHS_BORDER_WIDTH;
+			rhs = width - rhsBorderWidth;
 		} else { // rtl
-			rhs = RHS_BORDER_WIDTH;
+			rhs = rhsBorderWidth;
 		}
 		int visibleBottom = visibleRect.y + visibleRect.height;
 		FontMetrics metrics = g.getFontMetrics();
@@ -475,7 +474,7 @@ public class LineNumberList extends AbstractGutterComponent implements MouseInpu
 				int strWidth = metrics.stringWidth(number);
 				g.drawString(number, rhs - strWidth, y + ascent);
 			} else {
-				int x = RHS_BORDER_WIDTH;
+				int x = rhsBorderWidth;
 				g.drawString(number, x, y + ascent);
 			}
 
@@ -644,7 +643,7 @@ public class LineNumberList extends AbstractGutterComponent implements MouseInpu
 			// getting the line number of the caret suffices. This increases
 			// efficiency in the no-line-wrap case.
 
-			if (textArea.getLineWrap() == false) {
+			if (!textArea.getLineWrap()) {
 				int line = textArea.getDocument().getDefaultRootElement().getElementIndex(dot);
 				if (currentLine != line) {
 					repaintLine(line);

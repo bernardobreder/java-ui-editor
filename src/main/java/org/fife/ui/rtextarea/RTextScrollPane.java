@@ -1,7 +1,11 @@
 /*
- * 11/14/2003 RTextScrollPane.java - A JScrollPane that will only accept RTextAreas so that it can
- * display line numbers, fold indicators, and icons. This library is distributed under a modified
- * BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 11/14/2003
+ *
+ * RTextScrollPane.java - A JScrollPane that will only accept RTextAreas
+ * so that it can display line numbers, fold indicators, and icons.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -12,7 +16,6 @@ import java.awt.Font;
 import java.util.Arrays;
 import java.util.Stack;
 
-import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 
 /**
@@ -25,6 +28,7 @@ import javax.swing.JScrollPane;
  * etc.)
  * <li>+/- icons to denote code folding regions.
  * </ul>
+ *
  * The actual "meat" of these extras is contained in the {@link Gutter} class.
  * Each <code>RTextScrollPane</code> has a <code>Gutter</code> instance that it
  * uses as its row header. The gutter is only made visible when one of its
@@ -50,6 +54,16 @@ public class RTextScrollPane extends JScrollPane {
 	 * Creates a scroll pane. A default value will be used for line number color
 	 * (gray), and the current line's line number will be highlighted.
 	 *
+	 * @param textArea The text area this scroll pane will contain.
+	 */
+	public RTextScrollPane(RTextArea textArea) {
+		this(textArea, true);
+	}
+
+	/**
+	 * Creates a scroll pane. A default value will be used for line number color
+	 * (gray), and the current line's line number will be highlighted.
+	 *
 	 * @param comp The component this scroll pane should display. This should be an
 	 *             instance of {@link RTextArea}, <code>javax.swing.JLayer</code>
 	 *             (or the older <code>org.jdesktop.jxlayer.JXLayer</code>), or
@@ -59,6 +73,20 @@ public class RTextScrollPane extends JScrollPane {
 	 */
 	public RTextScrollPane(Component comp) {
 		this(comp, true);
+	}
+
+	/**
+	 * Creates a scroll pane. A default value will be used for line number color
+	 * (gray), and the current line's line number will be highlighted.
+	 *
+	 * @param textArea    The text area this scroll pane will contain. If this is
+	 *                    <code>null</code>, you must call
+	 *                    {@link #setViewportView(Component)}, passing in an
+	 *                    {@link RTextArea}.
+	 * @param lineNumbers Whether line numbers should be enabled.
+	 */
+	public RTextScrollPane(RTextArea textArea, boolean lineNumbers) {
+		this(textArea, lineNumbers, Color.GRAY);
 	}
 
 	/**
@@ -93,18 +121,22 @@ public class RTextScrollPane extends JScrollPane {
 	 * @param lineNumberColor The color to use for line numbers.
 	 */
 	public RTextScrollPane(Component comp, boolean lineNumbers, Color lineNumberColor) {
+
 		super(comp);
+
 		RTextArea textArea = getFirstRTextAreaDescendant(comp);
+
 		// Create the gutter for this document.
 		Font defaultFont = new Font("Monospaced", Font.PLAIN, 12);
 		gutter = new Gutter(textArea);
 		gutter.setLineNumberFont(defaultFont);
 		gutter.setLineNumberColor(lineNumberColor);
 		setLineNumbersEnabled(lineNumbers);
+
 		// Set miscellaneous properties.
 		setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS);
 		setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		setBorder(BorderFactory.createEmptyBorder());
+
 	}
 
 	/**
@@ -240,8 +272,8 @@ public class RTextScrollPane extends JScrollPane {
 	 * @return The first descendant text area, or <code>null</code> if none is
 	 *         found.
 	 */
-	private static final RTextArea getFirstRTextAreaDescendant(Component comp) {
-		Stack<Component> stack = new Stack<Component>();
+	private static RTextArea getFirstRTextAreaDescendant(Component comp) {
+		Stack<Component> stack = new Stack<>();
 		stack.add(comp);
 		while (!stack.isEmpty()) {
 			Component current = stack.pop();

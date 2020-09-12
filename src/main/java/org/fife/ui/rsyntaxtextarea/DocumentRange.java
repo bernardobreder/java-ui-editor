@@ -1,6 +1,10 @@
 /*
- * 08/11/2009 DocumentRange.java - A range of text in a document. This library is distributed under
- * a modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 08/11/2009
+ *
+ * DocumentRange.java - A range of text in a document.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -13,7 +17,6 @@ package org.fife.ui.rsyntaxtextarea;
 public class DocumentRange implements Comparable<DocumentRange> {
 
 	private int startOffs;
-
 	private int endOffs;
 
 	/**
@@ -118,10 +121,10 @@ public class DocumentRange implements Comparable<DocumentRange> {
 	 */
 	public void set(int start, int end) {
 		if (start < 0 || end < 0) {
-			throw new IllegalArgumentException("start and end must be >= 0");
+			throw new IllegalArgumentException("start and end must be >= 0 (" + start + "-" + end + ")");
 		}
 		if (end < start) {
-			throw new IllegalArgumentException("'end' cannot be less than 'start'");
+			throw new IllegalArgumentException("'end' cannot be less than 'start' (" + start + "-" + end + ")");
 		}
 		this.startOffs = start;
 		this.endOffs = end;

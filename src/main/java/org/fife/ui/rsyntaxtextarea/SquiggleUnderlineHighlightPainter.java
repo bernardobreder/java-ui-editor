@@ -1,8 +1,12 @@
 /*
- * 09/13/2005 SquiggleUnderlineHighlightPainter.java - Highlighter that draws a squiggle underline
- * under "highlighted" text, similar to error markers in Microsoft Visual Studio or Eclipse. This
- * library is distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt
- * file for details.
+ * 09/13/2005
+ *
+ * SquiggleUnderlineHighlightPainter.java - Highlighter that draws a squiggle
+ * underline under "highlighted" text, similar to error markers in Microsoft
+ * Visual Studio or Eclipse.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -23,6 +27,7 @@ import org.fife.ui.rtextarea.ChangeableHighlightPainter;
  * to what popular IDE's such as Visual Studio and Eclipse do to indicate
  * errors, warnings, etc.
  * <p>
+ *
  * This class must be used as a <code>LayerPainter</code>.
  *
  * @author Robert Futrell
@@ -46,8 +51,8 @@ public class SquiggleUnderlineHighlightPainter extends ChangeableHighlightPainte
 	 * Paints a portion of a highlight.
 	 *
 	 * @param g      the graphics context
-	 * @param offs0  the starting model offset >= 0
-	 * @param offs1  the ending model offset >= offs1
+	 * @param offs0  the starting model offset &gt;= 0
+	 * @param offs1  the ending model offset &gt;= offs1
 	 * @param bounds the bounding box of the view, which is not necessarily the
 	 *               region to paint.
 	 * @param c      the editor

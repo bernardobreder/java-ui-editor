@@ -1,6 +1,10 @@
 /*
- * 09/30/2012 HtmlFoldParser.java - Fold parser for HTML 5 and PHP. This library is distributed
- * under a modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 09/30/2012
+ *
+ * HtmlFoldParser.java - Fold parser for HTML 5 and PHP.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.folding;
 
@@ -54,31 +58,25 @@ public class HtmlFoldParser implements FoldParser {
 	private static final Set<String> FOLDABLE_TAGS;
 
 	private static final char[] MARKUP_CLOSING_TAG_START = "</".toCharArray();
-
 	// private static final char[] MARKUP_SHORT_TAG_END = "/>".toCharArray();
 	private static final char[] MLC_START = "<!--".toCharArray();
-
 	private static final char[] MLC_END = "-->".toCharArray();
 
 	private static final char[] PHP_START = "<?".toCharArray(); // <? and <?php
-
 	private static final char[] PHP_END = "?>".toCharArray();
 
 	// Scriptlets, declarations, and expressions all start the same way.
 	private static final char[] JSP_START = "<%".toCharArray();
-
 	private static final char[] JSP_END = "%>".toCharArray();
 
 	private static final char[][] LANG_START = { PHP_START, JSP_START };
-
 	private static final char[][] LANG_END = { PHP_END, JSP_END };
 
 	private static final char[] JSP_COMMENT_START = "<%--".toCharArray();
-
 	private static final char[] JSP_COMMENT_END = "--%>".toCharArray();
 
 	static {
-		FOLDABLE_TAGS = new HashSet<String>();
+		FOLDABLE_TAGS = new HashSet<>();
 		FOLDABLE_TAGS.add("body");
 		FOLDABLE_TAGS.add("canvas");
 		FOLDABLE_TAGS.add("div");
@@ -116,8 +114,8 @@ public class HtmlFoldParser implements FoldParser {
 	@Override
 	public List<Fold> getFolds(RSyntaxTextArea textArea) {
 
-		List<Fold> folds = new ArrayList<Fold>();
-		Stack<String> tagNameStack = new Stack<String>();
+		List<Fold> folds = new ArrayList<>();
+		Stack<String> tagNameStack = new Stack<>();
 		boolean inSublanguage = false;
 
 		Fold currentFold = null;
@@ -149,7 +147,7 @@ public class HtmlFoldParser implements FoldParser {
 						}
 
 						// ?> or %>
-						else if (t.startsWith(LANG_END[language])) {
+						else if (t.startsWith(LANG_END[language]) && currentFold != null) {
 							int phpEnd = t.getEndOffset() - 1;
 							currentFold.setEndOffset(phpEnd);
 							Fold parentFold = currentFold.getParent();
@@ -235,11 +233,12 @@ public class HtmlFoldParser implements FoldParser {
 							Token tagStartToken = t;
 							Token tagNameToken = t.getNextToken();
 							if (isFoldableTag(tagNameToken)) {
-								getTagCloseInfo(tagNameToken, textArea, line, tci);
+								int newLine = getTagCloseInfo(tagNameToken, textArea, line, tci);
 								if (tci.line == -1) { // EOF reached before end of tag
 									return folds;
 								}
 								// We have found either ">" or "/>" with tci.
+								// System.out.println(line + ", "+ tci + ", " + t);
 								Token tagCloseToken = tci.closeToken;
 								if (tagCloseToken.isSingleChar(Token.MARKUP_TAG_DELIMITER, '>')) {
 									if (currentFold == null) {
@@ -251,6 +250,7 @@ public class HtmlFoldParser implements FoldParser {
 									tagNameStack.push(tagNameToken.getLexeme());
 								}
 								t = tagCloseToken; // Continue parsing after tag
+								line = newLine;
 							}
 						}
 
@@ -289,8 +289,8 @@ public class HtmlFoldParser implements FoldParser {
 	}
 
 	/**
-	 * Grabs the token representing the closing of a tag (i.e. "<code>&gt;</code> "
-	 * or " <code>/&gt;</code>"). This should only be called after a tag name has
+	 * Grabs the token representing the closing of a tag (i.e. "<code>&gt;</code>"
+	 * or "<code>/&gt;</code>"). This should only be called after a tag name has
 	 * been parsed, to ensure the "closing" of other tags is not identified.
 	 *
 	 * @param tagNameToken The token denoting the name of the tag.
@@ -298,8 +298,9 @@ public class HtmlFoldParser implements FoldParser {
 	 * @param line         The line we're currently on.
 	 * @param info         On return, information about the closing of the tag is
 	 *                     returned in this object.
+	 * @return The line number of the closing tag token.
 	 */
-	private void getTagCloseInfo(Token tagNameToken, RSyntaxTextArea textArea, int line, TagCloseInfo info) {
+	private int getTagCloseInfo(Token tagNameToken, RSyntaxTextArea textArea, int line, TagCloseInfo info) {
 
 		info.reset();
 		Token t = tagNameToken.getNextToken();
@@ -318,6 +319,8 @@ public class HtmlFoldParser implements FoldParser {
 
 		} while (++line < textArea.getLineCount() && (t = textArea.getTokenListForLine(line)) != null);
 
+		return line;
+
 	}
 
 	/**
@@ -328,8 +331,8 @@ public class HtmlFoldParser implements FoldParser {
 	 * @param tagNameToken The tag name of the most recently parsed closing tag.
 	 * @return Whether it's the end of the current fold region.
 	 */
-	private static final boolean isEndOfLastFold(Stack<String> tagNameStack, Token tagNameToken) {
-		if (tagNameToken != null && !tagNameStack.isEmpty()) {
+	private static boolean isEndOfLastFold(Stack<String> tagNameStack, Token tagNameToken) {
+		if (tagNameToken != null && tagNameToken.getLexeme() != null && !tagNameStack.isEmpty()) {
 			return tagNameToken.getLexeme().equalsIgnoreCase(tagNameStack.peek());
 		}
 		return false;
@@ -341,8 +344,9 @@ public class HtmlFoldParser implements FoldParser {
 	 * @param tagNameToken The tag's name token. This may be <code>null</code>.
 	 * @return Whether this tag can be a foldable region.
 	 */
-	private static final boolean isFoldableTag(Token tagNameToken) {
-		return tagNameToken != null && FOLDABLE_TAGS.contains(tagNameToken.getLexeme().toLowerCase());
+	private static boolean isFoldableTag(Token tagNameToken) {
+		return tagNameToken != null && tagNameToken.getLexeme() != null
+				&& FOLDABLE_TAGS.contains(tagNameToken.getLexeme().toLowerCase());
 	}
 
 	/**
@@ -353,20 +357,19 @@ public class HtmlFoldParser implements FoldParser {
 	 * @param fold  The fold to remove.
 	 * @param folds The list of top-level folds.
 	 */
-	private static final void removeFold(Fold fold, List<Fold> folds) {
+	private static void removeFold(Fold fold, List<Fold> folds) {
 		if (!fold.removeFromParent()) {
 			folds.remove(folds.size() - 1);
 		}
 	}
 
 	/**
-	 * A simple wrapper for the token denoting the closing of a tag (i.e. "
-	 * <code>&gt;</code>" or " <code>/&gt;</code>").
+	 * A simple wrapper for the token denoting the closing of a tag (i.e.
+	 * "<code>&gt;</code>" or "<code>/&gt;</code>").
 	 */
 	private static class TagCloseInfo {
 
 		private Token closeToken;
-
 		private int line;
 
 		public void reset() {

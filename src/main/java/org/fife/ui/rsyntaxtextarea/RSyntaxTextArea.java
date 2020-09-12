@@ -1,11 +1,11 @@
 /*
- * 01/27/2004 RSyntaxTextArea.java - An extension of RTextArea that adds the ability to syntax
- * highlight certain programming languages. This library is distributed under a modified BSD
- * license. See the included RSyntaxTextArea.License.txt file for details.
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -15,7 +15,6 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.RenderingHints.Key;
 import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
 import java.awt.event.ActionEvent;
@@ -27,6 +26,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -36,11 +36,12 @@ import java.util.ResourceBundle;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
+import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.event.CaretEvent;
-import javax.swing.event.EventListenerList;
+import javax.swing.event.CaretListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
@@ -49,33 +50,35 @@ import javax.swing.text.Element;
 import javax.swing.text.Highlighter;
 
 import org.fife.ui.rsyntaxtextarea.focusabletip.FocusableTip;
+import org.fife.ui.rsyntaxtextarea.folding.DefaultFoldManager;
 import org.fife.ui.rsyntaxtextarea.folding.Fold;
 import org.fife.ui.rsyntaxtextarea.folding.FoldManager;
 import org.fife.ui.rsyntaxtextarea.parser.Parser;
 import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
 import org.fife.ui.rsyntaxtextarea.parser.ToolTipInfo;
-import org.fife.ui.rtextarea.Gutter;
 import org.fife.ui.rtextarea.RTextArea;
 import org.fife.ui.rtextarea.RTextAreaUI;
-import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.RecordableTextAction;
 
 /**
  * An extension of <code>RTextArea</code> that adds syntax highlighting of
  * certain programming languages to its list of features. Languages currently
  * supported include:
- * <table>
+ *
+ * <table summary="">
  * <tr>
  * <td style="vertical-align: top">
  * <ul>
  * <li>ActionScript
  * <li>Assembler (X86)
+ * <li>Assembler (6502)
  * <li>BBCode
  * <li>C
  * <li>C++
  * <li>CSS
  * <li>C#
  * <li>Clojure
+ * <li>Dart
  * <li>Delphi
  * <li>DTD
  * <li>Fortran
@@ -84,6 +87,7 @@ import org.fife.ui.rtextarea.RecordableTextAction;
  * <li>htaccess
  * <li>Java
  * <li>JavaScript
+ * <li>.jshintrc
  * <li>JSP
  * </ul>
  * </td>
@@ -97,6 +101,7 @@ import org.fife.ui.rtextarea.RecordableTextAction;
  * <li>NSIS
  * <li>Perl
  * <li>PHP
+ * <li>Properties files
  * <li>Python
  * <li>Ruby
  * <li>SAS
@@ -104,12 +109,14 @@ import org.fife.ui.rtextarea.RecordableTextAction;
  * <li>SQL
  * <li>Tcl
  * <li>UNIX shell scripts
+ * <li>Visual Basic
  * <li>Windows batch
  * <li>XML files
  * </ul>
  * </td>
  * </tr>
  * </table>
+ *
  * Other added features include:
  * <ul style="columns: 2 12em; column-gap: 1em">
  * <li>Code folding
@@ -120,79 +127,52 @@ import org.fife.ui.rtextarea.RecordableTextAction;
  * <li>A pluggable "parser" system that can be used to implement syntax
  * validation, spell checking, etc.
  * </ul>
+ *
  * It is recommended that you use an instance of
  * {@link org.fife.ui.rtextarea.RTextScrollPane} instead of a regular
  * <code>JScrollPane</code> as this class allows you to add line numbers and
  * bookmarks easily to your text area.
  *
  * @author Robert Futrell
- * @version 2.5.6
+ * @version 3.1.0
  * @see TextEditorPane
  */
 public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 
 	public static final String ANIMATE_BRACKET_MATCHING_PROPERTY = "RSTA.animateBracketMatching";
-
 	public static final String ANTIALIAS_PROPERTY = "RSTA.antiAlias";
-
 	public static final String AUTO_INDENT_PROPERTY = "RSTA.autoIndent";
-
 	public static final String BRACKET_MATCHING_PROPERTY = "RSTA.bracketMatching";
-
 	public static final String CLEAR_WHITESPACE_LINES_PROPERTY = "RSTA.clearWhitespaceLines";
-
 	public static final String CLOSE_CURLY_BRACES_PROPERTY = "RSTA.closeCurlyBraces";
-
 	public static final String CLOSE_MARKUP_TAGS_PROPERTY = "RSTA.closeMarkupTags";
-
 	public static final String CODE_FOLDING_PROPERTY = "RSTA.codeFolding";
-
 	public static final String EOL_VISIBLE_PROPERTY = "RSTA.eolMarkersVisible";
-
 	public static final String FOCUSABLE_TIPS_PROPERTY = "RSTA.focusableTips";
-
 	public static final String FRACTIONAL_FONTMETRICS_PROPERTY = "RSTA.fractionalFontMetrics";
-
 	public static final String HIGHLIGHT_SECONDARY_LANGUAGES_PROPERTY = "RSTA.highlightSecondaryLanguages";
-
 	public static final String HYPERLINKS_ENABLED_PROPERTY = "RSTA.hyperlinksEnabled";
-
 	public static final String MARK_OCCURRENCES_PROPERTY = "RSTA.markOccurrences";
-
 	public static final String MARKED_OCCURRENCES_CHANGED_PROPERTY = "RSTA.markedOccurrencesChanged";
-
 	public static final String PAINT_MATCHED_BRACKET_PAIR_PROPERTY = "RSTA.paintMatchedBracketPair";
-
 	public static final String PARSER_NOTICES_PROPERTY = "RSTA.parserNotices";
-
 	public static final String SYNTAX_SCHEME_PROPERTY = "RSTA.syntaxScheme";
-
 	public static final String SYNTAX_STYLE_PROPERTY = "RSTA.syntaxStyle";
-
 	public static final String TAB_LINE_COLOR_PROPERTY = "RSTA.tabLineColor";
-
 	public static final String TAB_LINES_PROPERTY = "RSTA.tabLines";
-
 	public static final String USE_SELECTED_TEXT_COLOR_PROPERTY = "RSTA.useSelectedTextColor";
-
 	public static final String VISIBLE_WHITESPACE_PROPERTY = "RSTA.visibleWhitespace";
 
 	private static final Color DEFAULT_BRACKET_MATCH_BG_COLOR = new Color(234, 234, 255);
-
 	private static final Color DEFAULT_BRACKET_MATCH_BORDER_COLOR = new Color(0, 0, 128);
-
 	private static final Color DEFAULT_SELECTION_COLOR = new Color(200, 200, 255);
 
 	private static final String MSG = "org.fife.ui.rsyntaxtextarea.RSyntaxTextArea";
 
 	private JMenu foldingMenu;
-
 	private static RecordableTextAction toggleCurrentFoldAction;
-
 	private static RecordableTextAction collapseAllCommentFoldsAction;
-
 	private static RecordableTextAction collapseAllFoldsAction;
-
 	private static RecordableTextAction expandAllFoldsAction;
 
 	/** The key for the syntax style to be highlighting. */
@@ -229,7 +209,6 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * Colors used for the "matched bracket" if bracket matching is enabled.
 	 */
 	private Color matchedBracketBGColor;
-
 	private Color matchedBracketBorderColor;
 
 	/** The location of the last matched bracket. */
@@ -246,6 +225,8 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 
 	private BracketMatchingTimer bracketRepaintTimer;
 
+	private MatchedBracketPopupTimer matchedBracketPopupTimer;
+
 	private boolean metricsNeverRefreshed;
 
 	/**
@@ -260,13 +241,13 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	private boolean closeCurlyBraces;
 
 	/**
-	 * Whether closing markup tags should be automatically completed when "
-	 * <code>&lt;/</code>" is typed (if the current language is a markup language).
+	 * Whether closing markup tags should be automatically completed when
+	 * "<code>&lt;/</code>" is typed (if the current language is a markup language).
 	 */
 	private boolean closeMarkupTags;
 
 	/**
-	 * Whether or not lines with nothing but whitespace are "made empty."
+	 * Whether or not lines with nothing but whitespace are "made empty".
 	 */
 	private boolean clearWhitespaceLines;
 
@@ -306,8 +287,11 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	/** Handles "mark occurrences" support. */
 	private MarkOccurrencesSupport markOccurrencesSupport;
 
-	/** The color used to render "marked occurrences." */
+	/** The color used to render "marked occurrences". */
 	private Color markOccurrencesColor;
+
+	/** The delay before occurrences are marked in the editor. */
+	private int markOccurrencesDelay;
 
 	/** Whether a border should be painted around marked occurrences. */
 	private boolean paintMarkOccurrencesBorder;
@@ -319,7 +303,6 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	private ParserManager parserManager;
 
 	private String cachedTip;
-
 	/** Used to work around an issue with Apple JVMs. */
 	private Point cachedTipLoc;
 
@@ -331,7 +314,6 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	private int hoveredOverLinkOffset;
 
 	private LinkGenerator linkGenerator;
-
 	private LinkGeneratorResult linkGeneratorResult;
 
 	private int rhsCorrection;
@@ -345,15 +327,16 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	private FocusableTip focusableTip;
 
 	/** Cached desktop anti-aliasing hints, if anti-aliasing is enabled. */
-	private Map<Key, Object> aaHints;
+	private Map<?, ?> aaHints;
 
 	/** Renders tokens. */
 	private TokenPainter tokenPainter;
 
+	/** Whether a popup showing matched bracket lines when they're off-screen. */
+	private boolean showMatchedBracketPopup;
+
 	private int lineHeight; // Height of a line of text; same for default, bold & italic.
-
 	private int maxAscent;
-
 	private boolean fractionalFontMetricsEnabled;
 
 	private Color[] secondaryLanguageBackgrounds;
@@ -371,6 +354,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 */
 	public RSyntaxTextArea(RSyntaxDocument doc) {
 		super(doc);
+		setSyntaxEditingStyle(doc.getSyntaxStyle());
 	}
 
 	/**
@@ -442,10 +426,15 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	}
 
 	/**
-	 * Adds a hyperlink listener to this text area.
+	 * Adds a hyperlink listener to this text area. Assuming hyperlinks are enabled,
+	 * this listener will receive events when the mouse enters, leaves, and clicks
+	 * on hyperlinks when the scanning mask modifier button (e.g. the control key)
+	 * is pressed.
 	 *
 	 * @param l The listener to add.
 	 * @see #removeHyperlinkListener(HyperlinkListener)
+	 * @see #setHyperlinksEnabled(boolean)
+	 * @see #setLinkScanningMask(int)
 	 */
 	public void addHyperlinkListener(HyperlinkListener l) {
 		listenerList.add(HyperlinkListener.class, l);
@@ -592,9 +581,11 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 
 	/**
 	 * Overridden to toggle the enabled state of various RSyntaxTextArea-specific
-	 * menu items. If you set the popup menu via {@link #setPopupMenu(JPopupMenu)},
-	 * you will want to override this method, especially if you removed any of the
-	 * menu items in the default popup menu.
+	 * menu items.
+	 *
+	 * If you set the popup menu via {@link #setPopupMenu(JPopupMenu)}, you will
+	 * want to override this method, especially if you removed any of the menu items
+	 * in the default popup menu.
 	 *
 	 * @param popupMenu The popup menu. This will never be <code>null</code>.
 	 * @see #createPopupMenu()
@@ -612,11 +603,41 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	}
 
 	/**
+	 * Copies the currently selected text to the system clipboard, with style
+	 * information from the specified theme. Does nothing for {@code null} or empty
+	 * selections.
+	 *
+	 * @param theme The theme to use for the color and font information. This may be
+	 *              {@code null}, in which case this text area's current styles are
+	 *              used.
+	 * @see #copyAsStyledText()
+	 */
+	public void copyAsStyledText(Theme theme) {
+
+		// It's more performant to call the no-arg overload
+		if (theme == null) {
+			copyAsStyledText();
+			return;
+		}
+
+		Theme origTheme = new Theme(this);
+
+		theme.apply(this);
+		try {
+			copyAsStyledText();
+		} finally {
+			origTheme.apply(this);
+		}
+	}
+
+	/**
 	 * Copies the currently selected text to the system clipboard, with any
 	 * necessary style information (font, foreground color and background color).
-	 * Does nothing for <code>null</code> selections.
+	 * Does nothing for {@code null} or empty selections.
+	 *
+	 * @see #copyAsStyledText(Theme)
 	 */
-	public void copyAsRtf() {
+	public void copyAsStyledText() {
 
 		int selStart = getSelectionStart();
 		int selEnd = getSelectionEnd();
@@ -624,62 +645,66 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 			return;
 		}
 
-		// Make sure there is a system clipboard, and that we can write
-		// to it.
-		SecurityManager sm = System.getSecurityManager();
-		if (sm != null) {
-			try {
-				sm.checkSystemClipboardAccess();
-			} catch (SecurityException se) {
-				UIManager.getLookAndFeel().provideErrorFeedback(null);
-				return;
-			}
-		}
-		Clipboard cb = getToolkit().getSystemClipboard();
+		// Get the selection as HTML
+		String html = HtmlUtil.getTextAsHtml(this, selStart, selEnd);
 
-		// Create the RTF selection.
-		RtfGenerator gen = new RtfGenerator();
-		Token tokenList = getTokenListFor(selStart, selEnd);
-		for (Token t = tokenList; t != null; t = t.getNextToken()) {
-			if (t.isPaintable()) {
-				if (t.length() == 1 && t.charAt(0) == '\n') {
-					gen.appendNewline();
-				} else {
-					Font font = getFontForTokenType(t.getType());
-					Color bg = getBackgroundForToken(t);
-					boolean underline = getUnderlineForToken(t);
-					// Small optimization - don't print fg color if this
-					// is a whitespace color. Saves on RTF size.
-					if (t.isWhitespace()) {
-						gen.appendToDocNoFG(t.getLexeme(), font, bg, underline);
-					} else {
-						Color fg = getForegroundForToken(t);
-						gen.appendToDoc(t.getLexeme(), font, fg, bg, underline);
-					}
-				}
-			}
-		}
+		// Get the selection as RTF
+		byte[] rtfBytes = getTextAsRtf(selStart, selEnd);
 
 		// Set the system clipboard contents to the RTF selection.
-		RtfTransferable contents = new RtfTransferable(gen.getRtf().getBytes());
-		// System.out.println("*** " + new String(gen.getRtf().getBytes()));
+		StyledTextTransferable contents = new StyledTextTransferable(html, rtfBytes);
+
+		Clipboard cb = getToolkit().getSystemClipboard();
 		try {
 			cb.setContents(contents, null);
 		} catch (IllegalStateException ise) {
 			UIManager.getLookAndFeel().provideErrorFeedback(null);
-			return;
 		}
-
 	}
 
 	/**
-	 * Returns the document to use for an <code>RSyntaxTextArea</code>
+	 * Returns the document to use for an <code>RSyntaxTextArea</code>.
 	 *
 	 * @return The document.
 	 */
 	@Override
 	protected Document createDefaultModel() {
 		return new RSyntaxDocument(SYNTAX_STYLE_NONE);
+	}
+
+	private HyperlinkEvent createHyperlinkEvent(HyperlinkEvent.EventType type) {
+
+		// If the mouse is leaving a hyperlink, or ctrl is released,
+		// short-circuit
+		if (type == HyperlinkEvent.EventType.EXITED) {
+			return new HyperlinkEvent(this, type, null);
+		}
+
+		HyperlinkEvent he = null;
+
+		if (linkGeneratorResult != null) {
+			he = linkGeneratorResult.execute();
+			linkGeneratorResult = null;
+		} else {
+			Token t = modelToToken(hoveredOverLinkOffset);
+			if (t != null) {
+				URL url = null;
+				String desc = null;
+				try {
+					String temp = t.getLexeme();
+					// URI's need "http://" prefix for web URL's to work.
+					if (temp.startsWith("www.")) {
+						temp = "http://" + temp;
+					}
+					url = new URL(temp);
+				} catch (MalformedURLException mue) {
+					desc = mue.getMessage();
+				}
+				he = new HyperlinkEvent(this, type, url, desc);
+			}
+		}
+
+		return he;
 	}
 
 	/**
@@ -769,6 +794,20 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 					if (dotRect != null) {
 						repaint(dotRect);
 					}
+
+					if (getShowMatchedBracketPopup()) {
+						Container parent = getParent();
+						if (parent instanceof JViewport) {
+							Rectangle visibleRect = this.getVisibleRect();
+							if (match.y + match.height < visibleRect.getY()) {
+								if (matchedBracketPopupTimer == null) {
+									matchedBracketPopupTimer = new MatchedBracketPopupTimer();
+								}
+								matchedBracketPopupTimer.restart(bracketInfo.y);
+							}
+						}
+					}
+
 				}
 			} catch (BadLocationException ble) {
 				ble.printStackTrace(); // Shouldn't happen.
@@ -822,16 +861,27 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * Notifies all listeners that have registered interest for notification on this
 	 * event type. The listener list is processed last to first.
 	 *
-	 * @param e The event to fire.
-	 * @see EventListenerList
+	 * @param type The type of event to fire.
 	 */
-	private void fireHyperlinkUpdate(HyperlinkEvent e) {
+	private void fireHyperlinkUpdate(HyperlinkEvent.EventType type) {
+
+		HyperlinkEvent e = null;
+
 		// Guaranteed to return a non-null array
 		Object[] listeners = listenerList.getListenerList();
+
 		// Process the listeners last to first, notifying
 		// those that are interested in this event
 		for (int i = listeners.length - 2; i >= 0; i -= 2) {
+
 			if (listeners[i] == HyperlinkListener.class) {
+
+				if (e == null) {
+					e = createHyperlinkEvent(type);
+					if (e == null) {
+						return; // No linkable text under the caret
+					}
+				}
 				((HyperlinkListener) listeners[i + 1]).hyperlinkUpdate(e);
 			}
 		}
@@ -868,13 +918,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 			// causes BadLocationExceptions when an entire folded region is
 			// deleted (see GitHub issue #22:
 			// https://github.com/bobbylight/RSyntaxTextArea/issues/22)
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					possiblyUpdateCurrentLineHighlightLocation();
-				}
-			});
+			SwingUtilities.invokeLater(this::possiblyUpdateCurrentLineHighlightLocation);
 		} else {
 			possiblyUpdateCurrentLineHighlightLocation();
 		}
@@ -884,7 +928,9 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 
 	/**
 	 * Forces the given {@link Parser} to re-parse the content of this text area.
+	 * This should only be called on the EDT.
 	 * <p>
+	 *
 	 * This method can be useful when a <code>Parser</code> can be configured as to
 	 * what notices it returns. For example, if a Java language parser can be
 	 * configured to set whether no serialVersionUID is a warning, error, or
@@ -900,7 +946,8 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 
 	/**
 	 * Forces re-parsing with a specific parser. Note that if this parser is not
-	 * installed on this text area, nothing will happen.
+	 * installed on this text area, nothing will happen. This method should only be
+	 * called on the EDT.
 	 *
 	 * @param parser The parser that should re-parse this text area's contents. This
 	 *               should be installed on this text area.
@@ -976,8 +1023,8 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	}
 
 	/**
-	 * Returns whether closing markup tags should be automatically completed when "
-	 * <code>&lt;/</code>" is typed. Note that this property is only honored for
+	 * Returns whether closing markup tags should be automatically completed when
+	 * "<code>&lt;/</code>" is typed. Note that this property is only honored for
 	 * markup languages, such as HTML, XML and PHP.
 	 *
 	 * @return Whether closing markup tags should be automatically completed.
@@ -1007,7 +1054,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * @return The color.
 	 * @see #getDefaultBracketMatchBorderColor
 	 */
-	public static final Color getDefaultBracketMatchBGColor() {
+	public static Color getDefaultBracketMatchBGColor() {
 		return DEFAULT_BRACKET_MATCH_BG_COLOR;
 	}
 
@@ -1017,7 +1064,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * @return The color.
 	 * @see #getDefaultBracketMatchBGColor
 	 */
-	public static final Color getDefaultBracketMatchBorderColor() {
+	public static Color getDefaultBracketMatchBorderColor() {
 		return DEFAULT_BRACKET_MATCH_BORDER_COLOR;
 	}
 
@@ -1138,7 +1185,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * @param g The graphics context for which to get a <code>Graphics2D</code>.
 	 * @return The <code>Graphics2D</code>.
 	 */
-	private final Graphics2D getGraphics2D(Graphics g) {
+	private Graphics2D getGraphics2D(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		if (aaHints != null) {
 			g2d.addRenderingHints(aaHints);
@@ -1181,6 +1228,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 *
 	 * @return Whether hyperlinks are enabled for this text area.
 	 * @see #setHyperlinksEnabled(boolean)
+	 * @see #addHyperlinkListener(HyperlinkListener)
 	 */
 	public boolean getHyperlinksEnabled() {
 		return hyperlinksEnabled;
@@ -1213,7 +1261,6 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 */
 	@Override
 	public int getLineHeight() {
-		// System.err.println("... getLineHeight() returning " + lineHeight);
 		return lineHeight;
 	}
 
@@ -1252,13 +1299,24 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	}
 
 	/**
-	 * Returns the color used to "mark occurrences."
+	 * Returns the color used for "mark occurrences" highlights.
 	 *
 	 * @return The mark occurrences color.
 	 * @see #setMarkOccurrencesColor(Color)
 	 */
 	public Color getMarkOccurrencesColor() {
 		return markOccurrencesColor;
+	}
+
+	/**
+	 * Returns the delay between when the caret is moved and when "marked
+	 * occurrences" are highlighted.
+	 *
+	 * @return The "mark occurrences" delay.
+	 * @see #setMarkOccurrencesDelay(int)
+	 */
+	public int getMarkOccurrencesDelay() {
+		return markOccurrencesDelay;
 	}
 
 	/**
@@ -1358,6 +1416,24 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	}
 
 	/**
+	 * Returns whether to paint the backgrounds of tokens on the specified line
+	 * (assuming they are not obstructed by e.g. selection).
+	 *
+	 * @param line The line number.
+	 * @param y    The y-offset of the line. This is used when line wrap is enabled,
+	 *             since each logical line can be rendered as several physical
+	 *             lines.
+	 * @return Whether to paint the token backgrounds on this line.
+	 */
+	boolean getPaintTokenBackgrounds(int line, float y) {
+		// System.out.println(y + ", " + getCurrentCaretY() + "-" + (getCurrentCaretY()
+		// + getLineHeight()));
+		int iy = (int) y;
+		int curCaretY = getCurrentCaretY();
+		return iy < curCaretY || iy >= curCaretY + getLineHeight() || !getHighlightCurrentLine();
+	}
+
+	/**
 	 * Returns the specified parser.
 	 *
 	 * @param index The {@link Parser} to retrieve.
@@ -1420,7 +1496,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * current programming language). For example, in Java, for a line containing:
 	 *
 	 * <pre>
-	 * for (int i=0; i<10; i++) {
+	 * for (int i=0; i&lt;10; i++) {
 	 * </pre>
 	 *
 	 * the following line should be indented.
@@ -1437,6 +1513,17 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 			return doc.getShouldIndentNextLine(line);
 		}
 		return false;
+	}
+
+	/**
+	 * Returns whether a small popup window should display the text on the line
+	 * containing a matched bracket whenever a matched bracket is off- screen.
+	 *
+	 * @return Whether to show the popup.
+	 * @see #setShowMatchedBracketPopup(boolean)
+	 */
+	public boolean getShowMatchedBracketPopup() {
+		return showMatchedBracketPopup;
 	}
 
 	/**
@@ -1499,7 +1586,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * @see #getHighlightSecondaryLanguages()
 	 */
 	public Color getSecondaryLanguageBackground(int index) {
-		return secondaryLanguageBackgrounds[index];
+		return secondaryLanguageBackgrounds[index - 1];
 	}
 
 	/**
@@ -1518,9 +1605,10 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * Returns whether or not templates are enabled for all instances of
 	 * <code>RSyntaxTextArea</code>.
 	 * <p>
+	 *
 	 * For more flexible boilerplate code insertion, consider using the <a href=
-	 * "http://javadoc.fifesoft.com/autocomplete/org/fife/ui/autocomplete/TemplateCompletion.html"
-	 * >TemplateCompletion class</a> in the
+	 * "http://javadoc.fifesoft.com/autocomplete/org/fife/ui/autocomplete/TemplateCompletion.html">
+	 * TemplateCompletion class</a> in the
 	 * <a href="https://github.com/bobbylight/AutoComplete">AutoComplete add-on
 	 * library</a>.
 	 *
@@ -1533,6 +1621,35 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 		return templatesEnabled;
 	}
 
+	private byte[] getTextAsRtf(int start, int end) {
+
+		// Create the RTF selection.
+		RtfGenerator gen = new RtfGenerator(getBackground());
+		Token tokenList = getTokenListFor(start, end);
+		for (Token t = tokenList; t != null; t = t.getNextToken()) {
+			if (t.isPaintable()) {
+				if (t.length() == 1 && t.charAt(0) == '\n') {
+					gen.appendNewline();
+				} else {
+					Font font = getFontForTokenType(t.getType());
+					Color bg = getBackgroundForToken(t);
+					boolean underline = getUnderlineForToken(t);
+					// Small optimization - don't print fg color if this
+					// is a whitespace color. Saves on RTF size.
+					if (t.isWhitespace()) {
+						gen.appendToDocNoFG(t.getLexeme(), font, bg, underline);
+					} else {
+						Color fg = getForegroundForToken(t);
+						gen.appendToDoc(t.getLexeme(), font, fg, bg, underline);
+					}
+				}
+			}
+		}
+
+		// RTF text is 7-bit ASCII so this should cover us
+		return gen.getRtf().getBytes(StandardCharsets.UTF_8);
+	}
+
 	/**
 	 * Returns a token list for the given range in the document.
 	 *
@@ -1540,7 +1657,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * @param endOffs   The end offset in the document.
 	 * @return The first token in the token list.
 	 */
-	private Token getTokenListFor(int startOffs, int endOffs) {
+	public Token getTokenListFor(int startOffs, int endOffs) {
 
 		TokenImpl tokenList = null;
 		TokenImpl lastToken = null;
@@ -1631,7 +1748,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	@Override
 	public String getToolTipText(MouseEvent e) {
 
-		// Apple JVMS (Java 6 and prior) have their ToolTipManager events
+		// Apple JVMs (Java 6 and prior) have their ToolTipManager events
 		// repeat for some reason, so this method gets called every 1 second
 		// or so. We short-circuit that since some ToolTipManagers may do
 		// expensive calculations (e.g. language supports).
@@ -1762,8 +1879,9 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 		setSelectionColor(getDefaultSelectionColor());
 		setTabLineColor(null);
 		setMarkOccurrencesColor(MarkOccurrencesSupport.DEFAULT_COLOR);
+		setMarkOccurrencesDelay(MarkOccurrencesSupport.DEFAULT_DELAY_MS);
 
-		foldManager = new FoldManager(this);
+		foldManager = new DefaultFoldManager(this);
 
 		// Set auto-indent related stuff.
 		setAutoIndentEnabled(true);
@@ -1788,6 +1906,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 		secondaryLanguageBackgrounds[2] = new Color(0xffe0f0);
 
 		setRightHandSideCorrection(0);
+		setShowMatchedBracketPopup(true);
 
 	}
 
@@ -1890,12 +2009,25 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 		// It is assumed that any rendering hints are already applied to g2d.
 		defaultFontMetrics = g2d.getFontMetrics(getFont());
 		syntaxScheme.refreshFontMetrics(g2d);
-		if (getLineWrap() == false) {
+		if (!getLineWrap()) {
 			// HORRIBLE HACK! The un-wrapped view needs to refresh its cached
 			// longest line information.
 			SyntaxView sv = (SyntaxView) getUI().getRootView(this).getView(0);
 			sv.calculateLongestLine();
 		}
+	}
+
+	@Override
+	public void redoLastAction() {
+		super.redoLastAction();
+		// Occasionally marked occurrences' Positions are in invalid states
+		// due to how javax.swing.text.AbstractDocument tracks the start and
+		// end offsets. This is usually not needed, but can be when the last
+		// token in the Document is a marked occurrence, and an undo or redo
+		// occurs which clears most of the document text. In that case it is
+		// possible for the end Position to be reset to something small, but
+		// the start offset to be its prior valid (start > end).
+		((RSyntaxTextAreaHighlighter) getHighlighter()).clearMarkOccurrencesHighlights();
 	}
 
 	/**
@@ -1913,6 +2045,8 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 *
 	 * @param l The listener to remove.
 	 * @see #addHyperlinkListener(HyperlinkListener)
+	 * @see #setHyperlinksEnabled(boolean)
+	 * @see #setLinkScanningMask(int)
 	 */
 	public void removeHyperlinkListener(HyperlinkListener l) {
 		listenerList.remove(HyperlinkListener.class, l);
@@ -1981,12 +2115,13 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	/**
 	 * Sets the "active line range." Note that this <code>RSyntaxTextArea</code>
 	 * itself does nothing with this information, but if it is contained inside an
-	 * {@link RTextScrollPane}, the active line range may be displayed in the icon
-	 * area of the {@link Gutter}.
+	 * {@link org.fife.ui.rtextarea.RTextScrollPane}, the active line range may be
+	 * displayed in the icon area of the {@link org.fife.ui.rtextarea.Gutter}.
 	 * <p>
+	 *
 	 * Note that basic users of <code>RSyntaxTextArea</code> will not call this
 	 * method directly; rather, it is usually called by instances of
-	 * <code>LanguageSupport</code> in the <code>RSTALangaugeSupport</code> library.
+	 * <code>LanguageSupport</code> in the <code>RSTALanguageSupport</code> library.
 	 * See <a href="http://fifesoft.com">http://fifesoft.com</a> for more
 	 * information about this library.
 	 *
@@ -2040,7 +2175,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 				// nice as what would be used if the getDesktopAntiAliasHints()
 				// call worked.
 				if (aaHints == null) {
-					Map<RenderingHints.Key, Object> temp = new HashMap<RenderingHints.Key, Object>();
+					Map<RenderingHints.Key, Object> temp = new HashMap<>();
 					temp.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 					aaHints = temp;
 				}
@@ -2110,6 +2245,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * entered after an opening curly brace. Note that this property is only honored
 	 * for languages that use curly braces to denote code blocks.
 	 * <p>
+	 *
 	 * This method fires a property change event of type
 	 * {@link #CLOSE_CURLY_BRACES_PROPERTY}.
 	 *
@@ -2124,10 +2260,11 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	}
 
 	/**
-	 * Sets whether closing markup tags should be automatically completed when "
-	 * <code>&lt;/</code>" is typed. Note that this property is only honored for
+	 * Sets whether closing markup tags should be automatically completed when
+	 * "<code>&lt;/</code>" is typed. Note that this property is only honored for
 	 * markup languages, such as HTML, XML and PHP.
 	 * <p>
+	 *
 	 * This method fires a property change event of type
 	 * {@link #CLOSE_MARKUP_TAGS_PROPERTY}.
 	 *
@@ -2164,13 +2301,13 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 *
 	 * @see #getAntiAliasingEnabled()
 	 */
-	private final void setDefaultAntiAliasingState() {
+	private void setDefaultAntiAliasingState() {
 
 		// Most accurate technique, but not available on all OSes.
 		aaHints = RSyntaxUtilities.getDesktopAntiAliasHints();
 		if (aaHints == null) {
 
-			Map<RenderingHints.Key, Object> temp = new HashMap<RenderingHints.Key, Object>();
+			Map<RenderingHints.Key, Object> temp = new HashMap<>();
 
 			// In Java 6+, you can figure out what text AA hint Swing uses for
 			// JComponents...
@@ -2237,6 +2374,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 			markOccurrencesSupport.clear();
 		}
 		super.setDocument(document);
+		setSyntaxEditingStyle(((RSyntaxDocument) document).getSyntaxStyle());
 		if (markOccurrencesSupport != null) {
 			markOccurrencesSupport.doMarkOccurrences();
 		}
@@ -2327,6 +2465,14 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 */
 	@Override
 	public void setHighlighter(Highlighter h) {
+
+		// Ugh, many RSTA methods assume a non-null highlighter. This is kind
+		// of icky, but most applications never *don't* want a highlighter.
+		// See #189 - BasicTextUI clears highlighter by setting it to null there
+		if (h == null) {
+			h = new RSyntaxTextAreaHighlighter();
+		}
+
 		if (!(h instanceof RSyntaxTextAreaHighlighter)) {
 			throw new IllegalArgumentException(
 					"RSyntaxTextArea requires " + "an RSyntaxTextAreaHighlighter for its Highlighter");
@@ -2373,6 +2519,8 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 *
 	 * @param enabled Whether hyperlinks are enabled.
 	 * @see #getHyperlinksEnabled()
+	 * @see #setLinkScanningMask(int)
+	 * @see #addHyperlinkListener(HyperlinkListener)
 	 */
 	public void setHyperlinksEnabled(boolean enabled) {
 		if (this.hyperlinksEnabled != enabled) {
@@ -2388,8 +2536,13 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 
 	/**
 	 * Sets the mask for the key used to toggle whether we are scanning for
-	 * hyperlinks with mouse hovering. The default value is
-	 * <code>CTRL_DOWN_MASK</code>.
+	 * hyperlinks with mouse hovering. The default value is {@code CTRL_DOWN_MASK}.
+	 * <p>
+	 *
+	 * Note that this value will be ignored if
+	 * {@link #setHyperlinksEnabled(boolean)} is called and set to {@code false}. If
+	 * you wish to disable hyperlinks, use that method rather than changing this
+	 * mask value.
 	 *
 	 * @param mask The mask to use. This should be some bitwise combination of
 	 *             {@link InputEvent#CTRL_DOWN_MASK},
@@ -2448,6 +2601,26 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	}
 
 	/**
+	 * Sets the delay between when the caret is moved and when "marked occurrences"
+	 * are highlighted.
+	 *
+	 * @param delay The new delay. This must be greater than {@code 0}.
+	 * @see #getMarkOccurrencesDelay()
+	 * @see #getMarkOccurrences()
+	 */
+	public void setMarkOccurrencesDelay(int delay) {
+		if (delay <= 0) {
+			throw new IllegalArgumentException("Delay must be > 0");
+		}
+		if (delay != this.markOccurrencesDelay) {
+			this.markOccurrencesDelay = delay;
+			if (markOccurrencesSupport != null) {
+				markOccurrencesSupport.setDelay(delay);
+			}
+		}
+	}
+
+	/**
 	 * Sets the color used as the background for a matched bracket.
 	 *
 	 * @param color The color to use. If this is <code>null</code>, then no special
@@ -2497,6 +2670,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * matched bracket is found. Note that this property does nothing if
 	 * {@link #isBracketMatchingEnabled()} returns <code>false</code>.
 	 * <p>
+	 *
 	 * This method fires a property change event of type
 	 * {@link #PAINT_MATCHED_BRACKET_PAIR_PROPERTY}.
 	 *
@@ -2540,12 +2714,16 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * @see #getParserDelay()
 	 */
 	public void setParserDelay(int millis) {
+		if (parserManager == null) {
+			parserManager = new ParserManager(this);
+		}
 		parserManager.setDelay(millis);
 	}
 
 	/**
 	 * Applications typically have no need to modify this value.
 	 * <p>
+	 *
 	 * Workaround for JTextComponents allowing the caret to be rendered entirely
 	 * off-screen if the entire "previous" character fit entirely.
 	 *
@@ -2586,6 +2764,17 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	}
 
 	/**
+	 * Sets whether a small popup window should display the text on the line
+	 * containing a matched bracket whenever a matched bracket is off- screen.
+	 *
+	 * @param show Whether to show the popup.
+	 * @see #getShowMatchedBracketPopup()
+	 */
+	public void setShowMatchedBracketPopup(boolean show) {
+		showMatchedBracketPopup = show;
+	}
+
+	/**
 	 * Sets what type of syntax highlighting this editor is doing. This method fires
 	 * a property change of type {@link #SYNTAX_STYLE_PROPERTY}.
 	 *
@@ -2614,6 +2803,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * This uses a shallow copy of the color scheme so that multiple text areas can
 	 * share the same color scheme and have their properties changed simultaneously.
 	 * <p>
+	 *
 	 * This method fires a property change event of type
 	 * {@link #SYNTAX_SCHEME_PROPERTY}.
 	 *
@@ -2686,6 +2876,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	/**
 	 * Enables or disables templates.
 	 * <p>
+	 *
 	 * Templates are a set of "shorthand identifiers" that you can configure so that
 	 * you only have to type a short identifier (such as "forb") to insert a larger
 	 * amount of code into the document (such as:
@@ -2693,7 +2884,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 *
 	 * <pre>
 	 *   for (&lt;caret&gt;) {
-	 * 
+	 *
 	 *   }
 	 * </pre>
 	 *
@@ -2703,9 +2894,10 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * of the same templates. This should not be an issue; rather, it should be
 	 * beneficial as it promotes uniformity among all text areas in an application.
 	 * <p>
+	 *
 	 * For more flexible boilerplate code insertion, consider using the <a href=
-	 * "http://javadoc.fifesoft.com/autocomplete/org/fife/ui/autocomplete/TemplateCompletion.html"
-	 * >TemplateCompletion class</a> in the
+	 * "http://javadoc.fifesoft.com/autocomplete/org/fife/ui/autocomplete/TemplateCompletion.html">TemplateCompletion
+	 * class</a> in the
 	 * <a href="https://github.com/bobbylight/AutoComplete">AutoComplete add-on
 	 * library</a>.
 	 *
@@ -2788,7 +2980,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	public void setWhitespaceVisible(boolean visible) {
 		if (whitespaceVisible != visible) {
 			this.whitespaceVisible = visible;
-			tokenPainter = visible ? new VisibleWhitespaceTokenPainter() : (TokenPainter) new DefaultTokenPainter();
+			tokenPainter = visible ? new VisibleWhitespaceTokenPainter() : new DefaultTokenPainter();
 			repaint();
 			firePropertyChange(VISIBLE_WHITESPACE_PROPERTY, !visible, visible);
 		}
@@ -2799,16 +2991,33 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * hyperlink modifier.
 	 */
 	private void stopScanningForLinks() {
+
 		if (isScanningForLinks) {
-			Cursor c = getCursor();
+
 			isScanningForLinks = false;
 			linkGeneratorResult = null;
 			hoveredOverLinkOffset = -1;
+
+			Cursor c = getCursor();
 			if (c != null && c.getType() == Cursor.HAND_CURSOR) {
+				fireHyperlinkUpdate(HyperlinkEvent.EventType.EXITED);
 				setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
 				repaint(); // TODO: Repaint just the affected line.
 			}
 		}
+	}
+
+	@Override
+	public void undoLastAction() {
+		super.undoLastAction();
+		// Occasionally marked occurrences' Positions are in invalid states
+		// due to how javax.swing.text.AbstractDocument tracks the start and
+		// end offsets. This is usually not needed, but can be when the last
+		// token in the Document is a marked occurrence, and an undo or redo
+		// occurs which clears most of the document text. In that case it is
+		// possible for the end Position to be reset to something small, but
+		// the start offset to be its prior valid (start > end).
+		((RSyntaxTextAreaHighlighter) getHighlighter()).clearMarkOccurrencesHighlights();
 	}
 
 	/**
@@ -2828,13 +3037,73 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	}
 
 	/**
+	 * Renders the text on the line containing the "matched bracket" after a delay.
+	 */
+	private final class MatchedBracketPopupTimer extends Timer implements ActionListener, CaretListener {
+
+		private MatchedBracketPopup popup;
+		private int origDot;
+		private int matchedBracketOffs;
+
+		private MatchedBracketPopupTimer() {
+			super(350, null);
+			addActionListener(this);
+			setRepeats(false);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+
+			if (popup != null) {
+				popup.dispose();
+			}
+
+			Window window = SwingUtilities.getWindowAncestor(RSyntaxTextArea.this);
+			popup = new MatchedBracketPopup(window, RSyntaxTextArea.this, matchedBracketOffs);
+			popup.pack();
+			popup.setVisible(true);
+
+		}
+
+		@Override
+		public void caretUpdate(CaretEvent e) {
+			int dot = e.getDot();
+			if (dot != origDot) {
+				stop();
+				removeCaretListener(this);
+				if (popup != null) {
+					popup.dispose();
+				}
+			}
+		}
+
+		/**
+		 * Restarts this timer, and stores a new offset to paint.
+		 *
+		 * @param matchedBracketOffs The offset of the new matched bracket.
+		 */
+		public void restart(int matchedBracketOffs) {
+			this.origDot = getCaretPosition();
+			this.matchedBracketOffs = matchedBracketOffs;
+			this.restart();
+		}
+
+		@Override
+		public void start() {
+			super.start();
+			addCaretListener(this);
+		}
+
+	}
+
+	/**
 	 * A timer that animates the "bracket matching" animation.
 	 */
 	private class BracketMatchingTimer extends Timer implements ActionListener {
 
 		private int pulseCount;
 
-		public BracketMatchingTimer() {
+		BracketMatchingTimer() {
 			super(20, null);
 			addActionListener(this);
 			setCoalesce(false);
@@ -2903,41 +3172,14 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 			insets = new Insets(0, 0, 0, 0);
 		}
 
-		private HyperlinkEvent createHyperlinkEvent() {
-			HyperlinkEvent he = null;
-			if (linkGeneratorResult != null) {
-				he = linkGeneratorResult.execute();
-				linkGeneratorResult = null;
-			} else {
-				Token t = modelToToken(hoveredOverLinkOffset);
-				URL url = null;
-				String desc = null;
-				try {
-					String temp = t.getLexeme();
-					// URI's need "http://" prefix for web URL's to work.
-					if (temp.startsWith("www.")) {
-						temp = "http://" + temp;
-					}
-					url = new URL(temp);
-				} catch (MalformedURLException mue) {
-					desc = mue.getMessage();
-				}
-				he = new HyperlinkEvent(RSyntaxTextArea.this, HyperlinkEvent.EventType.ACTIVATED, url, desc);
-			}
-			return he;
-		}
-
-		private final boolean equal(LinkGeneratorResult e1, LinkGeneratorResult e2) {
+		private boolean equal(LinkGeneratorResult e1, LinkGeneratorResult e2) {
 			return e1.getSourceOffset() == e2.getSourceOffset();
 		}
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (getHyperlinksEnabled() && isScanningForLinks && hoveredOverLinkOffset > -1) {
-				HyperlinkEvent he = createHyperlinkEvent();
-				if (he != null) {
-					fireHyperlinkUpdate(he);
-				}
+				fireHyperlinkUpdate(HyperlinkEvent.EventType.ACTIVATED);
 				stopScanningForLinks();
 			}
 		}
@@ -2974,7 +3216,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 					// Copy token, viewToModel() unfortunately modifies Token
 					t = new TokenImpl(t);
 				}
-				Cursor c2 = null;
+				Cursor c2;
 				if (t != null && t.isHyperlink()) {
 					if (hoveredOverLinkOffset == -1 || hoveredOverLinkOffset != t.getOffset()) {
 						hoveredOverLinkOffset = t.getOffset();
@@ -3004,12 +3246,21 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 				} else {
 					c2 = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
 					hoveredOverLinkOffset = -1;
-					linkGeneratorResult = null;
+					if (linkGeneratorResult != null) {
+						linkGeneratorResult = null;
+					}
 				}
 				if (getCursor() != c2) {
+
 					setCursor(c2);
 					// TODO: Repaint just the affected line(s).
 					repaint(); // Link either left or went into.
+
+					// Here we know for sure if they are changing to hovering over a link
+					// or leaving one
+					fireHyperlinkUpdate(
+							c2 == Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) ? HyperlinkEvent.EventType.ENTERED
+									: HyperlinkEvent.EventType.EXITED);
 				}
 			} else {
 				if (isScanningForLinks) {

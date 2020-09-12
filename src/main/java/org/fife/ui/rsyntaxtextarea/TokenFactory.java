@@ -1,7 +1,10 @@
 /*
- * 10/28/2004 TokenFactory.java - Interface for a class that generates tokens of some type. This
- * library is distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt
- * file for details.
+ * 10/28/2004
+ *
+ * TokenFactory.java - Interface for a class that generates tokens of some type.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -20,7 +23,7 @@ interface TokenFactory {
 	 *
 	 * @return A null token.
 	 */
-	public TokenImpl createToken();
+	TokenImpl createToken();
 
 	/**
 	 * Returns a token.
@@ -32,8 +35,7 @@ interface TokenFactory {
 	 * @param type        The type of token.
 	 * @return The token.
 	 */
-	public TokenImpl createToken(final Segment line, final int beg, final int end, final int startOffset,
-			final int type);
+	TokenImpl createToken(Segment line, int beg, int end, int startOffset, int type);
 
 	/**
 	 * Returns a token.
@@ -45,14 +47,13 @@ interface TokenFactory {
 	 * @param type        The type of token.
 	 * @return The token.
 	 */
-	public TokenImpl createToken(final char[] line, final int beg, final int end, final int startOffset,
-			final int type);
+	TokenImpl createToken(char[] line, int beg, int end, int startOffset, int type);
 
 	/**
 	 * Resets the state of this token maker. This method should be called by the
 	 * <code>TokenMaker</code> every time a token list is generated for a new line
 	 * so the tokens can be reused.
 	 */
-	public void resetAllTokens();
+	void resetAllTokens();
 
 }

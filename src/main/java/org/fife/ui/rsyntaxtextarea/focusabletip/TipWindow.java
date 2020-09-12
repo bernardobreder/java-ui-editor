@@ -1,7 +1,10 @@
 /*
- * 07/29/2009 TipWindow.java - The actual window component representing the tool tip. This library
- * is distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file
- * for details.
+ * 07/29/2009
+ *
+ * TipWindow.java - The actual window component representing the tool tip.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.focusabletip;
 
@@ -51,14 +54,10 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 class TipWindow extends JWindow implements ActionListener {
 
 	private FocusableTip ft;
-
 	private JEditorPane textArea;
-
 	private String text;
-
-	private TipListener tipListener;
-
-	private HyperlinkListener userHyperlinkListener;
+	private transient TipListener tipListener;
+	private transient HyperlinkListener userHyperlinkListener;
 
 	private static TipWindow visibleInstance;
 
@@ -68,7 +67,7 @@ class TipWindow extends JWindow implements ActionListener {
 	 * @param owner The parent window.
 	 * @param msg   The text of the tool tip. This can be HTML.
 	 */
-	public TipWindow(Window owner, FocusableTip ft, String msg) {
+	TipWindow(Window owner, FocusableTip ft, String msg) {
 
 		super(owner);
 		this.ft = ft;
@@ -88,13 +87,9 @@ class TipWindow extends JWindow implements ActionListener {
 			((HTMLDocument) textArea.getDocument()).setBase(ft.getImageBase());
 		}
 		textArea.addMouseListener(tipListener);
-		textArea.addHyperlinkListener(new HyperlinkListener() {
-
-			@Override
-			public void hyperlinkUpdate(HyperlinkEvent e) {
-				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-					TipWindow.this.ft.possiblyDisposeOfTipWindow();
-				}
+		textArea.addHyperlinkListener(e -> {
+			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+				TipWindow.this.ft.possiblyDisposeOfTipWindow();
 			}
 		});
 		cp.add(textArea);
@@ -107,7 +102,6 @@ class TipWindow extends JWindow implements ActionListener {
 		// InputMap/ActionMap combo doesn't work for JWindows (even when
 		// using the JWindow's JRootPane), so we'll resort to KeyListener
 		KeyAdapter ka = new KeyAdapter() {
-
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
@@ -139,7 +133,6 @@ class TipWindow extends JWindow implements ActionListener {
 			textArea.removeMouseListener(tipListener);
 			pack();
 			addWindowFocusListener(new WindowAdapter() {
-
 				@Override
 				public void windowLostFocus(WindowEvent e) {
 					ft.possiblyDisposeOfTipWindow();
@@ -186,9 +179,10 @@ class TipWindow extends JWindow implements ActionListener {
 			// Ensure the text area doesn't start out too tall or wide.
 			d = textArea.getPreferredSize();
 			d.width += 25; // Just a little extra space
-			final int MAX_WINDOW_W = 600;
-			d.width = Math.min(d.width, MAX_WINDOW_W);
-			d.height = Math.min(d.height, 400);
+			final int maxWindowW = ft.getMaxSize() != null ? ft.getMaxSize().width : 600;
+			final int maxWindowH = ft.getMaxSize() != null ? ft.getMaxSize().height : 400;
+			d.width = Math.min(d.width, maxWindowW);
+			d.height = Math.min(d.height, maxWindowH);
 
 			// Both needed for modelToView() calculation below...
 			textArea.setPreferredSize(d);
@@ -199,6 +193,9 @@ class TipWindow extends JWindow implements ActionListener {
 			r = textArea.modelToView(textArea.getDocument().getLength() - 1);
 			if (r.y + r.height > d.height) {
 				d.height = r.y + r.height + 5;
+				if (ft.getMaxSize() != null) {
+					d.height = Math.min(d.height, maxWindowH);
+				}
 				textArea.setPreferredSize(d);
 			}
 
@@ -225,7 +222,6 @@ class TipWindow extends JWindow implements ActionListener {
 			sg.applyComponentOrientation(sg.getComponentOrientation()); // Workaround
 			panel.add(sg, BorderLayout.LINE_END);
 			MouseInputAdapter adapter = new MouseInputAdapter() {
-
 				private Point lastPoint;
 
 				@Override
@@ -312,9 +308,9 @@ class TipWindow extends JWindow implements ActionListener {
 	/**
 	 * Listens for events in this window.
 	 */
-	private class TipListener extends MouseAdapter {
+	private final class TipListener extends MouseAdapter {
 
-		public TipListener() {
+		private TipListener() {
 		}
 
 		@Override

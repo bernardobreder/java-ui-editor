@@ -1,6 +1,10 @@
 /*
- * 04/24/2012 LatexFoldParser.java - Fold parser for LaTeX. This library is distributed under a
- * modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 04/24/2012
+ *
+ * LatexFoldParser.java - Fold parser for LaTeX.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.folding;
 
@@ -23,7 +27,6 @@ import org.fife.ui.rsyntaxtextarea.Token;
 public class LatexFoldParser implements FoldParser {
 
 	private static final char[] BEGIN = "\\begin".toCharArray();
-
 	private static final char[] END = "\\end".toCharArray();
 
 	/**
@@ -32,8 +35,8 @@ public class LatexFoldParser implements FoldParser {
 	@Override
 	public List<Fold> getFolds(RSyntaxTextArea textArea) {
 
-		List<Fold> folds = new ArrayList<Fold>();
-		Stack<String> expectedStack = new Stack<String>();
+		List<Fold> folds = new ArrayList<>();
+		Stack<String> expectedStack = new Stack<>();
 
 		Fold currentFold = null;
 		int lineCount = textArea.getLineCount();

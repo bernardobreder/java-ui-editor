@@ -1,7 +1,11 @@
 /*
- * 01/11/2011 PopupWindowDecorator.java - Hook allowing hosting applications to decorate JWindows
- * created by the AutoComplete library. This library is distributed under a modified BSD license.
- * See the included RSyntaxTextArea.License.txt file for details.
+ * 01/11/2011
+ *
+ * PopupWindowDecorator.java - Hook allowing hosting applications to decorate
+ * JWindows created by the AutoComplete library.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 

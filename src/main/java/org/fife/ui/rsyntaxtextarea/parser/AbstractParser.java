@@ -1,12 +1,14 @@
 /*
- * 07/31/2009 AbstractParser.java - A base implementation for parsers. This library is distributed
- * under a modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 07/31/2009
+ *
+ * AbstractParser.java - A base implementation for parsers.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.parser;
 
 import java.net.URL;
-
-import org.fife.ui.rsyntaxtextarea.focusabletip.FocusableTip;
 
 /**
  * A base class for {@link Parser} implementations. Most <code>Parser</code>s
@@ -24,8 +26,9 @@ public abstract class AbstractParser implements Parser {
 	private boolean enabled;
 
 	/**
-	 * Listens for events from {@link FocusableTip}s generated from this parser's
-	 * notices.
+	 * Listens for events from
+	 * {@link org.fife.ui.rsyntaxtextarea.focusabletip.FocusableTip}s generated from
+	 * this parser's notices.
 	 */
 	private ExtendedHyperlinkListener linkListener;
 

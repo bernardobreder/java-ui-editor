@@ -1,6 +1,10 @@
 /*
- * 02/17/2009 IconRowHeader.java - Renders icons in the gutter. This library is distributed under a
- * modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 02/17/2009
+ *
+ * IconRowHeader.java - Renders icons in the gutter.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -14,7 +18,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -28,12 +31,11 @@ import javax.swing.text.Element;
 import javax.swing.text.Position;
 import javax.swing.text.View;
 
-import org.fife.ui.rsyntaxtextarea.FoldingAwareIconRowHeader;
-
 /**
  * Renders icons in the {@link Gutter}. This can be used to visually mark lines
  * containing syntax errors, lines with breakpoints set on them, etc.
  * <p>
+ *
  * This component has built-in support for displaying icons representing
  * "bookmarks;" that is, lines a user can cycle through via F2 and Shift+F2.
  * Bookmarked lines are toggled via Ctrl+F2, or by clicking in the icon area at
@@ -44,13 +46,13 @@ import org.fife.ui.rsyntaxtextarea.FoldingAwareIconRowHeader;
  *
  * <pre>
  * Gutter gutter = scrollPane.getGutter();
- * gutter.setBookmarkIcon(new ImageIcon(&quot;bookmark.png&quot;));
+ * gutter.setBookmarkIcon(new ImageIcon("bookmark.png"));
  * gutter.setBookmarkingEnabled(true);
  * </pre>
  *
  * @author Robert Futrell
  * @version 1.0
- * @see FoldingAwareIconRowHeader
+ * @see org.fife.ui.rsyntaxtextarea.FoldingAwareIconRowHeader
  */
 public class IconRowHeader extends AbstractGutterComponent implements MouseListener {
 
@@ -127,7 +129,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	 * @return A tag for this icon.
 	 * @throws BadLocationException If <code>offs</code> is an invalid offset into
 	 *                              the text area.
-	 * @see #removeTrackingIcon(Object)
+	 * @see #removeTrackingIcon(GutterIconInfo)
 	 */
 	public GutterIconInfo addOffsetTrackingIcon(int offs, Icon icon) throws BadLocationException {
 		return addOffsetTrackingIcon(offs, icon, null);
@@ -144,13 +146,20 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	 * @return A tag for this icon.
 	 * @throws BadLocationException If <code>offs</code> is an invalid offset into
 	 *                              the text area.
-	 * @see #removeTrackingIcon(Object)
+	 * @see #removeTrackingIcon(GutterIconInfo)
 	 */
 	public GutterIconInfo addOffsetTrackingIcon(int offs, Icon icon, String tip) throws BadLocationException {
+		// Despite its documentation, AbstractDocument does *not* throw BLEs
+		// when creating sticky positions for offsets that do not exist.
+		// We must check for that ourselves.
+		if (offs < 0 || offs > textArea.getDocument().getLength()) {
+			throw new BadLocationException(
+					"Offset " + offs + " not in " + "required range of 0-" + textArea.getDocument().getLength(), offs);
+		}
 		Position pos = textArea.getDocument().createPosition(offs);
 		GutterIconImpl ti = new GutterIconImpl(icon, pos, tip);
 		if (trackingIcons == null) {
-			trackingIcons = new ArrayList<GutterIconImpl>(1); // Usually small
+			trackingIcons = new ArrayList<>(1); // Usually small
 		}
 		int index = Collections.binarySearch(trackingIcons, ti);
 		if (index < 0) {
@@ -202,7 +211,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	 */
 	public GutterIconInfo[] getBookmarks() {
 
-		List<GutterIconInfo> retVal = new ArrayList<GutterIconInfo>(1);
+		List<GutterIconInfo> retVal = new ArrayList<>(1);
 
 		if (trackingIcons != null) {
 			for (int i = 0; i < trackingIcons.size(); i++) {
@@ -275,7 +284,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	 */
 	public GutterIconInfo[] getTrackingIcons(int line) throws BadLocationException {
 
-		List<GutterIconInfo> retVal = new ArrayList<GutterIconInfo>(1);
+		List<GutterIconInfo> retVal = new ArrayList<>(1);
 
 		if (trackingIcons != null) {
 			int start = textArea.getLineStartOffset(line);
@@ -520,7 +529,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 
 		RTextAreaUI ui = (RTextAreaUI) textArea.getUI();
 		View v = ui.getRootView(textArea).getView(0);
-		// boolean currentLineHighlighted = textArea.getHighlightCurrentLine();
+//		boolean currentLineHighlighted = textArea.getHighlightCurrentLine();
 		Document doc = textArea.getDocument();
 		Element root = doc.getDefaultRootElement();
 		int lineCount = root.getElementCount();
@@ -560,7 +569,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		while (y < visibleBottom) {
 
 			r = getChildViewBounds(v, topLine, visibleEditorRect);
-			// int lineEndY = r.y+r.height;
+//			int lineEndY = r.y+r.height;
 
 			/*
 			 * // Highlight the current line's line number, if desired. if
@@ -617,7 +626,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	 * @see #removeAllTrackingIcons()
 	 * @see #addOffsetTrackingIcon(int, Icon)
 	 */
-	public void removeTrackingIcon(Object tag) {
+	public void removeTrackingIcon(GutterIconInfo tag) {
 		if (trackingIcons != null && trackingIcons.remove(tag)) {
 			repaint();
 		}
@@ -626,7 +635,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	/**
 	 * Removes all tracking icons.
 	 *
-	 * @see #removeTrackingIcon(Object)
+	 * @see #removeTrackingIcon(GutterIconInfo)
 	 * @see #addOffsetTrackingIcon(int, Icon)
 	 */
 	public void removeAllTrackingIcons() {
@@ -641,12 +650,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	 */
 	private void removeBookmarkTrackingIcons() {
 		if (trackingIcons != null) {
-			for (Iterator<GutterIconImpl> i = trackingIcons.iterator(); i.hasNext();) {
-				GutterIconImpl ti = i.next();
-				if (ti.getIcon() == bookmarkIcon) {
-					i.remove();
-				}
-			}
+			trackingIcons.removeIf(ti -> ti.getIcon() == bookmarkIcon);
 		}
 	}
 
@@ -766,9 +770,9 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		}
 
 		boolean found = false;
-		for (int i = 0; i < icons.length; i++) {
-			if (icons[i].getIcon() == bookmarkIcon) {
-				removeTrackingIcon(icons[i]);
+		for (GutterIconInfo icon : icons) {
+			if (icon.getIcon() == bookmarkIcon) {
+				removeTrackingIcon(icon);
 				found = true;
 				// Don't quit, in case they manipulate the document so > 1
 				// bookmark is on a single line (kind of flaky, but it
@@ -827,12 +831,10 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	private static class GutterIconImpl implements GutterIconInfo, Comparable<GutterIconInfo> {
 
 		private Icon icon;
-
 		private Position pos;
-
 		private String toolTip;
 
-		public GutterIconImpl(Icon icon, Position pos, String toolTip) {
+		GutterIconImpl(Icon icon, Position pos, String toolTip) {
 			this.icon = icon;
 			this.pos = pos;
 			this.toolTip = toolTip;

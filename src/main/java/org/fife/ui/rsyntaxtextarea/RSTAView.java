@@ -1,6 +1,10 @@
 /*
- * 02/10/2009 RSTAView.java - An <code>RSyntaxTextArea</code> view. This library is distributed
- * under a modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 02/10/2009
+ *
+ * RSTAView.java - An <code>RSyntaxTextArea</code> view.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -19,6 +23,7 @@ interface RSTAView {
 	/**
 	 * Returns the y-coordinate of the specified line.
 	 * <p>
+	 *
 	 * This method is quicker than using traditional <code>modelToView(int)</code>
 	 * calls, as the entire bounding box isn't computed.
 	 *
@@ -30,11 +35,12 @@ interface RSTAView {
 	 * @throws BadLocationException If <code>line</code> isn't a valid line number
 	 *                              for this document.
 	 */
-	public int yForLine(Rectangle alloc, int line) throws BadLocationException;
+	int yForLine(Rectangle alloc, int line) throws BadLocationException;
 
 	/**
 	 * Returns the y-coordinate of the line containing a specified offset.
 	 * <p>
+	 *
 	 * This method is quicker than using traditional <code>modelToView(int)</code>
 	 * calls, as the entire bounding box isn't computed.
 	 *
@@ -46,6 +52,6 @@ interface RSTAView {
 	 * @throws BadLocationException If <code>offs</code> isn't a valid offset into
 	 *                              the document.
 	 */
-	public int yForLineContaining(Rectangle alloc, int offs) throws BadLocationException;
+	int yForLineContaining(Rectangle alloc, int offs) throws BadLocationException;
 
 }

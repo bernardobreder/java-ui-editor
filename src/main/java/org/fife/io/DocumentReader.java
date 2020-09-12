@@ -1,7 +1,11 @@
 /*
- * 02/24/2004 DocumentReader.java - A reader for javax.swing.text.Document objects. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 02/24/2004
+ *
+ * DocumentReader.java - A reader for javax.swing.text.Document
+ * objects.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.io;
 
@@ -105,7 +109,7 @@ public class DocumentReader extends Reader {
 	 * @return The number of characters read.
 	 */
 	@Override
-	public int read(char array[]) {
+	public int read(char[] array) {
 		return read(array, 0, array.length);
 	}
 
@@ -119,7 +123,7 @@ public class DocumentReader extends Reader {
 	 *         stream (document) has been reached.
 	 */
 	@Override
-	public int read(char cbuf[], int off, int len) {
+	public int read(char[] cbuf, int off, int len) {
 		int k;
 		if (position >= document.getLength()) {
 			return -1; // Read past end of document.

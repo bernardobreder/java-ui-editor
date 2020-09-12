@@ -1,7 +1,11 @@
 /*
- * 08/19/2004 RecordableTextAction.java - An action that can be recorded and replayed in an
- * RTextArea macro. This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 08/19/2004
+ *
+ * RecordableTextAction.java - An action that can be recorded and replayed
+ * in an RTextArea macro.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -80,10 +84,10 @@ public abstract class RecordableTextAction extends TextAction {
 				// action like paste (e.g., paste would return Ctrl+V, but
 				// its action would be "paste-action").
 				String macroID = getMacroID();
-				// System.err.println(macroID);
-				// System.err.println("... " + (mod&ActionEvent.ALT_MASK));
-				// System.err.println("... " + (mod&ActionEvent.CTRL_MASK));
-				// System.err.println("... " + (mod&ActionEvent.META_MASK));
+//System.err.println(macroID);
+//System.err.println("... " + (mod&ActionEvent.ALT_MASK));
+//System.err.println("... " + (mod&ActionEvent.CTRL_MASK));
+//System.err.println("... " + (mod&ActionEvent.META_MASK));
 				if (!DefaultEditorKit.defaultKeyTypedAction.equals(macroID) || ((mod & ActionEvent.ALT_MASK) == 0
 						&& (mod & ActionEvent.CTRL_MASK) == 0 && (mod & ActionEvent.META_MASK) == 0)) {
 					String command = e.getActionCommand();
@@ -157,7 +161,7 @@ public abstract class RecordableTextAction extends TextAction {
 	 */
 	public int getMnemonic() {
 		Integer i = (Integer) getValue(MNEMONIC_KEY);
-		return i != null ? i.intValue() : -1;
+		return i != null ? i : -1;
 	}
 
 	/**
@@ -226,8 +230,8 @@ public abstract class RecordableTextAction extends TextAction {
 	 * Sets the name, mnemonic, and description of this action.
 	 *
 	 * @param msg     The resource bundle.
-	 * @param keyRoot The root of the keys for the properties. "<code>.Name</code>
-	 *                ", " <code>.Mnemonic</code>", and "<code>.Desc</code>" will be
+	 * @param keyRoot The root of the keys for the properties. "<code>.Name</code>",
+	 *                "<code>.Mnemonic</code>", and "<code>.Desc</code>" will be
 	 *                appended to create the key for each property.
 	 */
 	public void setProperties(ResourceBundle msg, String keyRoot) {

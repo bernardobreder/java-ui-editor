@@ -1,7 +1,11 @@
 /*
- * 03/26/2004 DynamicIntArray.java - Similar to an ArrayList, but holds ints instead of Objects.
- * This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 03/26/2004
+ *
+ * DynamicIntArray.java - Similar to an ArrayList, but holds ints instead
+ * of Objects.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.util;
 
@@ -85,8 +89,8 @@ public class DynamicIntArray implements Serializable {
 	 * @param intArray The array of <code>int</code>s to insert.
 	 * @throws IndexOutOfBoundsException If <code>index</code> is less than zero or
 	 *                                   greater than <code>getSize()</code>.
-	 * @throws NullPointerException      If <code>intArray<code> is
-	 *                                   <code>null<code>.
+	 * @throws NullPointerException      If <code>intArray</code> is
+	 *                                   <code>null</code>.
 	 */
 	public void add(int index, int[] intArray) {
 		if (index > size) {
@@ -98,7 +102,7 @@ public class DynamicIntArray implements Serializable {
 		if (moveCount > 0) {
 			System.arraycopy(data, index, data, index + addCount, moveCount);
 		}
-		System.arraycopy(data, index, intArray, 0, moveCount);
+		System.arraycopy(intArray, 0, data, index, addCount);
 		size += addCount;
 	}
 
@@ -165,7 +169,7 @@ public class DynamicIntArray implements Serializable {
 	 *
 	 * @param minCapacity The desired minimum capacity.
 	 */
-	private final void ensureCapacity(int minCapacity) {
+	private void ensureCapacity(int minCapacity) {
 		int oldCapacity = data.length;
 		if (minCapacity > oldCapacity) {
 			int[] oldData = data;
@@ -337,14 +341,15 @@ public class DynamicIntArray implements Serializable {
 	 * error-checking code, so that callers (e.g. {@link #get} and {@link #set}) can
 	 * be both small enough to be inlined, as well as not usually make any expensive
 	 * method calls (since their callers will usually not pass illegal arguments to
-	 * them). See
-	 * <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5103956"> this
-	 * Sun bug report</a> for more information.
+	 * them).
+	 *
+	 * See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5103956">
+	 * this Sun bug report</a> for more information.
 	 *
 	 * @param index The invalid index.
 	 * @throws IndexOutOfBoundsException Always.
 	 */
-	private final void throwException(int index) throws IndexOutOfBoundsException {
+	private void throwException(int index) {
 		throw new IndexOutOfBoundsException("Index " + index + " not in valid range [0-" + (size - 1) + "]");
 	}
 
@@ -352,14 +357,15 @@ public class DynamicIntArray implements Serializable {
 	 * Throws an exception. This method isolates error-handling code from the
 	 * error-checking code, so that callers can be both small enough to be inlined,
 	 * as well as not usually make any expensive method calls (since their callers
-	 * will usually not pass illegal arguments to them). See
-	 * <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5103956"> this
-	 * Sun bug report</a> for more information.
+	 * will usually not pass illegal arguments to them).
+	 *
+	 * See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5103956">
+	 * this Sun bug report</a> for more information.
 	 *
 	 * @param index The invalid index.
 	 * @throws IndexOutOfBoundsException Always.
 	 */
-	private final void throwException2(int index) throws IndexOutOfBoundsException {
+	private void throwException2(int index) {
 		throw new IndexOutOfBoundsException("Index " + index + ", not in range [0-" + size + "]");
 	}
 
@@ -367,14 +373,16 @@ public class DynamicIntArray implements Serializable {
 	 * Throws an exception. This method isolates error-handling code from the
 	 * error-checking code, so that callers can be both small enough to be inlined,
 	 * as well as not usually make any expensive method calls (since their callers
-	 * will usually not pass illegal arguments to them). See
-	 * <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5103956"> this
-	 * Sun bug report</a> for more information.
+	 * will usually not pass illegal arguments to them).
 	 *
-	 * @param index The invalid index.
+	 * See <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5103956">
+	 * this Sun bug report</a> for more information.
+	 *
+	 * @param fromIndex The from-index.
+	 * @param toIndex   The to-index.
 	 * @throws IndexOutOfBoundsException Always.
 	 */
-	private final void throwException3(int fromIndex, int toIndex) throws IndexOutOfBoundsException {
+	private void throwException3(int fromIndex, int toIndex) {
 		throw new IndexOutOfBoundsException(
 				"Index range [" + fromIndex + ", " + toIndex + "] not in valid range [0-" + (size - 1) + "]");
 	}

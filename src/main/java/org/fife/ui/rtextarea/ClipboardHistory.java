@@ -1,7 +1,10 @@
 /*
- * 08/29/2014 ClipboardHistory.java - A history of text added to the clipboard. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 08/29/2014
+ *
+ * ClipboardHistory.java - A history of text added to the clipboard.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -13,27 +16,27 @@ import java.util.List;
  * Listens for cuts and copies from instances of {@link RTextArea}. This is used
  * for the "clipboard history" shortcut (Ctrl+Shift+V by default).
  * <p>
+ *
  * Note that this class does not listen for all events on the system clipboard,
  * because that functionality is pretty fragile. See <a href=
- * "http://stackoverflow.com/questions/5484927/listen-to-clipboard-changes-check-ownership"
- * > http://stackoverflow.com/questions/5484927/listen-to-clipboard-changes-
- * check-ownership</a> for more information.
+ * "http://stackoverflow.com/questions/5484927/listen-to-clipboard-changes-check-ownership">
+ * http://stackoverflow.com/questions/5484927/listen-to-clipboard-changes-check-ownership</a>
+ * for more information.
  *
  * @author Robert Futrell
  * @version 1.0
  */
-public class ClipboardHistory {
+public final class ClipboardHistory {
 
-	private static ClipboardHistory INSTANCE;
+	private static ClipboardHistory instance;
 
 	private List<String> history;
-
 	private int maxSize;
 
 	private static final int DEFAULT_MAX_SIZE = 12;
 
 	private ClipboardHistory() {
-		history = new ArrayList<String>();
+		history = new ArrayList<>();
 		maxSize = DEFAULT_MAX_SIZE;
 	}
 
@@ -63,15 +66,16 @@ public class ClipboardHistory {
 	 * Returns the singleton instance of this class, lazily creating it if
 	 * necessary.
 	 * <p>
+	 *
 	 * This method should only be called on the EDT.
 	 *
 	 * @return The singleton instance of this class.
 	 */
-	public static final ClipboardHistory get() {
-		if (INSTANCE == null) {
-			INSTANCE = new ClipboardHistory();
+	public static ClipboardHistory get() {
+		if (instance == null) {
+			instance = new ClipboardHistory();
 		}
-		return INSTANCE;
+		return instance;
 	}
 
 	/**
@@ -80,7 +84,7 @@ public class ClipboardHistory {
 	 * @return The clipboard history.
 	 */
 	public List<String> getHistory() {
-		List<String> copy = new ArrayList<String>(this.history);
+		List<String> copy = new ArrayList<>(this.history);
 		Collections.reverse(copy);
 		return copy;
 	}

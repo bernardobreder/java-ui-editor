@@ -1,7 +1,11 @@
 /*
- * 10/23/2011 FoldCollapser.java - Goes through an RSTA instance and collapses folds of specific
- * types, such as comments. This library is distributed under a modified BSD license. See the
- * included RSyntaxTextArea.License.txt file for details.
+ * 10/23/2011
+ *
+ * FoldCollapser.java - Goes through an RSTA instance and collapses folds of
+ * specific types, such as comments.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.folding;
 
@@ -33,7 +37,7 @@ public class FoldCollapser {
 	 * @see FoldType
 	 */
 	public FoldCollapser(int typeToCollapse) {
-		typesToCollapse = new ArrayList<Integer>(3);
+		typesToCollapse = new ArrayList<>(3);
 		addTypeToCollapse(typeToCollapse);
 	}
 
@@ -43,7 +47,7 @@ public class FoldCollapser {
 	 * @param typeToCollapse The type of fold to collapse.
 	 */
 	public void addTypeToCollapse(int typeToCollapse) {
-		typesToCollapse.add(Integer.valueOf(typeToCollapse));
+		typesToCollapse.add(typeToCollapse);
 	}
 
 	/**
@@ -82,7 +86,7 @@ public class FoldCollapser {
 	public boolean getShouldCollapse(Fold fold) {
 		int type = fold.getFoldType();
 		for (Integer typeToCollapse : typesToCollapse) {
-			if (type == typeToCollapse.intValue()) {
+			if (type == typeToCollapse) {
 				return true;
 			}
 		}

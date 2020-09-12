@@ -1,7 +1,10 @@
 /*
- * 02/19/2009 GutterIconInfo.java - Information about an Icon in a Gutter. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 02/19/2009
+ *
+ * GutterIconInfo.java - Information about an Icon in a Gutter.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -10,7 +13,7 @@ import javax.swing.Icon;
 /**
  * Information about an icon displayed in a {@link Gutter}. Instances of this
  * class are returned by {@link Gutter#addLineTrackingIcon(int, Icon)} and
- * {@link Gutter#addOffsetTrackingIcon(int, Icon)} . They can later be used in
+ * {@link Gutter#addOffsetTrackingIcon(int, Icon)}. They can later be used in
  * calls to {@link Gutter#removeTrackingIcon(GutterIconInfo)} to be individually
  * removed.
  *
@@ -25,7 +28,7 @@ public interface GutterIconInfo {
 	 *
 	 * @return The icon being rendered.
 	 */
-	public Icon getIcon();
+	Icon getIcon();
 
 	/**
 	 * Returns the offset that is being tracked. The line of this offset is where
@@ -34,13 +37,13 @@ public interface GutterIconInfo {
 	 *
 	 * @return The offset being tracked.
 	 */
-	public int getMarkedOffset();
+	int getMarkedOffset();
 
 	/**
 	 * Returns the tool tip to display when the mouse hovers over this icon.
 	 *
 	 * @return The tool tip to display.
 	 */
-	public String getToolTip();
+	String getToolTip();
 
 }

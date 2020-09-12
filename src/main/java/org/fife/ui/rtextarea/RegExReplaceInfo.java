@@ -1,7 +1,10 @@
 /*
- * 02/19/2006 RegExReplaceInfo.java - Information about a regex text match. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 02/19/2006
+ *
+ * RegExReplaceInfo.java - Information about a regex text match.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -14,11 +17,8 @@ package org.fife.ui.rtextarea;
 class RegExReplaceInfo {
 
 	private String matchedText;
-
 	private int startIndex;
-
 	private int endIndex;
-
 	private String replacement;
 
 	/**
@@ -32,7 +32,7 @@ class RegExReplaceInfo {
 	 * @param replacement The text to replace the matched text with. This string has
 	 *                    any matched groups and character escapes replaced.
 	 */
-	public RegExReplaceInfo(String matchedText, int start, int end, String replacement) {
+	RegExReplaceInfo(String matchedText, int start, int end, String replacement) {
 		this.matchedText = matchedText;
 		this.startIndex = start;
 		this.endIndex = end;

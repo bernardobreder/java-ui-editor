@@ -1,7 +1,11 @@
 /*
- * 06/30/2012 RDocumentCharSequence.java - Iterator over a portion of an RTextArea's document. This
- * library is distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt
- * file for details.
+ * 06/30/2012
+ *
+ * RDocumentCharSequence.java - Iterator over a portion of an RTextArea's
+ * document.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -18,9 +22,7 @@ import javax.swing.text.BadLocationException;
 class RDocumentCharSequence implements CharSequence {
 
 	private RDocument doc;
-
 	private int start;
-
 	private int end;
 
 	/**
@@ -30,7 +32,7 @@ class RDocumentCharSequence implements CharSequence {
 	 * @param doc   The document.
 	 * @param start The starting offset in the document, inclusive.
 	 */
-	public RDocumentCharSequence(RDocument doc, int start) {
+	RDocumentCharSequence(RDocument doc, int start) {
 		this(doc, start, doc.getLength());
 	}
 
@@ -41,7 +43,7 @@ class RDocumentCharSequence implements CharSequence {
 	 * @param start The starting offset in the document, inclusive.
 	 * @param end   the ending offset in the document, exclusive.
 	 */
-	public RDocumentCharSequence(RDocument doc, int start, int end) {
+	RDocumentCharSequence(RDocument doc, int start, int end) {
 		this.doc = doc;
 		this.start = start;
 		this.end = end;

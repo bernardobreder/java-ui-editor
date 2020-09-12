@@ -1,7 +1,11 @@
 /*
- * 01/22/2005 BufferedImageBackgroundPainterStrategy.java - Renders an RTextAreaBase's background as
- * an image using a BufferedImage. This library is distributed under a modified BSD license. See the
- * included RSyntaxTextArea.License.txt file for details.
+ * 01/22/2005
+ *
+ * BufferedImageBackgroundPainterStrategy.java - Renders an RTextAreaBase's
+ * background as an image using a BufferedImage.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -19,12 +23,14 @@ import java.util.Map;
  * image. The image is always stretched to completely fill the
  * <code>RTextAreaBase</code>.
  * <p>
+ *
  * A <code>java.awt.image.BufferedImage</code> is used for rendering;
  * theoretically, for performance you should use
  * <code>java.awt.image.VolatileImage</code>; see
  * <code>org.fife.ui.RTextArea.VolatileImageBackgroundPainterStrategy</code> for
  * this.
  * <p>
+ *
  * You can set the scaling hint used when stretching/skewing the image to fit in
  * the <code>RTextAreaBase</code>'s background via the
  * <code>setScalingHint</code> method, but keep in mind the more accurate the
@@ -77,7 +83,7 @@ public class BufferedImageBackgroundPainterStrategy extends ImageBackgroundPaint
 		Image master = getMasterImage();
 		if (master != null) {
 
-			Map<RenderingHints.Key, Object> hints = new HashMap<RenderingHints.Key, Object>();
+			Map<RenderingHints.Key, Object> hints = new HashMap<>();
 			switch (hint) {
 			default:
 			case Image.SCALE_AREA_AVERAGING:

@@ -1,7 +1,11 @@
 /*
- * 02/06/2011 ActiveLineRangeEvent.java - Notifies listeners of an "active line range" change in an
- * RSyntaxTextArea. This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 02/06/2011
+ *
+ * ActiveLineRangeEvent.java - Notifies listeners of an "active line range"
+ * change in an RSyntaxTextArea.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -17,7 +21,6 @@ import java.util.EventObject;
 public class ActiveLineRangeEvent extends EventObject {
 
 	private int min;
-
 	private int max;
 
 	/**

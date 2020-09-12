@@ -1,7 +1,11 @@
 /*
- * 07/27/2009 ParseResult.java - The result of a Parser parsing some section of an RSyntaxTextArea.
- * This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 07/27/2009
+ *
+ * ParseResult.java - The result of a Parser parsing some section of an
+ * RSyntaxTextArea.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.parser;
 
@@ -24,7 +28,7 @@ public interface ParseResult {
 	 * @return The error, or <code>null</code> if the document was successfully
 	 *         parsed.
 	 */
-	public Exception getError();
+	Exception getError();
 
 	/**
 	 * Returns the first line parsed. All parser implementations should currently
@@ -33,7 +37,7 @@ public interface ParseResult {
 	 * @return The first line parsed.
 	 * @see #getLastLineParsed()
 	 */
-	public int getFirstLineParsed();
+	int getFirstLineParsed();
 
 	/**
 	 * Returns the first line parsed. All parser implementations should currently
@@ -42,21 +46,21 @@ public interface ParseResult {
 	 * @return The last line parsed.
 	 * @see #getFirstLineParsed()
 	 */
-	public int getLastLineParsed();
+	int getLastLineParsed();
 
 	/**
 	 * Returns the notices for the parsed section.
 	 *
 	 * @return A list of {@link ParserNotice}s.
 	 */
-	public List<ParserNotice> getNotices();
+	List<ParserNotice> getNotices();
 
 	/**
 	 * Returns the parser that generated these notices.
 	 *
 	 * @return The parser.
 	 */
-	public Parser getParser();
+	Parser getParser();
 
 	/**
 	 * Returns the amount of time this parser took to parse the specified range of
@@ -66,6 +70,6 @@ public interface ParseResult {
 	 * @return The parse time, in milliseconds, or <code>0</code> if the parse time
 	 *         was not recorded.
 	 */
-	public long getParseTime();
+	long getParseTime();
 
 }

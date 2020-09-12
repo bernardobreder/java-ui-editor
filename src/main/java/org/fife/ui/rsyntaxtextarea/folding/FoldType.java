@@ -1,7 +1,10 @@
 /*
- * 10/08/2011 FoldType.java - Types of folds found in many programming languages. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 10/08/2011
+ *
+ * FoldType.java - Types of folds found in many programming languages.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.folding;
 
@@ -15,6 +18,7 @@ package org.fife.ui.rsyntaxtextarea.folding;
  * for fold type. Then, the UI could provide a means for the user to specify
  * that they always want the import region folded when opening a new file.
  * <p>
+ *
  * The majority of the time, however, code editors won't need to be that fancy,
  * and can simply use the standard <code>CODE</code> and <code>COMMENT</code>
  * fold types.
@@ -28,18 +32,18 @@ public interface FoldType {
 	/**
 	 * Denotes a <code>Fold</code> as being a region of code.
 	 */
-	public static final int CODE = 0;
+	int CODE = 0;
 
 	/**
 	 * Denotes a <code>Fold</code> as being a multi-line comment.
 	 */
-	public static final int COMMENT = 1;
+	int COMMENT = 1;
 
 	/**
 	 * Denotes a <code>Fold</code> as being a section of import statements (Java),
 	 * include statements (C), etc.
 	 */
-	public static final int IMPORTS = 2;
+	int IMPORTS = 2;
 
 	/**
 	 * Users building advanced editors such as IDE's, that want to allow their users
@@ -49,6 +53,6 @@ public interface FoldType {
 	 * default fold types are added to this interface in the future, your code won't
 	 * suddenly break when upgrading to a new version of RSTA.
 	 */
-	public static final int FOLD_TYPE_USER_DEFINED_MIN = 1000;
+	int FOLD_TYPE_USER_DEFINED_MIN = 1000;
 
 }

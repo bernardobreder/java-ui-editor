@@ -1,6 +1,10 @@
 /*
- * 10/28/2004 DefaultTokenFactory.java - Default token factory. This library is distributed under a
- * modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 10/28/2004
+ *
+ * DefaultTokenFactory.java - Default token factory.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -17,6 +21,7 @@ import javax.swing.text.Segment;
  * <code>resetTokenList</code> when creating a new token list so that the token
  * maker can keep an accurate list of available tokens.
  * <p>
+ *
  * NOTE: This class should only be used by {@link TokenMaker}; nobody else needs
  * it!
  *
@@ -26,21 +31,17 @@ import javax.swing.text.Segment;
 class DefaultTokenFactory implements TokenFactory {
 
 	private int size;
-
 	private int increment;
-
 	private TokenImpl[] tokenList;
-
 	private int currentFreeToken;
 
 	protected static final int DEFAULT_START_SIZE = 30;
-
 	protected static final int DEFAULT_INCREMENT = 10;
 
 	/**
 	 * Constructor.
 	 */
-	public DefaultTokenFactory() {
+	DefaultTokenFactory() {
 		this(DEFAULT_START_SIZE, DEFAULT_INCREMENT);
 	}
 
@@ -50,7 +51,7 @@ class DefaultTokenFactory implements TokenFactory {
 	 * @param size      The initial number of tokens in this factory.
 	 * @param increment How many tokens to increment by when the stack gets empty.
 	 */
-	public DefaultTokenFactory(int size, int increment) {
+	DefaultTokenFactory(int size, int increment) {
 
 		this.size = size;
 		this.increment = increment;
@@ -68,7 +69,7 @@ class DefaultTokenFactory implements TokenFactory {
 	 * Adds tokens to the internal token list. This is called whenever a request is
 	 * made and no more tokens are available.
 	 */
-	private final void augmentTokenList() {
+	private void augmentTokenList() {
 		TokenImpl[] temp = new TokenImpl[size + increment];
 		System.arraycopy(tokenList, 0, temp, 0, size);
 		size += increment;

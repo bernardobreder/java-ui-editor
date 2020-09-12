@@ -1,12 +1,16 @@
 /*
- * 02/17/2012 SearchContext.java - Container for options of a search/replace operation. This library
- * is distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file
- * for details.
+ * 02/17/2012
+ *
+ * SearchContext.java - Container for options of a search/replace operation.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 
 /**
  * Contains information about a find/replace operation. Applications can keep an
@@ -19,7 +23,7 @@ import java.beans.PropertyChangeSupport;
  * @version 2.0
  * @see SearchEngine
  */
-public class SearchContext implements Cloneable {
+public class SearchContext implements Cloneable, Serializable {
 
 	/** Fired when the "search for" property is modified. */
 	public static final String PROPERTY_SEARCH_FOR = "Search.searchFor";
@@ -36,6 +40,9 @@ public class SearchContext implements Cloneable {
 	/** Fired when search direction is toggled. */
 	public static final String PROPERTY_SEARCH_FORWARD = "Search.Forward";
 
+	/** Fired when search wrap is toggled. */
+	public static final String PROPERTY_SEARCH_WRAP = "Search.Wrap";
+
 	/** Fired when "search in selection" is toggled (not currently supported). */
 	public static final String PROPERTY_SELECTION_ONLY = "Search.SelectionOnly";
 
@@ -46,22 +53,18 @@ public class SearchContext implements Cloneable {
 	public static final String PROPERTY_MARK_ALL = "Search.MarkAll";
 
 	private String searchFor;
-
 	private String replaceWith;
-
 	private boolean forward;
-
+	private boolean wrap;
 	private boolean matchCase;
-
 	private boolean wholeWord;
-
 	private boolean regex;
-
 	private boolean selectionOnly;
-
 	private boolean markAll;
 
-	private PropertyChangeSupport support;
+	private transient PropertyChangeSupport support;
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Creates a new search context. Specifies a forward search, case-insensitive,
@@ -94,6 +97,7 @@ public class SearchContext implements Cloneable {
 		this.matchCase = matchCase;
 		markAll = true;
 		forward = true;
+		wrap = false;
 	}
 
 	/**
@@ -181,6 +185,16 @@ public class SearchContext implements Cloneable {
 	}
 
 	/**
+	 * Returns whether the search should wrap.
+	 *
+	 * @return Whether we should search wrap
+	 * @see #setSearchWrap(boolean)
+	 */
+	public boolean getSearchWrap() {
+		return wrap;
+	}
+
+	/**
 	 * Returns whether the search should only be done in the selected text. This
 	 * flag is currently not supported.
 	 *
@@ -254,7 +268,7 @@ public class SearchContext implements Cloneable {
 
 	/**
 	 * Sets whether a regular expression search should be done.This method fires a
-	 * property change event of type {@link #PROPERTY_USE_REGEX}
+	 * property change event of type {@link #PROPERTY_USE_REGEX}.
 	 *
 	 * @param regex Whether a regular expression search should be done.
 	 * @see #isRegularExpression()
@@ -315,9 +329,24 @@ public class SearchContext implements Cloneable {
 	}
 
 	/**
+	 * Sets whether the search should be wrap through the text. This method fires a
+	 * property change event of type {@link #PROPERTY_SEARCH_WRAP}.
+	 *
+	 * @param wrap Whether we should search wrap
+	 * @see #getSearchWrap()
+	 */
+	public void setSearchWrap(boolean wrap) {
+		if (wrap != this.wrap) {
+			this.wrap = wrap;
+			firePropertyChange(PROPERTY_SEARCH_WRAP, !wrap, wrap);
+		}
+	}
+
+	/**
 	 * Sets whether only the selected text should be searched. This method fires a
 	 * property change event of type {@link #PROPERTY_SELECTION_ONLY}.
 	 * <p>
+	 *
 	 * This flag is currently not supported. Calling this method will throw an
 	 * {@link UnsupportedOperationException} until it is implemented.
 	 *
@@ -353,9 +382,9 @@ public class SearchContext implements Cloneable {
 
 	@Override
 	public String toString() {
-		return "[SearchContext: " + "searchFor='" + getSearchFor() + "'" + ", replaceWith='" + getReplaceWith() + "'"
-				+ ", matchCase=" + getMatchCase() + ", wholeWord=" + getWholeWord() + ", regex=" + isRegularExpression()
-				+ ", markAll=" + getMarkAll() + "]";
+		return "[SearchContext: " + "searchFor=" + getSearchFor() + ", replaceWith=" + getReplaceWith() + ", matchCase="
+				+ getMatchCase() + ", wholeWord=" + getWholeWord() + ", regex=" + isRegularExpression() + ", markAll="
+				+ getMarkAll() + "]";
 	}
 
 }

@@ -1,6 +1,10 @@
 /*
- * 08/13/2009 TipUtil.java - Utility methods for homemade tool tips. This library is distributed
- * under a modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 08/13/2009
+ *
+ * TipUtil.java - Utility methods for homemade tool tips.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.focusabletip;
 
@@ -19,6 +23,7 @@ import javax.swing.border.Border;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.text.html.HTMLDocument;
 
+import org.fife.ui.rsyntaxtextarea.HtmlUtil;
 import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 
 /**
@@ -27,43 +32,9 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
  * @author Robert Futrell
  * @version 1.0
  */
-public class TipUtil {
+public final class TipUtil {
 
 	private TipUtil() {
-	}
-
-	/**
-	 * Returns a hex string for the specified color, suitable for HTML.
-	 *
-	 * @param c The color.
-	 * @return The string representation, in the form "<code>#rrggbb</code>", or
-	 *         <code>null</code> if <code>c</code> is <code>null</code>.
-	 */
-	private static final String getHexString(Color c) {
-
-		if (c == null) {
-			return null;
-		}
-
-		StringBuilder sb = new StringBuilder("#");
-		int r = c.getRed();
-		if (r < 16) {
-			sb.append('0');
-		}
-		sb.append(Integer.toHexString(r));
-		int g = c.getGreen();
-		if (g < 16) {
-			sb.append('0');
-		}
-		sb.append(Integer.toHexString(g));
-		int b = c.getBlue();
-		if (b < 16) {
-			sb.append('0');
-		}
-		sb.append(Integer.toHexString(b));
-
-		return sb.toString();
-
 	}
 
 	/**
@@ -78,10 +49,10 @@ public class TipUtil {
 	public static Rectangle getScreenBoundsForPoint(int x, int y) {
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] devices = env.getScreenDevices();
-		for (int i = 0; i < devices.length; i++) {
-			GraphicsConfiguration[] configs = devices[i].getConfigurations();
-			for (int j = 0; j < configs.length; j++) {
-				Rectangle gcBounds = configs[j].getBounds();
+		for (GraphicsDevice device : devices) {
+			GraphicsConfiguration[] configs = device.getConfigurations();
+			for (GraphicsConfiguration config : configs) {
+				Rectangle gcBounds = config.getBounds();
 				if (gcBounds.contains(x, y)) {
 					return gcBounds;
 				}
@@ -147,7 +118,7 @@ public class TipUtil {
 	 * @param c The color to check.
 	 * @return Whether it is a DerivedColor
 	 */
-	private static final boolean isDerivedColor(Color c) {
+	private static boolean isDerivedColor(Color c) {
 		return c != null && c.getClass().getName().endsWith(".DerivedColor");
 	}
 
@@ -156,7 +127,7 @@ public class TipUtil {
 	 *
 	 * @return Whether the current LAF is Nimbus.
 	 */
-	private static final boolean isNimbusLookAndFeel() {
+	private static boolean isNimbusLookAndFeel() {
 		return UIManager.getLookAndFeel().getName().equals("Nimbus");
 	}
 
@@ -204,15 +175,28 @@ public class TipUtil {
 			font = new Font("SansSerif", Font.PLAIN, 12);
 		}
 		HTMLDocument doc = (HTMLDocument) textArea.getDocument();
-		doc.getStyleSheet().addRule("body { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "pt"
-				+ "; color: " + getHexString(fg) + "; }");
+		setFont(doc, font, fg);
 
 		// Always add link foreground rule. Unfortunately these CSS rules
 		// stack each time the LaF is changed (how can we overwrite them
 		// without clearing out the important "standard" ones?).
 		Color linkFG = RSyntaxUtilities.getHyperlinkForeground();
-		doc.getStyleSheet().addRule("a { color: " + getHexString(linkFG) + "; }");
+		doc.getStyleSheet().addRule("a { color: " + HtmlUtil.getHexString(linkFG) + "; }");
 
+	}
+
+	/**
+	 * Sets the default font for an HTML document (e.g., in a tool tip displaying
+	 * HTML). This is here because when rendering HTML, {@code setFont()} is not
+	 * honored.
+	 *
+	 * @param doc  The document to modify.
+	 * @param font The font to use.
+	 * @param fg   The default foreground color.
+	 */
+	public static void setFont(HTMLDocument doc, Font font, Color fg) {
+		doc.getStyleSheet().addRule("body { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "pt"
+				+ "; color: " + HtmlUtil.getHexString(fg) + "; }");
 	}
 
 }

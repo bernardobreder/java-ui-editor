@@ -1,6 +1,10 @@
 /*
- * 10/13/2013 RTextAreaHighlighter.java - Highlighter for RTextAreas. This library is distributed
- * under a modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 10/13/2013
+ *
+ * RTextAreaHighlighter.java - Highlighter for RTextAreas.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -27,6 +31,7 @@ import org.fife.ui.rsyntaxtextarea.DocumentRange;
  * The highlighter implementation used by {@link RTextArea}s. It knows to always
  * paint "mark all" highlights below selection highlights.
  * <p>
+ *
  * Most of this code is copied from javax.swing.text.DefaultHighlighter;
  * unfortunately, we cannot re-use much of it since it is package private.
  *
@@ -49,17 +54,17 @@ public class RTextAreaHighlighter extends BasicHighlighter {
 	 * Constructor.
 	 */
 	public RTextAreaHighlighter() {
-		markAllHighlights = new ArrayList<HighlightInfo>();
+		markAllHighlights = new ArrayList<>();
 	}
 
 	/**
 	 * Adds a special "marked occurrence" highlight.
 	 *
-	 * @param start
-	 * @param end
-	 * @param p
+	 * @param start The start offset of the highlight.
+	 * @param end   The end offset of the highlight.
+	 * @param p     The highlight painter.
 	 * @return A tag to reference the highlight later.
-	 * @throws BadLocationException
+	 * @throws BadLocationException If one of the offsets specified is invalid.
 	 * @see #clearMarkAllHighlights()
 	 */
 	Object addMarkAllHighlight(int start, int end, HighlightPainter p) throws BadLocationException {
@@ -118,7 +123,7 @@ public class RTextAreaHighlighter extends BasicHighlighter {
 	 * @return The list of "mark all" highlight ranges.
 	 */
 	public List<DocumentRange> getMarkAllHighlightRanges() {
-		List<DocumentRange> list = new ArrayList<DocumentRange>(markAllHighlights.size());
+		List<DocumentRange> list = new ArrayList<>(markAllHighlights.size());
 		for (HighlightInfo info : markAllHighlights) {
 			int start = info.getStartOffset();
 			int end = info.getEndOffset() + 1; // HACK
@@ -162,8 +167,7 @@ public class RTextAreaHighlighter extends BasicHighlighter {
 			if (tag instanceof LayeredHighlightInfo) {
 				LayeredHighlightInfo lhi = (LayeredHighlightInfo) tag;
 				int highlightStart = lhi.getStartOffset();
-				int highlightEnd = lhi.getEndOffset() + 1; // "+1" workaround for Java highlight
-															// issues
+				int highlightEnd = lhi.getEndOffset() + 1; // "+1" workaround for Java highlight issues
 				if ((lineStart < highlightStart && lineEnd > highlightStart)
 						|| (lineStart >= highlightStart && lineStart < highlightEnd)) {
 					lhi.paintLayeredHighlights(g, lineStart, lineEnd, viewBounds, editor, view);
@@ -189,13 +193,13 @@ public class RTextAreaHighlighter extends BasicHighlighter {
 	/**
 	 * Information about a highlight being painted by this highlighter.
 	 */
-	public static interface HighlightInfo extends Highlighter.Highlight {
+	public interface HighlightInfo extends Highlighter.Highlight {
 	}
 
 	/**
 	 * Information about a layered highlight being painted by this highlighter.
 	 */
-	public static interface LayeredHighlightInfo extends HighlightInfo {
+	public interface LayeredHighlightInfo extends HighlightInfo {
 
 		/**
 		 * Restricts the region based on the receivers offsets and messages the painter
@@ -211,9 +215,7 @@ public class RTextAreaHighlighter extends BasicHighlighter {
 	protected static class HighlightInfoImpl implements HighlightInfo {
 
 		private Position p0;
-
 		private Position p1;
-
 		private Highlighter.HighlightPainter painter;
 
 		/** To be extended by subclasses. */
@@ -254,21 +256,20 @@ public class RTextAreaHighlighter extends BasicHighlighter {
 	 * A straightforward implementation of <code>HighlightInfo</code> for painting
 	 * layered highlights.
 	 */
-	/*
-	 * NOTE: This implementation is a "hack" so typing at the "end" of the highlight
-	 * does not extend it to include the newly-typed chars, which is the standard
-	 * behavior of Swing Highlights. It assumes that the "p1" Position set is
-	 * actually 1 char too short, and will render the selection as if that "extra"
-	 * char should be highlighted.
-	 */
+	@SuppressWarnings({ "checkstyle:visibilitymodifier" })
 	protected static class LayeredHighlightInfoImpl extends HighlightInfoImpl implements LayeredHighlightInfo {
 
+		/*
+		 * NOTE: This implementation is a "hack" so typing at the "end" of the highlight
+		 * does not extend it to include the newly-typed chars, which is the standard
+		 * behavior of Swing Highlights. It assumes that the "p1" Position set is
+		 * actually 1 char too short, and will render the selection as if that "extra"
+		 * char should be highlighted.
+		 */
+
 		public int x;
-
 		public int y;
-
 		public int width;
-
 		public int height;
 
 		void union(Shape bounds) {
@@ -303,7 +304,7 @@ public class RTextAreaHighlighter extends BasicHighlighter {
 			// Restrict the region to what we represent
 			p0 = Math.max(start, p0);
 			p1 = Math.min(end, p1);
-			if (getColor() != null && (getPainter() instanceof ChangeableHighlightPainter)) {
+			if (getColor() != null && getPainter() instanceof ChangeableHighlightPainter) {
 				((ChangeableHighlightPainter) getPainter()).setPaint(getColor());
 			}
 			// Paint the appropriate region using the painter and union

@@ -1,7 +1,11 @@
 /*
- * 10/08/2011 FoldParserManager.java - Used by RSTA to determine what fold parser to use for each
- * language it supports. This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 10/08/2011
+ *
+ * FoldParserManager.java - Used by RSTA to determine what fold parser to use
+ * for each language it supports.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.folding;
 
@@ -20,7 +24,7 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
  * @author Robert Futrell
  * @version 1.0
  */
-public class FoldParserManager implements SyntaxConstants {
+public final class FoldParserManager implements SyntaxConstants {
 
 	/**
 	 * Map from syntax styles to fold parsers.
@@ -58,7 +62,7 @@ public class FoldParserManager implements SyntaxConstants {
 	 */
 	private Map<String, FoldParser> createFoldParserMap() {
 
-		Map<String, FoldParser> map = new HashMap<String, FoldParser>();
+		Map<String, FoldParser> map = new HashMap<>();
 
 		map.put(SYNTAX_STYLE_C, new CurlyFoldParser());
 		map.put(SYNTAX_STYLE_CPLUSPLUS, new CurlyFoldParser());
@@ -67,21 +71,27 @@ public class FoldParserManager implements SyntaxConstants {
 		map.put(SYNTAX_STYLE_CSS, new CurlyFoldParser());
 		map.put(SYNTAX_STYLE_D, new CurlyFoldParser());
 		map.put(SYNTAX_STYLE_DART, new CurlyFoldParser());
+		map.put(SYNTAX_STYLE_GO, new CurlyFoldParser());
 		map.put(SYNTAX_STYLE_GROOVY, new CurlyFoldParser());
 		map.put(SYNTAX_STYLE_HTACCESS, new XmlFoldParser());
 		map.put(SYNTAX_STYLE_HTML, new HtmlFoldParser(HtmlFoldParser.LANGUAGE_HTML));
 		map.put(SYNTAX_STYLE_JAVA, new CurlyFoldParser(true, true));
 		map.put(SYNTAX_STYLE_JAVASCRIPT, new CurlyFoldParser());
 		map.put(SYNTAX_STYLE_JSON, new JsonFoldParser());
+		map.put(SYNTAX_STYLE_JSON_WITH_COMMENTS, new JsonFoldParser());
 		map.put(SYNTAX_STYLE_JSP, new HtmlFoldParser(HtmlFoldParser.LANGUAGE_JSP));
 		map.put(SYNTAX_STYLE_LATEX, new LatexFoldParser());
+		map.put(SYNTAX_STYLE_LESS, new CurlyFoldParser());
 		map.put(SYNTAX_STYLE_LISP, new LispFoldParser());
 		map.put(SYNTAX_STYLE_MXML, new XmlFoldParser());
 		map.put(SYNTAX_STYLE_NSIS, new NsisFoldParser());
 		map.put(SYNTAX_STYLE_PERL, new CurlyFoldParser());
 		map.put(SYNTAX_STYLE_PHP, new HtmlFoldParser(HtmlFoldParser.LANGUAGE_PHP));
+		map.put(SYNTAX_STYLE_PYTHON, new PythonFoldParser());
 		map.put(SYNTAX_STYLE_SCALA, new CurlyFoldParser());
+		map.put(SYNTAX_STYLE_TYPESCRIPT, new CurlyFoldParser());
 		map.put(SYNTAX_STYLE_XML, new XmlFoldParser());
+		map.put(SYNTAX_STYLE_YAML, new YamlFoldParser());
 
 		return map;
 

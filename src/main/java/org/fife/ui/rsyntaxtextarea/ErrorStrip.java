@@ -1,7 +1,11 @@
 /*
- * 08/10/2009 ErrorStrip.java - A component that can visually show Parser messages (syntax errors,
- * etc.) in an RSyntaxTextArea. This library is distributed under a modified BSD license. See the
- * included RSyntaxTextArea.License.txt file for details.
+ * 08/10/2009
+ *
+ * ErrorStrip.java - A component that can visually show Parser messages (syntax
+ * errors, etc.) in an RSyntaxTextArea.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -17,16 +21,19 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.text.BadLocationException;
 
 import org.fife.ui.rsyntaxtextarea.parser.Parser;
@@ -38,6 +45,7 @@ import org.fife.ui.rtextarea.RTextArea;
  * A component to sit alongside an {@link RSyntaxTextArea} that displays colored
  * markers for locations of interest (parser errors, marked occurrences, etc.).
  * <p>
+ *
  * <code>ErrorStrip</code>s display <code>ParserNotice</code>s from
  * {@link Parser}s. Currently, the only way to get lines flagged in this
  * component is to register a <code>Parser</code> on an RSyntaxTextArea and
@@ -47,8 +55,9 @@ import org.fife.ui.rtextarea.RTextArea;
  * to be displayed in this error strip. The default threshold is
  * {@link org.fife.ui.rsyntaxtextarea.parser.ParserNotice.Level#WARNING}.
  * <p>
- * An <code>ErrorStrip</code> can be added to a UI like so:
  *
+ * An <code>ErrorStrip</code> can be added to a UI like so:
+ * 
  * <pre>
  * textArea = createTextArea();
  * textArea.addParser(new MyParser(textArea)); // Identifies lines to display
@@ -62,13 +71,13 @@ import org.fife.ui.rtextarea.RTextArea;
  * @author Robert Futrell
  * @version 0.5
  */
-/*
- * Possible improvements: 1. Handle marked occurrence changes & "mark all"
- * changes separately from parser changes. For each property change, call a
- * method that removes the notices being reloaded from the Markers (removing any
- * Markers that are now "empty").
- */
-public class ErrorStrip extends JComponent {
+// Possible improvements:
+//    1. Handle marked occurrence changes & "mark all" changes separately from
+//       parser changes. For each property change, call a method that removes
+//       the notices being reloaded from the Markers (removing any Markers that
+//       are now "empty").
+//
+public class ErrorStrip extends JPanel {
 
 	/**
 	 * The text area.
@@ -78,7 +87,7 @@ public class ErrorStrip extends JComponent {
 	/**
 	 * Listens for events in this component.
 	 */
-	private Listener listener;
+	private transient Listener listener;
 
 	/**
 	 * Whether "marked occurrences" in the text area should be shown in this error
@@ -125,13 +134,16 @@ public class ErrorStrip extends JComponent {
 	private int lastLineY;
 
 	/**
+	 * Generates the tool tips for markers in this error strip.
+	 */
+	private transient ErrorStripMarkerToolTipProvider markerToolTipProvider;
+
+	/**
 	 * The preferred width of this component.
 	 */
 	private static final int PREFERRED_WIDTH = 14;
 
-	private static final String MSG = "org.fife.ui.rsyntaxtextarea.ErrorStrip";
-
-	private static final ResourceBundle msg = ResourceBundle.getBundle(MSG);
+	private static final ResourceBundle MSG = ResourceBundle.getBundle("org.fife.ui.rsyntaxtextarea.ErrorStrip");
 
 	/**
 	 * Constructor.
@@ -148,7 +160,8 @@ public class ErrorStrip extends JComponent {
 		setShowMarkAll(true);
 		setLevelThreshold(ParserNotice.Level.WARNING);
 		setFollowCaret(true);
-		setCaretMarkerColor(Color.BLACK);
+		setCaretMarkerColor(getDefaultCaretMarkerColor());
+		setMarkerToolTipProvider(null); // Install default
 	}
 
 	/**
@@ -186,7 +199,7 @@ public class ErrorStrip extends JComponent {
 	 */
 	private Color getBrighterColor(Color c) {
 		if (brighterColors == null) {
-			brighterColors = new HashMap<Color, Color>(5); // Usually small
+			brighterColors = new HashMap<>(5); // Usually small
 		}
 		Color brighter = brighterColors.get(c);
 		if (brighter == null) {
@@ -212,6 +225,22 @@ public class ErrorStrip extends JComponent {
 	}
 
 	/**
+	 * Returns the default color for the caret marker. This is a UI resource so that
+	 * it is updated if the LookAndFeel is updated, but not if the user overrides
+	 * it.
+	 *
+	 * @return The default color.
+	 */
+	private ColorUIResource getDefaultCaretMarkerColor() {
+
+		if (RSyntaxUtilities.isLightForeground(getForeground())) {
+			return new ColorUIResource(textArea.getCaretColor());
+		}
+
+		return new ColorUIResource(Color.BLACK);
+	}
+
+	/**
 	 * Returns whether the caret's position should be drawn.
 	 *
 	 * @return Whether the caret's position should be drawn.
@@ -221,9 +250,6 @@ public class ErrorStrip extends JComponent {
 		return followCaret;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Dimension getPreferredSize() {
 		int height = textArea.getPreferredScrollableViewportSize().height;
@@ -262,16 +288,13 @@ public class ErrorStrip extends JComponent {
 		return showMarkedOccurrences;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getToolTipText(MouseEvent e) {
 		String text = null;
 		int line = yToLine(e.getY());
 		if (line > -1) {
-			text = msg.getString("Line");
-			text = MessageFormat.format(text, Integer.valueOf(line + 1));
+			text = MSG.getString("Line");
+			text = MessageFormat.format(text, line + 1);
 		}
 		return text;
 	}
@@ -287,7 +310,7 @@ public class ErrorStrip extends JComponent {
 	private int lineToY(int line) {
 		int h = textArea.getVisibleRect().height;
 		float lineCount = textArea.getLineCount();
-		return (int) (((line - 1) / (lineCount - 1)) * h) - 2;
+		return (int) (((line - 1) / (lineCount - 1)) * (h - 2));
 	}
 
 	/**
@@ -310,7 +333,7 @@ public class ErrorStrip extends JComponent {
 	 * @param i An RGB component for a color (0-255).
 	 * @return A possibly brighter value for the component.
 	 */
-	private static final int possiblyBrighter(int i) {
+	private static int possiblyBrighter(int i) {
 		if (i < 255) {
 			i += (int) ((255 - i) * 0.8f);
 		}
@@ -323,12 +346,12 @@ public class ErrorStrip extends JComponent {
 	private void refreshMarkers() {
 
 		removeAll(); // listener is removed in Marker.removeNotify()
-		Map<Integer, Marker> markerMap = new HashMap<Integer, Marker>();
+		Map<Integer, Marker> markerMap = new HashMap<>();
 
 		List<ParserNotice> notices = textArea.getParserNotices();
 		for (ParserNotice notice : notices) {
 			if (notice.getLevel().isEqualToOrWorseThan(levelThreshold) || (notice instanceof TaskNotice)) {
-				Integer key = Integer.valueOf(notice.getLine());
+				Integer key = notice.getLine();
 				Marker m = markerMap.get(key);
 				if (m == null) {
 					m = new Marker(notice);
@@ -373,7 +396,7 @@ public class ErrorStrip extends JComponent {
 				continue;
 			}
 			ParserNotice notice = new MarkedOccurrenceNotice(range, color);
-			Integer key = Integer.valueOf(line);
+			Integer key = line;
 			Marker m = markerMap.get(key);
 			if (m == null) {
 				m = new Marker(notice);
@@ -450,6 +473,18 @@ public class ErrorStrip extends JComponent {
 	}
 
 	/**
+	 * Sets the provider of tool tips for markers in this error strip. Applications
+	 * can use this method to control the content and format of the tool tip
+	 * descriptions of line markers.
+	 *
+	 * @param provider The provider. If this is <code>null</code>, a default
+	 *                 implementation will be used.
+	 */
+	public void setMarkerToolTipProvider(ErrorStripMarkerToolTipProvider provider) {
+		markerToolTipProvider = provider != null ? provider : new DefaultErrorStripMarkerToolTipProvider();
+	}
+
+	/**
 	 * Sets whether "mark all" highlights are shown in this error strip.
 	 *
 	 * @param show Whether to show markers for "mark all" highlights.
@@ -479,6 +514,15 @@ public class ErrorStrip extends JComponent {
 		}
 	}
 
+	public void updateUI() {
+
+		super.updateUI();
+
+		if (caretMarkerColor instanceof ColorUIResource) {
+			setCaretMarkerColor(getDefaultCaretMarkerColor());
+		}
+	}
+
 	/**
 	 * Returns the line in the text area corresponding to a y-offset in this
 	 * component.
@@ -487,7 +531,7 @@ public class ErrorStrip extends JComponent {
 	 * @return The line.
 	 * @see #lineToY(int)
 	 */
-	private final int yToLine(int y) {
+	private int yToLine(int y) {
 		int line = -1;
 		int h = textArea.getVisibleRect().height;
 		if (y < h) {
@@ -495,6 +539,59 @@ public class ErrorStrip extends JComponent {
 			line = Math.round((textArea.getLineCount() - 1) * at);
 		}
 		return line;
+	}
+
+	/**
+	 * The default implementation of the provider of tool tips for markers in an
+	 * error strip.
+	 *
+	 * @author predi
+	 */
+	private static class DefaultErrorStripMarkerToolTipProvider implements ErrorStripMarkerToolTipProvider {
+
+		@Override
+		public String getToolTipText(List<ParserNotice> notices) {
+
+			String text;
+
+			if (notices.size() == 1) {
+				text = notices.get(0).getMessage();
+			} else { // > 1
+				StringBuilder sb = new StringBuilder("<html>");
+				sb.append(MSG.getString("MultipleMarkers"));
+				sb.append("<br>");
+				for (ParserNotice pn : notices) {
+					sb.append("&nbsp;&nbsp;&nbsp;- ");
+					sb.append(pn.getMessage());
+					sb.append("<br>");
+				}
+				text = sb.toString();
+			}
+
+			return text;
+
+		}
+
+	}
+
+	/**
+	 * Returns tool tip text for the markers in an {@link ErrorStrip} that denote
+	 * one or more parser notices.
+	 *
+	 * @author predi
+	 */
+	public interface ErrorStripMarkerToolTipProvider {
+
+		/**
+		 * Returns the tool tip text for a marker in an <code>ErrorStrip</code> that
+		 * denotes a given list of parser notices.
+		 *
+		 * @param notices The list of parser notices.
+		 * @return The tool tip text. This may be HTML. Returning <code>null</code> will
+		 *         result in no tool tip being displayed.
+		 */
+		String getToolTipText(List<ParserNotice> notices);
+
 	}
 
 	/**
@@ -579,15 +676,14 @@ public class ErrorStrip extends JComponent {
 	}
 
 	/**
-	 * A notice that wraps a "marked occurrence."
+	 * A notice that wraps a "marked occurrence" instance.
 	 */
 	private class MarkedOccurrenceNotice implements ParserNotice {
 
 		private DocumentRange range;
-
 		private Color color;
 
-		public MarkedOccurrenceNotice(DocumentRange range, Color color) {
+		MarkedOccurrenceNotice(DocumentRange range, Color color) {
 			this.range = range;
 			this.color = color;
 		}
@@ -648,7 +744,7 @@ public class ErrorStrip extends JComponent {
 			String text = null;
 			try {
 				String word = textArea.getText(range.getStartOffset(), getLength());
-				text = msg.getString("OccurrenceOf");
+				text = MSG.getString("OccurrenceOf");
 				text = MessageFormat.format(text, word);
 			} catch (BadLocationException ble) {
 				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
@@ -690,8 +786,8 @@ public class ErrorStrip extends JComponent {
 
 		private List<ParserNotice> notices;
 
-		public Marker(ParserNotice notice) {
-			notices = new ArrayList<ParserNotice>(1); // Usually just 1
+		Marker(ParserNotice notice) {
+			notices = new ArrayList<>(1); // Usually just 1
 			addNotice(notice);
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			setSize(getPreferredSize());
@@ -704,8 +800,8 @@ public class ErrorStrip extends JComponent {
 
 		public boolean containsMarkedOccurence() {
 			boolean result = false;
-			for (int i = 0; i < notices.size(); i++) {
-				if (notices.get(i) instanceof MarkedOccurrenceNotice) {
+			for (ParserNotice notice : notices) {
+				if (notice instanceof MarkedOccurrenceNotice) {
 					result = true;
 					break;
 				}
@@ -734,26 +830,7 @@ public class ErrorStrip extends JComponent {
 
 		@Override
 		public String getToolTipText() {
-
-			String text = null;
-
-			if (notices.size() == 1) {
-				text = notices.get(0).getMessage();
-			} else { // > 1
-				StringBuilder sb = new StringBuilder("<html>");
-				sb.append(msg.getString("MultipleMarkers"));
-				sb.append("<br>");
-				for (int i = 0; i < notices.size(); i++) {
-					ParserNotice pn = notices.get(i);
-					sb.append("&nbsp;&nbsp;&nbsp;- ");
-					sb.append(pn.getMessage());
-					sb.append("<br>");
-				}
-				text = sb.toString();
-			}
-
-			return text;
-
+			return markerToolTipProvider.getToolTipText(Collections.unmodifiableList(notices));
 		}
 
 		protected void mouseClicked(MouseEvent e) {
@@ -761,12 +838,13 @@ public class ErrorStrip extends JComponent {
 			int offs = pn.getOffset();
 			int len = pn.getLength();
 			if (offs > -1 && len > -1) { // These values are optional
-				textArea.setSelectionStart(offs);
-				textArea.setSelectionEnd(offs + len);
+				DocumentRange range = new DocumentRange(offs, offs + len);
+				RSyntaxUtilities.selectAndPossiblyCenter(textArea, range, true);
 			} else {
 				int line = pn.getLine();
 				try {
 					offs = textArea.getLineStartOffset(line);
+					textArea.getFoldManager().ensureOffsetNotInClosedFold(offs);
 					textArea.setCaretPosition(offs);
 				} catch (BadLocationException ble) { // Never happens
 					UIManager.getLookAndFeel().provideErrorFeedback(textArea);

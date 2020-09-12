@@ -1,7 +1,11 @@
 /*
- * 01/22/2005 ColorBackgroundPainterStrategy.java - Renders an RTextAreaBase's background as a
- * single color. This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 01/22/2005
+ *
+ * ColorBackgroundPainterStrategy.java - Renders an RTextAreaBase's background
+ * as a single color.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -41,7 +45,7 @@ public class ColorBackgroundPainterStrategy implements BackgroundPainterStrategy
 	 */
 	@Override
 	public boolean equals(Object o2) {
-		return o2 != null && (o2 instanceof ColorBackgroundPainterStrategy)
+		return (o2 instanceof ColorBackgroundPainterStrategy)
 				&& this.color.equals(((ColorBackgroundPainterStrategy) o2).getColor());
 	}
 

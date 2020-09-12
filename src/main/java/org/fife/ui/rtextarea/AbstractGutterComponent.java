@@ -1,7 +1,10 @@
 /*
- * 02/17/2009 AbstractGutterComponent.java - A component that can be displayed in a Gutter. This
- * library is distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt
- * file for details.
+ * 02/17/2009
+ *
+ * AbstractGutterComponent.java - A component that can be displayed in a Gutter.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -36,7 +39,7 @@ abstract class AbstractGutterComponent extends JPanel {
 	 *
 	 * @param textArea The text area.
 	 */
-	public AbstractGutterComponent(RTextArea textArea) {
+	AbstractGutterComponent(RTextArea textArea) {
 		init(); // Called before setTextArea().
 		setTextArea(textArea);
 	}
@@ -51,7 +54,7 @@ abstract class AbstractGutterComponent extends JPanel {
 	 *                   <code>getVisibleEditorRect</code> method.
 	 * @return The child view's bounds.
 	 */
-	protected static final Rectangle getChildViewBounds(View parent, int line, Rectangle editorRect) {
+	protected static Rectangle getChildViewBounds(View parent, int line, Rectangle editorRect) {
 		Shape alloc = parent.getChildAllocation(line, editorRect);
 		if (alloc == null) {
 			// WrappedSyntaxView can have this when made so small it's

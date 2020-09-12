@@ -1,6 +1,10 @@
 /*
- * 12/12/2008 TokenMakerFactory.java - A factory for TokenMakers. This library is distributed under
- * a modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 12/12/2008
+ *
+ * TokenMakerFactory.java - A factory for TokenMakers.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -37,7 +41,7 @@ public abstract class TokenMakerFactory {
 	 */
 	public static synchronized TokenMakerFactory getDefaultInstance() {
 		if (DEFAULT_INSTANCE == null) {
-			String clazz = null;
+			String clazz;
 			try {
 				clazz = System.getProperty(PROPERTY_DEFAULT_TOKEN_MAKER_FACTORY);
 			} catch (java.security.AccessControlException ace) {
@@ -47,7 +51,7 @@ public abstract class TokenMakerFactory {
 				clazz = "org.fife.ui.rsyntaxtextarea.DefaultTokenMakerFactory";
 			}
 			try {
-				DEFAULT_INSTANCE = (TokenMakerFactory) Class.forName(clazz).newInstance();
+				DEFAULT_INSTANCE = (TokenMakerFactory) Class.forName(clazz).getDeclaredConstructor().newInstance();
 			} catch (RuntimeException re) { // FindBugs
 				throw re;
 			} catch (Exception e) {

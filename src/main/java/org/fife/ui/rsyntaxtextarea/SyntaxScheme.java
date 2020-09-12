@@ -1,7 +1,11 @@
 /*
- * 02/26/2004 SyntaxScheme.java - The set of colors and tokens used by an RSyntaxTextArea to color
- * tokens. This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 02/26/2004
+ *
+ * SyntaxScheme.java - The set of colors and tokens used by an RSyntaxTextArea
+ * to color tokens.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -33,6 +37,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * @version 1.0
  * @see Theme
  */
+@SuppressWarnings({ "checkstyle:magicnumber" })
 public class SyntaxScheme implements Cloneable, TokenTypes {
 
 	private Style[] styles;
@@ -92,8 +97,7 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 	 * @param font The new font of the text area.
 	 */
 	void changeBaseFont(Font old, Font font) {
-		for (int i = 0; i < styles.length; i++) {
-			Style style = styles[i];
+		for (Style style : styles) {
 			if (style != null && style.font != null) {
 				if (style.font.getFamily().equals(old.getFamily()) && style.font.getSize() == old.getSize()) {
 					int s = style.font.getStyle(); // Keep bold or italic
@@ -111,7 +115,7 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 	 */
 	@Override
 	public Object clone() {
-		SyntaxScheme shcs = null;
+		SyntaxScheme shcs;
 		try {
 			shcs = (SyntaxScheme) super.clone();
 		} catch (CloneNotSupportedException cnse) { // Never happens
@@ -167,7 +171,7 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 	 * @param c The color.
 	 * @return The string representation of the color.
 	 */
-	private static final String getHexString(Color c) {
+	private static String getHexString(Color c) {
 		return "$" + Integer.toHexString((c.getRGB() & 0xffffff) + 0x1000000).substring(1);
 	}
 
@@ -220,9 +224,9 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 		// probably much slower than a "bad" hash code here.
 		int hashCode = 0;
 		int count = styles.length;
-		for (int i = 0; i < count; i++) {
-			if (styles[i] != null) {
-				hashCode ^= styles[i].hashCode();
+		for (Style style : styles) {
+			if (style != null) {
+				hashCode ^= style.hashCode();
 				break;
 			}
 		}
@@ -232,6 +236,7 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 	/**
 	 * Loads a syntax scheme from an input stream.
 	 * <p>
+	 *
 	 * Consider using the {@link Theme} class for saving and loading RSTA styles
 	 * rather than using this API.
 	 *
@@ -254,6 +259,7 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 	 * <code>toCommaSeparatedString</code>. This method is useful for saving and
 	 * restoring color schemes.
 	 * <p>
+	 *
 	 * Consider using the {@link Theme} class for saving and loading RSTA styles
 	 * rather than using this API.
 	 *
@@ -270,6 +276,7 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 	 * <code>toCommaSeparatedString</code>. This method is useful for saving and
 	 * restoring color schemes.
 	 * <p>
+	 *
 	 * Consider using the {@link Theme} class for saving and loading RSTA styles
 	 * rather than using this API.
 	 *
@@ -361,8 +368,7 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 
 	void refreshFontMetrics(Graphics2D g2d) {
 		// It is assumed that any rendering hints are already applied to g2d.
-		for (int i = 0; i < styles.length; i++) {
-			Style s = styles[i];
+		for (Style s : styles) {
 			if (s != null) {
 				s.fontMetrics = s.font == null ? null : g2d.getFontMetrics(s.font);
 			}
@@ -496,20 +502,20 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 
 	/**
 	 * Returns the color represented by a string. If the first char in the string is
-	 * '<code>$</code> ', it is assumed to be in hex, otherwise it is assumed to be
+	 * '<code>$</code>', it is assumed to be in hex, otherwise it is assumed to be
 	 * decimal. So, for example, both of these:
-	 *
+	 * 
 	 * <pre>
 	 * "$00ff00"
 	 * "65280"
 	 * </pre>
-	 *
+	 * 
 	 * will return <code>new Color(0, 255, 0)</code>.
 	 *
 	 * @param s The string to evaluate.
 	 * @return The color.
 	 */
-	private static final Color stringToColor(String s) {
+	private static Color stringToColor(String s) {
 		// Check for decimal as well as hex, for backward
 		// compatibility (fix from GwynEvans on forums)
 		char ch = s.charAt(0);
@@ -521,8 +527,8 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 	 * as follows:
 	 * <ul>
 	 * <li>If a color is non-null, it is added as a 24-bit integer of the form
-	 * <code>((r<<16) | (g<<8) | (b))</code>; if it is <code>null</code>, it is
-	 * added as "<i>-,</i>".
+	 * <code>((r&lt;*lt;16) | (g&lt;*lt;8) | (b))</code>; if it is
+	 * <code>null</code>, it is added as "<i>-,</i>".
 	 * <li>The font and style (bold/italic) is added as an integer like so:
 	 * "<i>family,</i> <i>style,</i> <i>size</i>".
 	 * <li>The entire syntax highlighting scheme is thus one long string of color
@@ -583,15 +589,14 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 	private static class SyntaxSchemeLoader extends DefaultHandler {
 
 		private Font baseFont;
-
 		private SyntaxScheme scheme;
 
-		public SyntaxSchemeLoader(Font baseFont) {
+		SyntaxSchemeLoader(Font baseFont) {
 			scheme = new SyntaxScheme(baseFont);
 		}
 
 		public static SyntaxScheme load(Font baseFont, InputStream in) throws IOException {
-			SyntaxSchemeLoader parser = null;
+			SyntaxSchemeLoader parser;
 			try {
 				XMLReader reader = XMLReaderFactory.createXMLReader();
 				parser = new SyntaxSchemeLoader(baseFont);
@@ -612,13 +617,14 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 			if ("style".equals(qName)) {
 
 				String type = attrs.getValue("token");
-				Field field = null;
+
+				Field field;
 				try {
-					field = Token.class.getField(type);
+					field = SyntaxScheme.class.getField(type);
 				} catch (RuntimeException re) {
 					throw re; // FindBugs
 				} catch (Exception e) {
-					System.err.println("Invalid token type: " + type);
+					System.err.println("Error fetching 'getType' method for Token class");
 					return;
 				}
 
@@ -627,10 +633,7 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 					int index = 0;
 					try {
 						index = field.getInt(scheme);
-					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
-						return;
-					} catch (IllegalAccessException e) {
+					} catch (IllegalArgumentException | IllegalAccessException e) {
 						e.printStackTrace();
 						return;
 					}
@@ -652,12 +655,12 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 					boolean italic = false;
 					String boldStr = attrs.getValue("bold");
 					if (boldStr != null) {
-						bold = Boolean.valueOf(boldStr).booleanValue();
+						bold = Boolean.parseBoolean(boldStr);
 						styleSpecified = true;
 					}
 					String italicStr = attrs.getValue("italic");
 					if (italicStr != null) {
-						italic = Boolean.valueOf(italicStr).booleanValue();
+						italic = Boolean.parseBoolean(italicStr);
 						styleSpecified = true;
 					}
 					if (styleSpecified) {
@@ -673,7 +676,7 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 
 					String ulineStr = attrs.getValue("underline");
 					if (ulineStr != null) {
-						boolean uline = Boolean.valueOf(ulineStr).booleanValue();
+						boolean uline = Boolean.parseBoolean(ulineStr);
 						scheme.styles[index].underline = uline;
 					}
 

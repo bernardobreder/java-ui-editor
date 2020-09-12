@@ -1,14 +1,17 @@
 /*
- * 11/25/2008 TextEditorPane.java - A syntax highlighting text area that has knowledge of the file
- * it is editing on disk. This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 11/25/2008
+ *
+ * TextEditorPane.java - A syntax highlighting text area that has knowledge of
+ * the file it is editing on disk.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -25,6 +28,7 @@ import org.fife.ui.rtextarea.RTextAreaEditorKit;
 /**
  * An extension of {@link org.fife.ui.rsyntaxtextarea.RSyntaxTextArea} that adds
  * information about the file being edited, such as:
+ *
  * <ul>
  * <li>Its name and location.
  * <li>Is it dirty?
@@ -33,13 +37,16 @@ import org.fife.ui.rtextarea.RTextAreaEditorKit;
  * <li>The file's encoding on disk.
  * <li>Easy access to the line separator.
  * </ul>
+ *
  * Loading and saving is also built into the editor.
  * <p>
+ *
  * When saving UTF-8 files, whether or not a BOM is written is controlled by the
  * {@link UnicodeWriter} class. Use
  * {@link UnicodeWriter#setWriteUtf8BOM(boolean)} to toggle writing BOMs for
  * UTF-8 files.
  * <p>
+ *
  * Both local and remote files (e.g. ftp) are supported. See the
  * {@link FileLocation} class for more information.
  *
@@ -51,11 +58,36 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Property change event fired when the file path this text area references is
+	 * updated.
+	 *
+	 * @see #load(FileLocation, String)
+	 * @see #saveAs(FileLocation)
+	 */
 	public static final String FULL_PATH_PROPERTY = "TextEditorPane.fileFullPath";
 
+	/**
+	 * Property change event fired when the text area's dirty flag changes.
+	 *
+	 * @see #setDirty(boolean)
+	 */
 	public static final String DIRTY_PROPERTY = "TextEditorPane.dirty";
 
+	/**
+	 * Property change event fired when the text area should be treated as
+	 * read-only, and previously it should not, or vice-versa.
+	 *
+	 * @see #setReadOnly(boolean)
+	 */
 	public static final String READ_ONLY_PROPERTY = "TextEditorPane.readOnly";
+
+	/**
+	 * Property change event fired when the text area's encoding changes.
+	 *
+	 * @see #setEncoding(String)
+	 */
+	public static final String ENCODING_PROPERTY = "TextEditorPane.encoding";
 
 	/**
 	 * The location of the file being edited.
@@ -184,22 +216,10 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 	 *
 	 * @return The default encoding.
 	 */
-	private static final String getDefaultEncoding() {
+	private static String getDefaultEncoding() {
 		// NOTE: The "file.encoding" system property is not guaranteed to be
 		// set by the spec, so we cannot rely on it.
-		String encoding = Charset.defaultCharset().name();
-		if (encoding == null) {
-			try {
-				File f = File.createTempFile("rsta", null);
-				FileWriter w = new FileWriter(f);
-				encoding = w.getEncoding();
-				w.close();
-				f.deleteOnExit();// delete(); Keep FindBugs happy
-			} catch (IOException ioe) {
-				encoding = "US-ASCII";
-			}
-		}
-		return encoding;
+		return Charset.defaultCharset().name();
 	}
 
 	/**
@@ -236,6 +256,7 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 	 * after it was loaded into this editor pane, this method will not return the
 	 * actual file's last modified time.
 	 * <p>
+	 *
 	 * For remote files, this method will always return
 	 * {@link #LAST_MODIFIED_UNKNOWN}.
 	 *
@@ -249,9 +270,10 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 	}
 
 	/**
-	 * Returns the line separator used when writing this file (e.g. "
-	 * <code>\n</code>", " <code>\r\n</code>", or "<code>\r</code>").
+	 * Returns the line separator used when writing this file (e.g.
+	 * "<code>\n</code>", "<code>\r\n</code>", or "<code>\r</code>").
 	 * <p>
+	 *
 	 * Note that this value is an <code>Object</code> and not a <code>String</code>
 	 * as that is the way the {@link Document} interface defines its property
 	 * values. If you always use {@link #setLineSeparator(String)} to modify this
@@ -354,6 +376,7 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 	 * the last load or save operation. Note that if this is a remote file, this
 	 * method will always return <code>false</code>.
 	 * <p>
+	 *
 	 * This method may be used by applications to implement a reloading feature,
 	 * where the user is prompted to reload a file if it has been modified since
 	 * their last open or save.
@@ -378,6 +401,26 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 	/**
 	 * Loads the specified file in this editor. This method fires a property change
 	 * event of type {@link #FULL_PATH_PROPERTY}.
+	 * <p>
+	 * The file will be checked for a BOM; if one is found, the proper Unicode
+	 * flavor is used to load the file. If not, the system default encoding is
+	 * assumed.
+	 *
+	 * @param loc The location of the file to load. This cannot be
+	 *            <code>null</code>.
+	 * @throws IOException If an IO error occurs.
+	 * @see #load(FileLocation, String)
+	 * @see #load(FileLocation, Charset)
+	 * @see #save()
+	 * @see #saveAs(FileLocation)
+	 */
+	public void load(FileLocation loc) throws IOException {
+		load(loc, (String) null);
+	}
+
+	/**
+	 * Loads the specified file in this editor. This method fires a property change
+	 * event of type {@link #FULL_PATH_PROPERTY}.
 	 *
 	 * @param loc        The location of the file to load. This cannot be
 	 *                   <code>null</code>.
@@ -386,6 +429,28 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 	 *                   this value is <code>null</code>, the system default
 	 *                   encoding is used.
 	 * @throws IOException If an IO error occurs.
+	 * @see #load(FileLocation)
+	 * @see #load(FileLocation, String)
+	 * @see #save()
+	 * @see #saveAs(FileLocation)
+	 */
+	public void load(FileLocation loc, Charset defaultEnc) throws IOException {
+		load(loc, defaultEnc == null ? null : defaultEnc.name());
+	}
+
+	/**
+	 * Loads the specified file in this editor. This method fires a property change
+	 * event of type {@link #FULL_PATH_PROPERTY}.
+	 *
+	 * @param loc        The location of the file to load. This cannot be
+	 *                   <code>null</code>.
+	 * @param defaultEnc The encoding to use when loading/saving the file. This
+	 *                   encoding will only be used if the file is not Unicode. If
+	 *                   this value is <code>null</code>, the system default
+	 *                   encoding is used.
+	 * @throws IOException If an IO error occurs.
+	 * @see #load(FileLocation)
+	 * @see #load(FileLocation, Charset)
 	 * @see #save()
 	 * @see #saveAs(FileLocation)
 	 */
@@ -409,12 +474,10 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 		// Remove listener so dirty flag doesn't get set when loading a file.
 		Document doc = getDocument();
 		doc.removeDocumentListener(this);
-		BufferedReader r = new BufferedReader(ur);
-		try {
+		try (BufferedReader r = new BufferedReader(ur)) {
 			read(r, null);
 		} finally {
 			doc.addDocumentListener(this);
-			r.close();
 		}
 
 		// No IOException thrown, so we can finally change the location.
@@ -423,6 +486,7 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 		this.loc = loc;
 		setDirty(false);
 		setCaretPosition(0);
+		discardAllEdits();
 		firePropertyChange(FULL_PATH_PROPERTY, old, getFileFullPath());
 
 	}
@@ -431,10 +495,12 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 	 * Reloads this file from disk. The file must exist for this operation to not
 	 * throw an exception.
 	 * <p>
+	 *
 	 * The file's "dirty" state will be set to <code>false</code> after this
 	 * operation. If this is a local file, its "last modified" time is updated to
 	 * reflect that of the actual file.
 	 * <p>
+	 *
 	 * Note that if the file has been modified on disk, and is now a Unicode
 	 * encoding when before it wasn't (or if it is a different Unicode now), this
 	 * will cause this {@link TextEditorPane}'s encoding to change. Otherwise, the
@@ -448,11 +514,8 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 		String oldEncoding = getEncoding();
 		UnicodeReader ur = new UnicodeReader(loc.getInputStream(), oldEncoding);
 		String encoding = ur.getEncoding();
-		BufferedReader r = new BufferedReader(ur);
-		try {
+		try (BufferedReader r = new BufferedReader(ur)) {
 			read(r, null); // Dumps old contents.
-		} finally {
-			r.close();
 		}
 		setEncoding(encoding);
 		setDirty(false);
@@ -475,6 +538,7 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 	/**
 	 * Saves the file in its current encoding.
 	 * <p>
+	 *
 	 * The text area's "dirty" state is set to <code>false</code>, and if this is a
 	 * local file, its "last modified" time is updated.
 	 *
@@ -515,11 +579,8 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 	 */
 	private void saveImpl(FileLocation loc) throws IOException {
 		OutputStream out = loc.getOutputStream();
-		BufferedWriter w = new BufferedWriter(new UnicodeWriter(out, getEncoding()));
-		try {
+		try (BufferedWriter w = new BufferedWriter(new UnicodeWriter(out, getEncoding()))) {
 			write(w);
-		} finally {
-			w.close();
 		}
 	}
 
@@ -527,6 +588,7 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 	 * Sets whether or not this text in this editor has unsaved changes. This fires
 	 * a property change event of type {@link #DIRTY_PROPERTY}.
 	 * <p>
+	 *
 	 * Applications will usually have no need to call this method directly; the only
 	 * time you might have a need to call this method directly is if you have to
 	 * initialize an instance of TextEditorPane with content that does not come from
@@ -563,7 +625,8 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 
 	/**
 	 * Sets the encoding to use when reading or writing this file. This method sets
-	 * the editor's dirty flag when the encoding is changed.
+	 * the editor's dirty flag when the encoding is changed, and fires a property
+	 * change event of type {@link #ENCODING_PROPERTY}.
 	 *
 	 * @param encoding The new encoding.
 	 * @throws UnsupportedCharsetException If the encoding is not supported.
@@ -578,23 +641,26 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 			throw new UnsupportedCharsetException(encoding);
 		}
 		if (charSet == null || !charSet.equals(encoding)) {
+			String oldEncoding = charSet;
 			charSet = encoding;
+			firePropertyChange(ENCODING_PROPERTY, oldEncoding, charSet);
 			setDirty(true);
 		}
 	}
 
 	/**
-	 * Sets the line separator sequence to use when this file is saved (e.g. "
-	 * <code>\n</code>", " <code>\r\n</code>" or "<code>\r</code>"). Besides
-	 * parameter checking, this method is preferred over
+	 * Sets the line separator sequence to use when this file is saved (e.g.
+	 * "<code>\n</code>", "<code>\r\n</code>" or "<code>\r</code>").
+	 *
+	 * Besides parameter checking, this method is preferred over
 	 * <code>getDocument().putProperty()</code> because it sets the editor's dirty
 	 * flag when the line separator is changed.
 	 *
 	 * @param separator The new line separator.
 	 * @throws NullPointerException     If <code>separator</code> is
-	 *                                  <code>null</code> .
-	 * @throws IllegalArgumentException If <code>separator</code> is not one of "
-	 *                                  <code>\n</code> ", "<code>\r\n</code> " or
+	 *                                  <code>null</code>.
+	 * @throws IllegalArgumentException If <code>separator</code> is not one of
+	 *                                  "<code>\n</code>", "<code>\r\n</code>" or
 	 *                                  "<code>\r</code>".
 	 * @see #getLineSeparator()
 	 */
@@ -603,9 +669,10 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 	}
 
 	/**
-	 * Sets the line separator sequence to use when this file is saved (e.g. "
-	 * <code>\n</code>", " <code>\r\n</code>" or "<code>\r</code>"). Besides
-	 * parameter checking, this method is preferred over
+	 * Sets the line separator sequence to use when this file is saved (e.g.
+	 * "<code>\n</code>", "<code>\r\n</code>" or "<code>\r</code>").
+	 *
+	 * Besides parameter checking, this method is preferred over
 	 * <code>getDocument().putProperty()</code> because can set the editor's dirty
 	 * flag when the line separator is changed.
 	 *
@@ -613,9 +680,9 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 	 * @param setDirty  Whether the dirty flag should be set if the line separator
 	 *                  is changed.
 	 * @throws NullPointerException     If <code>separator</code> is
-	 *                                  <code>null</code> .
-	 * @throws IllegalArgumentException If <code>separator</code> is not one of "
-	 *                                  <code>\n</code> ", "<code>\r\n</code> " or
+	 *                                  <code>null</code>.
+	 * @throws IllegalArgumentException If <code>separator</code> is not one of
+	 *                                  "<code>\n</code>", "<code>\r\n</code>" or
 	 *                                  "<code>\r</code>".
 	 * @see #getLineSeparator()
 	 */
@@ -655,6 +722,7 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 	 * edited, if that file is local and exists. If the file is remote or is local
 	 * but does not yet exist, nothing happens.
 	 * <p>
+	 *
 	 * You normally do not have to call this method, as the "last saved or loaded"
 	 * time for {@link TextEditorPane}s is kept up-to-date internally during such
 	 * operations as {@link #save()}, {@link #reload()}, etc.
@@ -667,5 +735,4 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 			lastSaveOrLoadTime = loc.getActualLastModified();
 		}
 	}
-
 }

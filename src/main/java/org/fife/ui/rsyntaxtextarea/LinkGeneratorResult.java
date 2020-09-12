@@ -1,7 +1,12 @@
 /*
- * 02/16/2012 Copyright (C) 2013 Robert Futrell robert_futrell at users.sourceforge.net
- * http://fifesoft.com/rsyntaxtextarea This library is distributed under a modified BSD license. See
- * the included RSyntaxTextArea.License.txt file for details.
+ * 02/16/2012
+ *
+ * Copyright (C) 2013 Robert Futrell
+ * robert_futrell at users.sourceforge.net
+ * http://fifesoft.com/rsyntaxtextarea
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -31,7 +36,7 @@ public interface LinkGeneratorResult {
 	 *         <code>null</code> if the action's behavior occurs in this method
 	 *         directly.
 	 */
-	public HyperlinkEvent execute();
+	HyperlinkEvent execute();
 
 	/**
 	 * Returns the starting offset of the link specified by the parent
@@ -39,6 +44,6 @@ public interface LinkGeneratorResult {
 	 *
 	 * @return The offset.
 	 */
-	public int getSourceOffset();
+	int getSourceOffset();
 
 }

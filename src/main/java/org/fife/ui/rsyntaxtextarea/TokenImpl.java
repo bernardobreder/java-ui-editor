@@ -1,6 +1,10 @@
 /*
- * 02/21/2004 Token.java - A token used in syntax highlighting. This library is distributed under a
- * modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 02/21/2004
+ *
+ * Token.java - A token used in syntax highlighting.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -16,6 +20,7 @@ import javax.swing.text.Utilities;
 /**
  * The default implementation of {@link Token}.
  * <p>
+ *
  * <b>Note:</b> The instances of <code>Token</code> returned by
  * {@link RSyntaxDocument}s are pooled and should always be treated as
  * immutable. They should not be cast to <code>TokenImpl</code> and modified.
@@ -25,6 +30,7 @@ import javax.swing.text.Utilities;
  * @author Robert Futrell
  * @version 0.3
  */
+@SuppressWarnings({ "checkstyle:visibilitymodifier" })
 public class TokenImpl implements Token {
 
 	/**
@@ -33,9 +39,7 @@ public class TokenImpl implements Token {
 	 * it.
 	 */
 	public char[] text;
-
 	public int textOffset;
-
 	public int textCount;
 
 	/**
@@ -64,7 +68,7 @@ public class TokenImpl implements Token {
 	private int languageIndex;
 
 	/**
-	 * Creates a "null token." The token itself is not null; rather, it signifies
+	 * Creates a "null" token. The token itself is not null; rather, it signifies
 	 * that it is the last token in a linked list of tokens and that it is not part
 	 * of a "multi-line token."
 	 */
@@ -141,19 +145,23 @@ public class TokenImpl implements Token {
 			sb.append("<u>");
 		}
 
-		if (!isWhitespace()) {
+		boolean needsFontTag = fontFamily || !isWhitespace();
+		if (needsFontTag) {
 			sb.append("<font");
 			if (fontFamily) {
-				sb.append(" face=\"").append(font.getFamily()).append("\"");
+				sb.append(" face=\"").append(font.getFamily()).append('"');
 			}
-			sb.append(" color=\"").append(getHTMLFormatForColor(scheme.foreground)).append("\">");
+			if (!isWhitespace()) {
+				sb.append(" color=\"").append(getHTMLFormatForColor(scheme.foreground)).append('"');
+			}
+			sb.append('>');
 		}
 
 		// NOTE: Don't use getLexeme().trim() because whitespace tokens will
 		// be turned into NOTHING.
 		appendHtmlLexeme(textArea, sb, tabsToSpaces);
 
-		if (!isWhitespace()) {
+		if (needsFontTag) {
 			sb.append("</font>");
 		}
 		if (scheme.underline || isHyperlink()) {
@@ -180,7 +188,7 @@ public class TokenImpl implements Token {
 	 * @param tabsToSpaces Whether to convert tabs into spaces.
 	 * @return The same buffer.
 	 */
-	private final StringBuilder appendHtmlLexeme(RSyntaxTextArea textArea, StringBuilder sb, boolean tabsToSpaces) {
+	private StringBuilder appendHtmlLexeme(RSyntaxTextArea textArea, StringBuilder sb, boolean tabsToSpaces) {
 
 		boolean lastWasSpace = false;
 		int i = textOffset;
@@ -200,12 +208,19 @@ public class TokenImpl implements Token {
 				sb.append(text, lastI, i - lastI);
 				lastI = i + 1;
 				if (tabsToSpaces && tabStr == null) {
-					tabStr = "";
+					StringBuilder stringBuilder = new StringBuilder();
 					for (int j = 0; j < textArea.getTabSize(); j++) {
-						tabStr += "&nbsp;";
+						stringBuilder.append("&nbsp;");
 					}
+					tabStr = stringBuilder.toString();
 				}
 				sb.append(tabsToSpaces ? tabStr : "&#09;");
+				lastWasSpace = false;
+				break;
+			case '&':
+				sb.append(text, lastI, i - lastI);
+				lastI = i + 1;
+				sb.append("&amp;");
 				lastWasSpace = false;
 				break;
 			case '<':
@@ -218,6 +233,24 @@ public class TokenImpl implements Token {
 				sb.append(text, lastI, i - lastI);
 				lastI = i + 1;
 				sb.append("&gt;");
+				lastWasSpace = false;
+				break;
+			case '\'':
+				sb.append(text, lastI, i - lastI);
+				lastI = i + 1;
+				sb.append("&#39;");
+				lastWasSpace = false;
+				break;
+			case '"':
+				sb.append(text, lastI, i - lastI);
+				lastI = i + 1;
+				sb.append("&#34;");
+				lastWasSpace = false;
+				break;
+			case '/': // OWASP-recommended to escape even though unnecessary
+				sb.append(text, lastI, i - lastI);
+				lastI = i + 1;
+				sb.append("&#47;");
 				lastWasSpace = false;
 				break;
 			default:
@@ -308,7 +341,7 @@ public class TokenImpl implements Token {
 	 * @return The HTML form of the color. If <code>color</code> is
 	 *         <code>null</code>, <code>#000000</code> is returned.
 	 */
-	private static final String getHTMLFormatForColor(Color color) {
+	private static String getHTMLFormatForColor(Color color) {
 		if (color == null) {
 			return "black";
 		}
@@ -378,7 +411,10 @@ public class TokenImpl implements Token {
 
 	@Override
 	public String getLexeme() {
-		return text == null ? null : new String(text, textOffset, textCount);
+		if (text == null) {
+			return null;
+		}
+		return isPaintable() ? new String(text, textOffset, textCount) : null;
 	}
 
 	@Override
@@ -681,6 +717,7 @@ public class TokenImpl implements Token {
 	/**
 	 * Makes this token start at the specified offset into the document.
 	 * <p>
+	 *
 	 * <b>Note:</b> You should not modify <code>Token</code> instances you did not
 	 * create yourself (e.g., came from an <code>RSyntaxDocument</code>). If you do,
 	 * rendering issues and/or runtime exceptions will likely occur. You have been
@@ -707,6 +744,7 @@ public class TokenImpl implements Token {
 	/**
 	 * Moves the starting offset of this token.
 	 * <p>
+	 *
 	 * <b>Note:</b> You should not modify <code>Token</code> instances you did not
 	 * create yourself (e.g., came from an <code>RSyntaxDocument</code>). If you do,
 	 * rendering issues and/or runtime exceptions will likely occur. You have been
@@ -794,17 +832,11 @@ public class TokenImpl implements Token {
 		this.offset = offset;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setType(int type) {
 		this.type = type;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean startsWith(char[] chars) {
 		if (chars.length <= textCount) {
@@ -818,9 +850,6 @@ public class TokenImpl implements Token {
 		return false;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int tokenToDocument(int pos) {
 		return pos + (getOffset() - textOffset);

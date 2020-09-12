@@ -1,13 +1,15 @@
 /*
- * 09/16/2004 Macro.java - A macro as recorded/played back by an RTextArea. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 09/16/2004
+ *
+ * Macro.java - A macro as recorded/played back by an RTextArea.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +34,18 @@ import org.xml.sax.InputSource;
 /**
  * A macro as recorded/played back by an {@link RTextArea}.
  * <p>
+ *
  * <code>Macro</code>s are static; when a Macro is loaded, it can be run by any
  * instance of <code>RTextArea</code> in the application. To activate and play
  * back a macro, use the following methods:
+ *
  * <ul>
  * <li>{@link RTextArea#loadMacro(Macro)}
  * <li>{@link RTextArea#playbackLastMacro()}
  * </ul>
+ *
  * To record and save a new macro, you'd use the following methods:
+ *
  * <ul>
  * <li>{@link RTextArea#beginRecordingMacro()} (this discards the previous
  * "current" macro, if any)
@@ -47,6 +53,7 @@ import org.xml.sax.InputSource;
  * <code>playbackLastMacro()</code> to play this macro immediately if desired)
  * <li>{@link RTextArea#getCurrentMacro()}.{@link #saveToFile(File)}
  * </ul>
+ *
  * As <code>Macro</code>s save themselves as XML files, a common technique is to
  * save all macros in files named "<code>{@link #getName()}.xml</code>", and
  * place them all in a common directory.
@@ -57,15 +64,11 @@ import org.xml.sax.InputSource;
 public class Macro {
 
 	private String name;
-
 	private ArrayList<MacroRecord> macroRecords;
 
 	private static final String ROOT_ELEMENT = "macro";
-
 	private static final String MACRO_NAME = "macroName";
-
 	private static final String ACTION = "action";
-
 	private static final String ID = "id";
 
 	private static final String UNTITLED_MACRO_NAME = "<Untitled>";
@@ -83,19 +86,16 @@ public class Macro {
 	 * Loads a macro from a file on disk.
 	 *
 	 * @param file The file from which to load the macro.
-	 * @throws FileNotFoundException If the specified file does not exist, is a
-	 *                               directory instead of a regular file, or
-	 *                               otherwise cannot be opened.
-	 * @throws IOException           If an I/O exception occurs while reading the
-	 *                               file.
+	 * @throws IOException If the file does not exist or an I/O exception occurs
+	 *                     while reading the file.
 	 * @see #saveToFile(String)
 	 * @see #saveToFile(File)
 	 */
-	public Macro(File file) throws FileNotFoundException, IOException {
+	public Macro(File file) throws IOException {
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = null;
-		Document doc = null;
+		DocumentBuilder db;
+		Document doc;
 		try {
 			db = dbf.newDocumentBuilder();
 			// InputSource is = new InputSource(new FileReader(file));
@@ -111,11 +111,11 @@ public class Macro {
 			throw new IOException("Error parsing XML: " + desc);
 		}
 
-		macroRecords = new ArrayList<MacroRecord>();
+		macroRecords = new ArrayList<>();
 
 		// Traverse the XML tree.
 		boolean parsedOK = initializeFromXMLFile(doc.getDocumentElement());
-		if (parsedOK == false) {
+		if (!parsedOK) {
 			name = null;
 			macroRecords.clear();
 			macroRecords = null;
@@ -144,12 +144,10 @@ public class Macro {
 		this.name = name;
 
 		if (records != null) {
-			macroRecords = new ArrayList<MacroRecord>(records.size());
-			for (MacroRecord record : records) {
-				macroRecords.add(record);
-			}
+			macroRecords = new ArrayList<>(records.size());
+			macroRecords.addAll(records);
 		} else {
-			macroRecords = new ArrayList<MacroRecord>(10);
+			macroRecords = new ArrayList<>(10);
 		}
 
 	}
@@ -192,17 +190,19 @@ public class Macro {
 	 * Used in parsing an XML document containing a macro. This method initializes
 	 * this macro with the data contained in the passed-in node.
 	 *
-	 * @param node The root node of the parsed XML document.
+	 * @param root The root node of the parsed XML document.
 	 * @return <code>true</code> if the macro initialization went okay;
 	 *         <code>false</code> if an error occurred.
 	 */
 	private boolean initializeFromXMLFile(Element root) {
 
 		/*
-		 * This method expects the XML document to be in the following format: <?xml
-		 * version="1.0" encoding="UTF-8" ?> <macro> <macroName>test</macroName> <action
-		 * id="default-typed">abcdefg</action> [<action id=...>...</action>] ...
+		 * This method expects the XML document to be in the following format:
+		 *
+		 * <?xml version="1.0" encoding="UTF-8" ?> <macro> <macroName>test</macroName>
+		 * <action id="default-typed">abcdefg</action> [<action id=...>...</action>] ...
 		 * </macro>
+		 *
 		 */
 
 		NodeList childNodes = root.getChildNodes();
@@ -304,10 +304,12 @@ public class Macro {
 	public void saveToFile(String fileName) throws IOException {
 
 		/*
-		 * This method writes the XML document in the following format: <?xml
-		 * version="1.0" encoding="UTF-8" ?> <macro> <macroName>test</macroName> <action
-		 * id="default-typed">abcdefg</action> [<action id=...>...</action>] ...
+		 * This method writes the XML document in the following format:
+		 *
+		 * <?xml version="1.0" encoding="UTF-8" ?> <macro> <macroName>test</macroName>
+		 * <action id="default-typed">abcdefg</action> [<action id=...>...</action>] ...
 		 * </macro>
+		 *
 		 */
 
 		try {
@@ -320,6 +322,7 @@ public class Macro {
 
 			// Write the name of the macro.
 			Element nameElement = doc.createElement(MACRO_NAME);
+			nameElement.appendChild(doc.createCDATASection(name));
 			rootElement.appendChild(nameElement);
 
 			// Write all actions (the meat) in the macro.
@@ -385,15 +388,14 @@ public class Macro {
 	 */
 	static class MacroRecord {
 
-		public String id;
+		String id;
+		String actionCommand;
 
-		public String actionCommand;
-
-		public MacroRecord() {
+		MacroRecord() {
 			this(null, null);
 		}
 
-		public MacroRecord(String id, String actionCommand) {
+		MacroRecord(String id, String actionCommand) {
 			this.id = id;
 			this.actionCommand = actionCommand;
 		}

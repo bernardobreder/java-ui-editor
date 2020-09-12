@@ -1,6 +1,10 @@
 /*
- * 12/21/2004 ConfigurableCaret.java - The caret used by RTextArea. This library is distributed
- * under a modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 12/21/2004
+ *
+ * ConfigurableCaret.java - The caret used by RTextArea.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rtextarea;
 
@@ -15,7 +19,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -24,7 +27,6 @@ import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 import javax.swing.plaf.TextUI;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Caret;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
@@ -39,6 +41,7 @@ import org.fife.ui.rsyntaxtextarea.folding.FoldManager;
  * The caret used by {@link RTextArea}. This caret has all of the properties
  * that <code>javax.swing.text.DefaultCaret</code> does, as well as adding the
  * following niceties:
+ *
  * <ul>
  * <li>This caret can render itself many different ways; see the
  * {@link #setStyle(CaretStyle)} method and {@link CaretStyle} for more
@@ -58,15 +61,15 @@ public class ConfigurableCaret extends DefaultCaret {
 	/**
 	 * Action used to select a word on a double click.
 	 */
-	static private transient Action selectWord = null;
+	private static transient Action selectWord = null;
 
 	/**
 	 * Action used to select a line on a triple click.
 	 */
-	static private transient Action selectLine = null;
+	private static transient Action selectLine = null;
 
 	/**
-	 * holds last MouseEvent which caused the word selection
+	 * holds last MouseEvent which caused the word selection.
 	 */
 	private transient MouseEvent selectedWordEvent = null;
 
@@ -90,6 +93,12 @@ public class ConfigurableCaret extends DefaultCaret {
 	private boolean alwaysVisible;
 
 	/**
+	 * Whether this caret will try to paste into the editor (assuming it is
+	 * editable) on middle-mouse clicks.
+	 */
+	private boolean pasteOnMiddleMouseClick;
+
+	/**
 	 * Creates the caret using {@link CaretStyle#THICK_VERTICAL_LINE_STYLE}.
 	 */
 	public ConfigurableCaret() {
@@ -106,6 +115,7 @@ public class ConfigurableCaret extends DefaultCaret {
 		seg = new Segment();
 		setStyle(style);
 		selectionPainter = new ChangeableHighlightPainter();
+		pasteOnMiddleMouseClick = true;
 	}
 
 	/**
@@ -159,7 +169,6 @@ public class ConfigurableCaret extends DefaultCaret {
 	 *
 	 * @param c The text component. If this is not an <code>RTextArea</code>, an
 	 *          <code>Exception</code> will be thrown.
-	 * @see Caret#deinstall
 	 */
 	@Override
 	public void deinstall(JTextComponent c) {
@@ -168,6 +177,17 @@ public class ConfigurableCaret extends DefaultCaret {
 		}
 		super.deinstall(c);
 		c.setNavigationFilter(null);
+	}
+
+	/**
+	 * Returns whether this caret will paste the contents of the clipboard into the
+	 * editor (assuming it is editable) on middle-mouse-button clicks.
+	 *
+	 * @return Whether a paste operation will be performed.
+	 * @see #setPasteOnMiddleMouseClick(boolean)
+	 */
+	public boolean getPasteOnMiddleMouseClick() {
+		return pasteOnMiddleMouseClick;
 	}
 
 	/**
@@ -215,7 +235,6 @@ public class ConfigurableCaret extends DefaultCaret {
 	 *
 	 * @param c The text component. If this is not an {@link RTextArea}, an
 	 *          <code>Exception</code> will be thrown.
-	 * @see Caret#install
 	 */
 	@Override
 	public void install(JTextComponent c) {
@@ -244,7 +263,6 @@ public class ConfigurableCaret extends DefaultCaret {
 	 * double click selects a word, and a triple click the current line.
 	 *
 	 * @param e the mouse event
-	 * @see MouseListener#mouseClicked
 	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -280,7 +298,7 @@ public class ConfigurableCaret extends DefaultCaret {
 				}
 			}
 
-			else if (SwingUtilities.isMiddleMouseButton(e)) {
+			else if (SwingUtilities.isMiddleMouseButton(e) && getPasteOnMiddleMouseClick()) {
 				if (nclicks == 1 && textArea.isEditable() && textArea.isEnabled()) {
 					// Paste the system selection, if it exists (e.g., on UNIX
 					// platforms, the user can select text, the middle-mouse click
@@ -441,7 +459,7 @@ public class ConfigurableCaret extends DefaultCaret {
 	}
 
 	/**
-	 * Selects word based on the MouseEvent
+	 * Selects word based on a mouse event.
 	 */
 	private void selectWord(MouseEvent e) {
 		if (selectedWordEvent != null && selectedWordEvent.getX() == e.getX() && selectedWordEvent.getY() == e.getY()) {
@@ -485,6 +503,17 @@ public class ConfigurableCaret extends DefaultCaret {
 	}
 
 	/**
+	 * Sets whether this caret will paste the contents of the clipboard into the
+	 * editor (assuming it is editable) on middle-mouse-button clicks.
+	 *
+	 * @param paste Whether a paste operation will be performed.
+	 * @see #getPasteOnMiddleMouseClick()
+	 */
+	public void setPasteOnMiddleMouseClick(boolean paste) {
+		pasteOnMiddleMouseClick = paste;
+	}
+
+	/**
 	 * Sets whether this caret's selection should have rounded edges.
 	 *
 	 * @param rounded Whether it should have rounded edges.
@@ -525,6 +554,7 @@ public class ConfigurableCaret extends DefaultCaret {
 	/**
 	 * Helper function used by the block and underline carets to ensure the width of
 	 * the painted caret is valid. This is done for the following reasons:
+	 *
 	 * <ul>
 	 * <li>The <code>View</code> classes in the javax.swing.text package always
 	 * return a width of "1" when <code>modelToView</code> is called. We'll be
@@ -589,6 +619,7 @@ public class ConfigurableCaret extends DefaultCaret {
 	 * already take folding into account, as do viewToModel() and modelToView(), so
 	 * this filter usually does not do anything.
 	 * <p>
+	 *
 	 * Common cases: backspacing to visible line of collapsed region.
 	 */
 	private class FoldAwareNavigationFilter extends NavigationFilter {
@@ -617,9 +648,8 @@ public class ConfigurableCaret extends DefaultCaret {
 						try {
 							if (dot > lastDot) { // Moving to further line
 								int lineCount = textArea.getLineCount();
-								while (++line < lineCount && fm.isLineHidden(line)) {
+								while (++line < lineCount && fm.isLineHidden(line))
 									;
-								}
 								if (line < lineCount) {
 									dot = textArea.getLineStartOffset(line);
 								} else { // No lower lines visible
@@ -627,9 +657,8 @@ public class ConfigurableCaret extends DefaultCaret {
 									return;
 								}
 							} else if (dot < lastDot) { // Moving to earlier line
-								while (--line >= 0 && fm.isLineHidden(line)) {
+								while (--line >= 0 && fm.isLineHidden(line))
 									;
-								}
 								if (line >= 0) {
 									dot = textArea.getLineEndOffset(line) - 1;
 								}

@@ -1,7 +1,11 @@
 /*
- * 02/24/2004 SyntaxView.java - The View object used by RSyntaxTextArea when word wrap is disabled.
- * This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 02/24/2004
+ *
+ * SyntaxView.java - The View object used by RSyntaxTextArea when word wrap is
+ * disabled.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -32,10 +36,12 @@ import org.fife.ui.rsyntaxtextarea.folding.FoldManager;
  * languages using the colors and font styles specified by the
  * <code>RSyntaxTextArea</code>.
  * <p>
+ *
  * You don't really have to do anything to use this class, as
  * {@link RSyntaxTextAreaUI} automatically sets the text area's view to be an
  * instance of this class if word wrap is disabled.
  * <p>
+ *
  * The tokens that specify how to paint the syntax-highlighted text are gleaned
  * from the text area's {@link RSyntaxDocument}.
  *
@@ -61,11 +67,9 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 	 * by stashing which line is currently the longest.
 	 */
 	private Element longLine;
-
 	private float longLineWidth;
 
 	private int tabSize;
-
 	private int tabBase;
 
 	/**
@@ -77,11 +81,8 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 	 * Cached values to speed up the painting a tad.
 	 */
 	private int lineHeight = 0;
-
 	private int ascent;
-
 	private int clipStart;
-
 	private int clipEnd;
 
 	/**
@@ -174,12 +175,13 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 	 * @param y       The y-coordinate at which to draw.
 	 * @return The x-coordinate representing the end of the painted text.
 	 */
-	private float drawLine(TokenPainter painter, Token token, Graphics2D g, float x, float y) {
+	private float drawLine(TokenPainter painter, Token token, Graphics2D g, float x, float y, int line) {
 
 		float nextX = x; // The x-value at the end of our text.
+		boolean paintBG = host.getPaintTokenBackgrounds(line, y);
 
 		while (token != null && token.isPaintable() && nextX < clipEnd) {
-			nextX = painter.paint(token, g, nextX, y, host, this, clipStart);
+			nextX = painter.paint(token, g, nextX, y, host, this, clipStart, paintBG);
 			token = token.getNextToken();
 		}
 
@@ -289,7 +291,6 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 	/**
 	 * Calculates the width of the line represented by the given element.
 	 *
-	 * @param line       The line for which to get the length.
 	 * @param lineNumber The line number of the specified line in the document.
 	 * @return The width of the line.
 	 */
@@ -304,7 +305,7 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 	 * the same order found in the model, or they just might not allow access to
 	 * some of the locations in the model.
 	 *
-	 * @param pos       the position to convert >= 0
+	 * @param pos       the position to convert &gt;= 0
 	 * @param a         the allocated region to render into
 	 * @param direction the direction from the current position that can be thought
 	 *                  of as the arrow keys typically found on a keyboard. This may
@@ -312,7 +313,7 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 	 *                  SwingConstants.NORTH, or SwingConstants.SOUTH.
 	 * @return the location within the model that best represents the next location
 	 *         visual position.
-	 * @exception BadLocationException
+	 * @exception BadLocationException     If the offset specified is invalid.
 	 * @exception IllegalArgumentException for an invalid direction
 	 */
 	@Override
@@ -325,9 +326,10 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 	 * Determines the preferred span for this view along an axis.
 	 *
 	 * @param axis may be either View.X_AXIS or View.Y_AXIS
-	 * @return the span the view would like to be rendered into >= 0. Typically the
-	 *         view is told to render into the span that is returned, although there
-	 *         is no guarantee. The parent may choose to resize or break the view.
+	 * @return the span the view would like to be rendered into &gt;= 0. Typically
+	 *         the view is told to render into the span that is returned, although
+	 *         there is no guarantee. The parent may choose to resize or break the
+	 *         view.
 	 * @exception IllegalArgumentException for an invalid axis
 	 */
 	@Override
@@ -345,12 +347,12 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 			// called, lineHeight isn't initialized. If we don't do it
 			// here, we get no vertical scrollbar (as lineHeight==0).
 			lineHeight = host != null ? host.getLineHeight() : lineHeight;
-			// return getElement().getElementCount() * lineHeight;
+//				return getElement().getElementCount() * lineHeight;
 			int visibleLineCount = getElement().getElementCount();
 			if (host.isCodeFoldingEnabled()) {
 				visibleLineCount -= host.getFoldManager().getHiddenLineCount();
 			}
-			return visibleLineCount * lineHeight;
+			return visibleLineCount * (float) lineHeight;
 		default:
 			throw new IllegalArgumentException("Invalid axis: " + axis);
 		}
@@ -362,7 +364,7 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 	 *
 	 * @return The amount of space to add to the x-axis preferred span.
 	 */
-	private final int getRhsCorrection() {
+	private int getRhsCorrection() {
 		int rhsCorrection = 10;
 		if (host != null) {
 			rhsCorrection = host.getRightHandSideCorrection();
@@ -377,7 +379,7 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 	 */
 	private int getTabSize() {
 		Integer i = (Integer) getDocument().getProperty(PlainDocument.tabSizeAttribute);
-		int size = (i != null) ? i.intValue() : 5;
+		int size = (i != null) ? i : 5;
 		return size;
 	}
 
@@ -409,9 +411,9 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 				return document.getTokenListForLine(line);
 			}
 		}
-		// int line = map.getElementIndex(offset) - 1;
-		// if (line>=0)
-		// return document.getTokenListForLine(line);
+//		int line = map.getElementIndex(offset) - 1;
+//		if (line>=0)
+//			return document.getTokenListForLine(line);
 		return null;
 	}
 
@@ -443,10 +445,10 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 				return document.getTokenListForLine(line);
 			}
 		}
-		// int line = map.getElementIndex(offset);
-		// int lineCount = map.getElementCount();
-		// if (line<lineCount-1)
-		// return document.getTokenListForLine(line+1);
+//		int line = map.getElementIndex(offset);
+//		int lineCount = map.getElementCount();
+//		if (line<lineCount-1)
+//			return document.getTokenListForLine(line+1);
 		return null;
 	}
 
@@ -479,7 +481,7 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 			// current line not being highlighted when a document is first
 			// opened. So, we set it here just in case.
 			lineHeight = host != null ? host.getLineHeight() : lineHeight;
-			if (host.isCodeFoldingEnabled()) {
+			if (host != null && host.isCodeFoldingEnabled()) {
 				FoldManager fm = host.getFoldManager();
 				int hiddenCount = fm.getHiddenLineCountAbove(line);
 				line -= hiddenCount;
@@ -493,7 +495,7 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 	 * Provides a mapping from the document model coordinate space to the coordinate
 	 * space of the view mapped to it.
 	 *
-	 * @param pos the position to convert >= 0
+	 * @param pos the position to convert &gt;= 0
 	 * @param a   the allocated region to render into
 	 * @return the bounding box of the given position
 	 * @exception BadLocationException if the given position does not represent a
@@ -527,6 +529,7 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 	 * space to the view coordinate space. The specified region is created as a
 	 * union of the first and last character positions.
 	 * <p>
+	 *
 	 * This is implemented to subtract the width of the second character, as this
 	 * view's <code>modelToView</code> actually returns the width of the character
 	 * instead of "1" or "0" like the View implementations in
@@ -535,16 +538,16 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 	 * for its consumers (implementations of
 	 * <code>javax.swing.text.Highlighter</code>).
 	 *
-	 * @param p0 the position of the first character (>=0)
+	 * @param p0 the position of the first character (&gt;=0)
 	 * @param b0 The bias of the first character position, toward the previous
 	 *           character or the next character represented by the offset, in case
 	 *           the position is a boundary of two views; <code>b0</code> will have
 	 *           one of these values:
 	 *           <ul>
 	 *           <li><code>Position.Bias.Forward</code>
-	 *           <li><code> Position.Bias.Backward</code>
+	 *           <li><code>Position.Bias.Backward</code>
 	 *           </ul>
-	 * @param p1 the position of the last character (>=0)
+	 * @param p1 the position of the last character (&gt;=0)
 	 * @param b1 the bias for the second character position, defined one of the
 	 *           legal values shown above
 	 * @param a  the area of the view, which encompasses the requested region
@@ -608,10 +611,10 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 	 * implementation does not support things like centering so it ignores the
 	 * tabOffset argument.
 	 *
-	 * @param x         the current position >= 0
+	 * @param x         the current position &gt;= 0
 	 * @param tabOffset the position within the text stream that the tab occurred at
-	 *                  >= 0.
-	 * @return the tab stop, measured in points >= 0
+	 *                  &gt;= 0.
+	 * @return the tab stop, measured in points &gt;= 0
 	 */
 	@Override
 	public float nextTabStop(float x, int tabOffset) {
@@ -619,7 +622,7 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 			return x;
 		}
 		int ntabs = (((int) x) - tabBase) / tabSize;
-		return tabBase + ((ntabs + 1) * tabSize);
+		return tabBase + ((ntabs + 1f) * tabSize);
 	}
 
 	/**
@@ -685,11 +688,15 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 			// Paint a line of text.
 			token = document.getTokenListForLine(line);
 			if (selStart == selEnd || startOffset >= selEnd || endOffset < selStart) {
-				drawLine(painter, token, g2d, x, y);
+				drawLine(painter, token, g2d, x, y, line);
 			} else {
 				// System.out.println("Drawing line with selection: " + line);
 				drawLineWithSelection(painter, token, g2d, x, y, selStart, selEnd);
 			}
+
+			// Paint parser highlights (typically squiggle-underlines) after
+			// text and selection
+			h.paintParserHighlights(g2d, startOffset, endOffset, a, host, this);
 
 			if (fold != null && fold.isCollapsed()) {
 
@@ -785,8 +792,8 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 				}
 			}
 			if (removed != null) {
-				for (int i = 0; i < removed.length; i++) {
-					if (removed[i] == longLine) {
+				for (Element element : removed) {
+					if (element == longLine) {
 						longLineWidth = -1; // Must do this!!
 						calculateLongestLine();
 						break;
@@ -853,11 +860,11 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 	 * Provides a mapping from the view coordinate space to the logical coordinate
 	 * space of the model.
 	 *
-	 * @param fx the X coordinate >= 0
-	 * @param fy the Y coordinate >= 0
+	 * @param fx the X coordinate &gt;= 0
+	 * @param fy the Y coordinate &gt;= 0
 	 * @param a  the allocated region to render into
 	 * @return the location within the model that best represents the given point in
-	 *         the view >= 0
+	 *         the view &gt;= 0
 	 */
 	@Override
 	public int viewToModel(float fx, float fy, Shape a, Position.Bias[] bias) {
@@ -890,6 +897,7 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 		else {
 
 			Element map = doc.getDefaultRootElement();
+			lineHeight = host.getLineHeight();
 			int lineIndex = Math.abs((y - alloc.y) / lineHeight);// metrics.getHeight() );
 			FoldManager fm = host.getFoldManager();
 			// System.out.print("--- " + lineIndex);
@@ -919,9 +927,6 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int yForLine(Rectangle alloc, int line) throws BadLocationException {
 
@@ -932,10 +937,12 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 			// current line not being highlighted when a document is first
 			// opened. So, we set it here just in case.
 			lineHeight = host != null ? host.getLineHeight() : lineHeight;
-			FoldManager fm = host.getFoldManager();
-			if (!fm.isLineHidden(line)) {
-				line -= fm.getHiddenLineCountAbove(line);
-				return alloc.y + line * lineHeight;
+			if (host != null) {
+				FoldManager fm = host.getFoldManager();
+				if (!fm.isLineHidden(line)) {
+					line -= fm.getHiddenLineCountAbove(line);
+					return alloc.y + line * lineHeight;
+				}
 			}
 		}
 
@@ -943,9 +950,6 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int yForLineContaining(Rectangle alloc, int offs) throws BadLocationException {
 		Element map = getElement();

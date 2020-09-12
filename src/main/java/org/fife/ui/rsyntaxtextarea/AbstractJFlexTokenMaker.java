@@ -1,7 +1,11 @@
 /*
- * 03/23/2005 AbstractJFlexTokenMaker.java - Base class for token makers generated from programs
- * such as JFlex. This library is distributed under a modified BSD license. See the included
- * RSyntaxTextArea.License.txt file for details.
+ * 03/23/2005
+ *
+ * AbstractJFlexTokenMaker.java - Base class for token makers generated from
+ * programs such as JFlex.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -21,7 +25,6 @@ public abstract class AbstractJFlexTokenMaker extends TokenMakerBase {
 	protected Segment s;
 
 	protected int start; // Just for states.
-
 	protected int offsetShift; // As parser always starts at 0, but our line doesn't.
 
 	/**

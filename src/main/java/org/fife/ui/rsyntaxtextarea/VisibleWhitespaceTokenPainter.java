@@ -1,7 +1,11 @@
 /*
- * 03/16/2013 VisibleWhitespaceTokenPainter - Renders tokens in an instance of RSyntaxTextArea, with
- * special glyphs to denote spaces and tabs. This library is distributed under a modified BSD
- * license. See the included RSyntaxTextArea.License.txt file for details.
+ * 03/16/2013
+ *
+ * VisibleWhitespaceTokenPainter - Renders tokens in an instance of
+ * RSyntaxTextArea, with special glyphs to denote spaces and tabs.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -14,6 +18,7 @@ import javax.swing.text.TabExpander;
 /**
  * A token painter that visibly renders whitespace (spaces and tabs).
  * <p>
+ *
  * The current implementation paints as follows:
  * <ul>
  * <li>The first tab or space, if any, is found in the token.</li>
@@ -27,6 +32,7 @@ import javax.swing.text.TabExpander;
  * This means that rendering hints are applied to all groups of characters
  * within a token, excluding whitespace and tabs.
  * <p>
+ *
  * A problem with this implementation is that FontMetrics.charsWidth() is still
  * used to calculate the width of a group of chars painted. Thus, the group of
  * characters will be painted with the rendering hints specified, but the

@@ -1,6 +1,10 @@
 /*
- * 02/24/2004 RSyntaxTextAreaUI.java - UI for an RSyntaxTextArea. This library is distributed under
- * a modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 02/24/2004
+ *
+ * RSyntaxTextAreaUI.java - UI for an RSyntaxTextArea.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -34,10 +38,8 @@ import org.fife.ui.rtextarea.RTextAreaUI;
 public class RSyntaxTextAreaUI extends RTextAreaUI {
 
 	private static final String SHARED_ACTION_MAP_NAME = "RSyntaxTextAreaUI.actionMap";
-
 	private static final String SHARED_INPUT_MAP_NAME = "RSyntaxTextAreaUI.inputMap";
-
-	private static final EditorKit defaultKit = new RSyntaxTextAreaEditorKit();
+	private static final EditorKit DEFAULT_KIT = new RSyntaxTextAreaEditorKit();
 
 	public static ComponentUI createUI(JComponent ta) {
 		return new RSyntaxTextAreaUI(ta);
@@ -103,12 +105,13 @@ public class RSyntaxTextAreaUI extends RTextAreaUI {
 	 */
 	@Override
 	public EditorKit getEditorKit(JTextComponent tc) {
-		return defaultKit;
+		return DEFAULT_KIT;
 	}
 
 	/**
 	 * Get the InputMap to use for the UI.
 	 * <p>
+	 *
 	 * This method is not named <code>getInputMap()</code> because there is a
 	 * package-private method in <code>BasicTextAreaUI</code> with that name. Thus,
 	 * creating a new method with that name causes certain compilers to issue
@@ -130,14 +133,9 @@ public class RSyntaxTextAreaUI extends RTextAreaUI {
 		return map;
 	}
 
-	/**
-	 * Paints the text area's background.
-	 *
-	 * @param g The graphics component on which to paint.
-	 */
 	@Override
-	protected void paintBackground(Graphics g) {
-		super.paintBackground(g);
+	protected void paintEditorAugmentations(Graphics g) {
+		super.paintEditorAugmentations(g);
 		paintMatchedBracket(g);
 	}
 
@@ -162,17 +160,18 @@ public class RSyntaxTextAreaUI extends RTextAreaUI {
 		}
 	}
 
-	private void paintMatchedBracketImpl(Graphics g, RSyntaxTextArea rsta, Rectangle r) {
+	protected void paintMatchedBracketImpl(Graphics g, RSyntaxTextArea rsta, Rectangle r) {
 		// We must add "-1" to the height because otherwise we'll paint below
 		// the region that gets invalidated.
 		if (rsta.getAnimateBracketMatching()) {
 			Color bg = rsta.getMatchedBracketBGColor();
+			final int arcWH = 5;
 			if (bg != null) {
 				g.setColor(bg);
-				g.fillRoundRect(r.x, r.y, r.width, r.height - 1, 5, 5);
+				g.fillRoundRect(r.x, r.y, r.width, r.height - 1, arcWH, arcWH);
 			}
 			g.setColor(rsta.getMatchedBracketBorderColor());
-			g.drawRoundRect(r.x, r.y, r.width, r.height - 1, 5, 5);
+			g.drawRoundRect(r.x, r.y, r.width, r.height - 1, arcWH, arcWH);
 		} else {
 			Color bg = rsta.getMatchedBracketBGColor();
 			if (bg != null) {
@@ -219,6 +218,7 @@ public class RSyntaxTextAreaUI extends RTextAreaUI {
 	/**
 	 * Returns the y-coordinate of the specified line.
 	 * <p>
+	 *
 	 * This method is quicker than using traditional <code>modelToView(int)</code>
 	 * calls, as the entire bounding box isn't computed.
 	 */
@@ -235,6 +235,7 @@ public class RSyntaxTextAreaUI extends RTextAreaUI {
 	/**
 	 * Returns the y-coordinate of the line containing a specified offset.
 	 * <p>
+	 *
 	 * This is faster than calling <code>modelToView(offs).y</code>, so it is
 	 * preferred if you do not need the actual bounding box.
 	 */

@@ -1,7 +1,10 @@
 /*
- * 09/23/2005 ParserNotice.java - A notice (i.e, and error or warning) from a parser. This library
- * is distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file
- * for details.
+ * 09/23/2005
+ *
+ * ParserNotice.java - A notice (i.e, and error or warning) from a parser.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.parser;
 
@@ -10,6 +13,7 @@ import java.awt.Color;
 /**
  * A notice (e.g., a warning or error) from a parser.
  * <p>
+ *
  * Since different parsers have different levels of precision when it comes to
  * identifying errors in code, this class supports marking parser notices on
  * either a per-line basis or arbitrary regions of a document. For any
@@ -33,14 +37,14 @@ public interface ParserNotice extends Comparable<ParserNotice> {
 	 * @return Whether the position is contained. This will always return
 	 *         <code>false</code> if {@link #getOffset()} returns <code>-1</code>.
 	 */
-	public boolean containsPosition(int pos);
+	boolean containsPosition(int pos);
 
 	/**
 	 * Returns the color to use when painting this notice.
 	 *
 	 * @return The color.
 	 */
-	public Color getColor();
+	Color getColor();
 
 	/**
 	 * Returns the length of the code the message is concerned with.
@@ -50,21 +54,21 @@ public interface ParserNotice extends Comparable<ParserNotice> {
 	 * @see #getOffset()
 	 * @see #getLine()
 	 */
-	public int getLength();
+	int getLength();
 
 	/**
 	 * Returns the level of this notice.
 	 *
 	 * @return A value from the {@link Level} enumeration.
 	 */
-	public Level getLevel();
+	Level getLevel();
 
 	/**
 	 * Returns the line number the notice is about.
 	 *
 	 * @return The line number.
 	 */
-	public int getLine();
+	int getLine();
 
 	/**
 	 * Returns whether this parser notice has offset and length information (as
@@ -75,14 +79,14 @@ public interface ParserNotice extends Comparable<ParserNotice> {
 	 * @see #getOffset()
 	 * @see #getLength()
 	 */
-	public boolean getKnowsOffsetAndLength();
+	boolean getKnowsOffsetAndLength();
 
 	/**
 	 * Returns the message from the parser.
 	 *
 	 * @return The message from the parser.
 	 */
-	public String getMessage();
+	String getMessage();
 
 	/**
 	 * Returns the offset of the code the message is concerned with.
@@ -91,21 +95,21 @@ public interface ParserNotice extends Comparable<ParserNotice> {
 	 * @see #getLength()
 	 * @see #getLine()
 	 */
-	public int getOffset();
+	int getOffset();
 
 	/**
 	 * Returns the parser that created this message.
 	 *
 	 * @return The parser.
 	 */
-	public Parser getParser();
+	Parser getParser();
 
 	/**
 	 * Whether a squiggle underline should be drawn in the editor for this notice.
 	 *
 	 * @return Whether a squiggle underline should be drawn.
 	 */
-	public boolean getShowInEditor();
+	boolean getShowInEditor();
 
 	/**
 	 * Returns the tool tip text to display for this notice.
@@ -113,12 +117,12 @@ public interface ParserNotice extends Comparable<ParserNotice> {
 	 * @return The tool tip text. If none has been explicitly set, this method
 	 *         returns the same text as {@link #getMessage()}.
 	 */
-	public String getToolTipText();
+	String getToolTipText();
 
 	/**
 	 * Denotes the severity of a parser notice.
 	 */
-	public static enum Level {
+	enum Level {
 
 		/**
 		 * Indicates an informational notice.
@@ -137,7 +141,7 @@ public interface ParserNotice extends Comparable<ParserNotice> {
 
 		private int value;
 
-		private Level(int value) {
+		Level(int value) {
 			this.value = value;
 		}
 

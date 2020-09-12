@@ -1,7 +1,10 @@
 /*
- * 02/21/2005 CodeTemplate.java - A "template" (macro) for commonly-typed code. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 02/21/2005
+ *
+ * CodeTemplate.java - A "template" (macro) for commonly-typed code.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.templates;
 
@@ -19,13 +22,14 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 /**
  * A code template that inserts static text before and after the caret.
  * <p>
+ *
  * For example, you can associate the identifier <code>forb</code> (short for
  * "for-block") with the following code:
  * <p>
  *
  * <pre>
  *   for (&lt;caret&gt;) {
- * 
+ *
  *   }
  * </pre>
  *

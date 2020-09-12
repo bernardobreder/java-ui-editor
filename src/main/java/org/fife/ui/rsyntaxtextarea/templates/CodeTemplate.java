@@ -1,7 +1,10 @@
 /*
- * 11/29/2008 CodeTemplate.java - A "template" (macro) for commonly-typed code. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 11/29/2008
+ *
+ * CodeTemplate.java - A "template" (macro) for commonly-typed code.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.templates;
 
@@ -17,13 +20,14 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
  * enabled and the short identifier is typed, it is replaced with the longer
  * code snippet.
  * <p>
+ *
  * For example, you can associate the identifier <code>forb</code> (short for
  * "for-block") with the following code:
  * <p>
  *
  * <pre>
  *   for (&lt;caret&gt;) {
- * 
+ *
  *   }
  * </pre>
  *
@@ -32,6 +36,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
  * is added in place of <code>forb</code>. Further, the caret is placed at the
  * position denoted by <code>&lt;caret&gt;</code>.
  * <p>
+ *
  * Static text replacements are done with {@link StaticCodeTemplate}. Dynamic
  * templates can also be created and used.
  *
@@ -46,14 +51,14 @@ public interface CodeTemplate extends Cloneable, Comparable<CodeTemplate>, Seria
 	 *
 	 * @return A deep copy of this template.
 	 */
-	public Object clone();
+	Object clone();
 
 	/**
 	 * Returns the ID of this code template.
 	 *
 	 * @return The template's ID.
 	 */
-	public String getID();
+	String getID();
 
 	/**
 	 * Invokes this code template. The changes are made to the given text area.
@@ -61,6 +66,6 @@ public interface CodeTemplate extends Cloneable, Comparable<CodeTemplate>, Seria
 	 * @param textArea The text area to operate on.
 	 * @throws BadLocationException If something bad happens.
 	 */
-	public void invoke(RSyntaxTextArea textArea) throws BadLocationException;
+	void invoke(RSyntaxTextArea textArea) throws BadLocationException;
 
 }

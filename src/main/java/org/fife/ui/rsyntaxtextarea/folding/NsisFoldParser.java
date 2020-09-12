@@ -1,6 +1,10 @@
 /*
- * 10/07/2012 NsisFoldParser.java - Fold parser for NSIS. This library is distributed under a
- * modified BSD license. See the included RSyntaxTextArea.License.txt file for details.
+ * 10/07/2012
+ *
+ * NsisFoldParser.java - Fold parser for NSIS.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.folding;
 
@@ -16,6 +20,7 @@ import org.fife.ui.rsyntaxtextarea.Token;
 /**
  * A fold parser NSIS.
  * <p>
+ *
  * Note that this class may impose somewhat of a performance penalty on large
  * source files, since it re-parses the entire document each time folds are
  * reevaluated.
@@ -26,16 +31,13 @@ import org.fife.ui.rsyntaxtextarea.Token;
 public class NsisFoldParser implements FoldParser {
 
 	private static final char[] KEYWORD_FUNCTION = "Function".toCharArray();
-
 	private static final char[] KEYWORD_FUNCTION_END = "FunctionEnd".toCharArray();
-
 	private static final char[] KEYWORD_SECTION = "Section".toCharArray();
-
 	private static final char[] KEYWORD_SECTION_END = "SectionEnd".toCharArray();
 
 	protected static final char[] C_MLC_END = "*/".toCharArray();
 
-	private static final boolean foundEndKeyword(char[] keyword, Token t, Stack<char[]> endWordStack) {
+	private static boolean foundEndKeyword(char[] keyword, Token t, Stack<char[]> endWordStack) {
 		return t.is(Token.RESERVED_WORD, keyword) && !endWordStack.isEmpty() && keyword == endWordStack.peek();
 	}
 
@@ -45,13 +47,13 @@ public class NsisFoldParser implements FoldParser {
 	@Override
 	public List<Fold> getFolds(RSyntaxTextArea textArea) {
 
-		List<Fold> folds = new ArrayList<Fold>();
+		List<Fold> folds = new ArrayList<>();
 
 		Fold currentFold = null;
 		int lineCount = textArea.getLineCount();
 		boolean inMLC = false;
 		int mlcStart = 0;
-		Stack<char[]> endWordStack = new Stack<char[]>();
+		Stack<char[]> endWordStack = new Stack<>();
 
 		try {
 
@@ -77,8 +79,7 @@ public class NsisFoldParser implements FoldParser {
 									currentFold.setEndOffset(mlcEnd);
 									currentFold = currentFold.getParent();
 								}
-								// System.out.println("Ending MLC at: " + mlcEnd + ", parent==" +
-								// currentFold);
+								// System.out.println("Ending MLC at: " + mlcEnd + ", parent==" + currentFold);
 								inMLC = false;
 								mlcStart = 0;
 							}

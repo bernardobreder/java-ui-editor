@@ -1,7 +1,10 @@
 /*
- * 11/13/2008 FileLocation.java - Holds the location of a local or remote file. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 11/13/2008
+ *
+ * FileLocation.java - Holds the location of a local or remote file.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -9,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -27,6 +31,14 @@ public abstract class FileLocation {
 	 * @return The file's location.
 	 */
 	public static FileLocation create(String fileFullPath) {
+		if (fileFullPath.startsWith("http://") || fileFullPath.startsWith("https://")
+				|| fileFullPath.startsWith("ftp://")) {
+			try {
+				return new URLFileLocation(new URL(fileFullPath));
+			} catch (MalformedURLException mue) {
+				throw new IllegalArgumentException("Not a valid URL: " + fileFullPath, mue);
+			}
+		}
 		return new FileFileLocation(new File(fileFullPath));
 	}
 

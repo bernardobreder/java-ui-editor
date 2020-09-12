@@ -1,7 +1,10 @@
 /*
- * 08/11/2009 DefaultParserNotice.java - Base implementation of a parser notice. This library is
- * distributed under a modified BSD license. See the included RSyntaxTextArea.License.txt file for
- * details.
+ * 08/11/2009
+ *
+ * DefaultParserNotice.java - Base implementation of a parser notice.
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea.parser;
 
@@ -19,21 +22,13 @@ import java.awt.Color;
 public class DefaultParserNotice implements ParserNotice {
 
 	private Parser parser;
-
 	private Level level;
-
 	private int line;
-
 	private int offset;
-
 	private int length;
-
 	private boolean showInEditor;
-
 	private Color color;
-
 	private String message;
-
 	private String toolTipText;
 
 	private static final Color[] DEFAULT_COLORS = { new Color(255, 0, 128), // Error
@@ -245,15 +240,15 @@ public class DefaultParserNotice implements ParserNotice {
 	}
 
 	/**
-	 * Sets the tooltip text to display for this notice.
+	 * Sets the tool tip text to display for this notice.
 	 *
-	 * @param text The new tooltip text. This can be HTML. If this is
-	 *             <code>null</code>, then tooltips will return the same text as
+	 * @param text The new tool tip text. This can be HTML. If this is
+	 *             <code>null</code>, then tool tips will return the same text as
 	 *             {@link #getMessage()}.
 	 * @see #getToolTipText()
 	 */
 	public void setToolTipText(String text) {
-		toolTipText = text;
+		this.toolTipText = text;
 	}
 
 	/**

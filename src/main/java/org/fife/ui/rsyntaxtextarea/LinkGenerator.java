@@ -1,7 +1,12 @@
 /*
- * 02/16/2012 Copyright (C) 2013 Robert Futrell robert_futrell at users.sourceforge.net
- * http://fifesoft.com/rsyntaxtextarea This library is distributed under a modified BSD license. See
- * the included RSyntaxTextArea.License.txt file for details.
+ * 02/16/2012
+ *
+ * Copyright (C) 2013 Robert Futrell
+ * robert_futrell at users.sourceforge.net
+ * http://fifesoft.com/rsyntaxtextarea
+ *
+ * This library is distributed under a modified BSD license.  See the included
+ * LICENSE file for details.
  */
 package org.fife.ui.rsyntaxtextarea;
 
@@ -14,6 +19,7 @@ package org.fife.ui.rsyntaxtextarea;
  * object is returned, describing exactly what region of text is the link, and
  * where it goes to.
  * <p>
+ *
  * This interface is typically used by applications providing advanced support
  * for programming languages, such as IDEs. For example, an implementation of
  * this class could identify the token under the mouse position as a "variable,"
@@ -35,6 +41,6 @@ public interface LinkGenerator {
 	 * @return The link information, or <code>null</code> if no link is at the
 	 *         specified offset.
 	 */
-	public LinkGeneratorResult isLinkAtOffset(RSyntaxTextArea textArea, int offs);
+	LinkGeneratorResult isLinkAtOffset(RSyntaxTextArea textArea, int offs);
 
 }
