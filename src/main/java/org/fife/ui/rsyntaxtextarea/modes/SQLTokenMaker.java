@@ -17,6 +17,7 @@ import javax.swing.text.Segment;
 import org.fife.ui.rsyntaxtextarea.AbstractJFlexTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * This class generates tokens representing a text stream as SQL.
@@ -535,22 +536,22 @@ public class SQLTokenMaker extends AbstractJFlexTokenMaker {
 		this.offsetShift = -text.offset + startOffset;
 
 		// Start off in the proper state.
-		int state = Token.NULL;
+		int state = TokenTypes.NULL;
 		switch (initialTokenType) {
-		case Token.LITERAL_STRING_DOUBLE_QUOTE:
+		case TokenTypes.LITERAL_STRING_DOUBLE_QUOTE:
 			state = STRING;
 			start = text.offset;
 			break;
-		case Token.LITERAL_CHAR:
+		case TokenTypes.LITERAL_CHAR:
 			state = CHAR;
 			start = text.offset;
 			break;
-		case Token.COMMENT_MULTILINE:
+		case TokenTypes.COMMENT_MULTILINE:
 			state = MLC;
 			start = text.offset;
 			break;
 		default:
-			state = Token.NULL;
+			state = TokenTypes.NULL;
 		}
 
 		s = text;
@@ -814,7 +815,7 @@ public class SQLTokenMaker extends AbstractJFlexTokenMaker {
 
 			switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
 			case 20: {
-				addToken(Token.PREPROCESSOR);
+				addToken(TokenTypes.PREPROCESSOR);
 			}
 			case 23:
 				break;
@@ -826,7 +827,7 @@ public class SQLTokenMaker extends AbstractJFlexTokenMaker {
 				break;
 			case 21: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead + 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead + 1, TokenTypes.COMMENT_MULTILINE);
 			}
 			case 25:
 				break;
@@ -837,12 +838,12 @@ public class SQLTokenMaker extends AbstractJFlexTokenMaker {
 			case 26:
 				break;
 			case 4: {
-				addToken(Token.WHITESPACE);
+				addToken(TokenTypes.WHITESPACE);
 			}
 			case 27:
 				break;
 			case 14: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_CHAR);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_CHAR);
 				return firstToken;
 			}
 			case 28:
@@ -854,44 +855,44 @@ public class SQLTokenMaker extends AbstractJFlexTokenMaker {
 			case 29:
 				break;
 			case 7: {
-				addToken(Token.LITERAL_NUMBER_FLOAT);
+				addToken(TokenTypes.LITERAL_NUMBER_FLOAT);
 			}
 			case 30:
 				break;
 			case 19: {
-				addToken(Token.RESERVED_WORD);
+				addToken(TokenTypes.RESERVED_WORD);
 			}
 			case 31:
 				break;
 			case 6: {
-				addToken(Token.SEPARATOR);
+				addToken(TokenTypes.SEPARATOR);
 			}
 			case 32:
 				break;
 			case 15: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead, Token.LITERAL_CHAR);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_CHAR);
 			}
 			case 33:
 				break;
 			case 1: {
-				addToken(Token.IDENTIFIER);
+				addToken(TokenTypes.IDENTIFIER);
 			}
 			case 34:
 				break;
 			case 22: {
-				addToken(Token.FUNCTION);
+				addToken(TokenTypes.FUNCTION);
 			}
 			case 35:
 				break;
 			case 12: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				return firstToken;
 			}
 			case 36:
 				break;
 			case 17: {
-				addToken(Token.COMMENT_EOL);
+				addToken(TokenTypes.COMMENT_EOL);
 			}
 			case 37:
 				break;
@@ -902,23 +903,23 @@ public class SQLTokenMaker extends AbstractJFlexTokenMaker {
 			case 38:
 				break;
 			case 3: {
-				addToken(Token.LITERAL_NUMBER_DECIMAL_INT);
+				addToken(TokenTypes.LITERAL_NUMBER_DECIMAL_INT);
 			}
 			case 39:
 				break;
 			case 5: {
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 			}
 			case 40:
 				break;
 			case 13: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 			}
 			case 41:
 				break;
 			case 10: {
-				addToken(Token.ERROR_IDENTIFIER);
+				addToken(TokenTypes.ERROR_IDENTIFIER);
 				addNullToken();
 				return firstToken;
 			}
@@ -929,7 +930,7 @@ public class SQLTokenMaker extends AbstractJFlexTokenMaker {
 			case 43:
 				break;
 			case 16: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
 				return firstToken;
 			}
 			case 44:
@@ -939,7 +940,7 @@ public class SQLTokenMaker extends AbstractJFlexTokenMaker {
 					zzAtEOF = true;
 					switch (zzLexicalState) {
 					case STRING: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 						return firstToken;
 					}
 					case 355:
@@ -951,13 +952,13 @@ public class SQLTokenMaker extends AbstractJFlexTokenMaker {
 					case 356:
 						break;
 					case MLC: {
-						addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
+						addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
 						return firstToken;
 					}
 					case 357:
 						break;
 					case CHAR: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_CHAR);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_CHAR);
 						return firstToken;
 					}
 					case 358:

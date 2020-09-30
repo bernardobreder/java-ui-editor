@@ -135,7 +135,7 @@ public class Gutter extends JPanel {
 
 		listener = new TextAreaListener();
 		lineNumberColor = Color.gray;
-		lineNumberFont = RTextArea.getDefaultFont();
+		lineNumberFont = RTextAreaBase.getDefaultFont();
 		lineNumberingStartIndex = 1;
 		iconRowHeaderInheritsGutterBackground = false;
 

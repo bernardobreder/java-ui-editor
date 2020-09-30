@@ -18,6 +18,7 @@ import javax.swing.text.BadLocationException;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Token;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * Fold parser for HTML 5, PHP and JSP. For HTML, we currently don't fold
@@ -133,7 +134,7 @@ public class HtmlFoldParser implements FoldParser {
 
 					// If we're folding PHP. Note that PHP folding can only be
 					// "one level deep," so our logic here is simple.
-					if (language >= 0 && t.getType() == Token.SEPARATOR) {
+					if (language >= 0 && t.getType() == TokenTypes.SEPARATOR) {
 
 						// <?, <?php, <%, <%!, ...
 						if (t.startsWith(LANG_START[language])) {
@@ -165,7 +166,7 @@ public class HtmlFoldParser implements FoldParser {
 
 					if (!inSublanguage) {
 
-						if (t.getType() == Token.COMMENT_MULTILINE) {
+						if (t.getType() == TokenTypes.COMMENT_MULTILINE) {
 
 							// Continuing an MLC from a previous line
 							if (inMLC) {
@@ -229,7 +230,7 @@ public class HtmlFoldParser implements FoldParser {
 						}
 
 						// If we're starting a new tag...
-						else if (t.isSingleChar(Token.MARKUP_TAG_DELIMITER, '<')) {
+						else if (t.isSingleChar(TokenTypes.MARKUP_TAG_DELIMITER, '<')) {
 							Token tagStartToken = t;
 							Token tagNameToken = t.getNextToken();
 							if (isFoldableTag(tagNameToken)) {
@@ -240,7 +241,7 @@ public class HtmlFoldParser implements FoldParser {
 								// We have found either ">" or "/>" with tci.
 								// System.out.println(line + ", "+ tci + ", " + t);
 								Token tagCloseToken = tci.closeToken;
-								if (tagCloseToken.isSingleChar(Token.MARKUP_TAG_DELIMITER, '>')) {
+								if (tagCloseToken.isSingleChar(TokenTypes.MARKUP_TAG_DELIMITER, '>')) {
 									if (currentFold == null) {
 										currentFold = new Fold(FoldType.CODE, textArea, tagStartToken.getOffset());
 										folds.add(currentFold);
@@ -255,7 +256,7 @@ public class HtmlFoldParser implements FoldParser {
 						}
 
 						// If we've found a closing tag (e.g. "</div>").
-						else if (t.is(Token.MARKUP_TAG_DELIMITER, MARKUP_CLOSING_TAG_START)) {
+						else if (t.is(TokenTypes.MARKUP_TAG_DELIMITER, MARKUP_CLOSING_TAG_START)) {
 							if (currentFold != null) {
 								Token tagNameToken = t.getNextToken();
 								if (isFoldableTag(tagNameToken) && isEndOfLastFold(tagNameStack, tagNameToken)) {
@@ -307,7 +308,7 @@ public class HtmlFoldParser implements FoldParser {
 
 		do {
 
-			while (t != null && t.getType() != Token.MARKUP_TAG_DELIMITER) {
+			while (t != null && t.getType() != TokenTypes.MARKUP_TAG_DELIMITER) {
 				t = t.getNextToken();
 			}
 

@@ -14,6 +14,7 @@ import javax.swing.text.Segment;
 import org.fife.ui.rsyntaxtextarea.AbstractJFlexTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * This class takes plain text and returns tokens representing 6502 assembler.
@@ -496,6 +497,7 @@ public class Assembler6502TokenMaker extends AbstractJFlexTokenMaker {
 	 * @return The first <code>Token</code> in a linked list representing the syntax
 	 *         highlighted text.
 	 */
+	@Override
 	public Token getTokenList(Segment text, int initialTokenType, int startOffset) {
 
 		resetTokenList();
@@ -621,6 +623,7 @@ public class Assembler6502TokenMaker extends AbstractJFlexTokenMaker {
 	 *
 	 * @param newState the new lexical state
 	 */
+	@Override
 	public final void yybegin(int newState) {
 		zzLexicalState = newState;
 	}
@@ -802,45 +805,45 @@ public class Assembler6502TokenMaker extends AbstractJFlexTokenMaker {
 
 			switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
 			case 1: {
-				addToken(Token.IDENTIFIER);
+				addToken(TokenTypes.IDENTIFIER);
 			}
 			case 17:
 				break;
 			case 14: {
-				addToken(Token.FUNCTION);
+				addToken(TokenTypes.FUNCTION);
 			}
 			case 18:
 				break;
 			case 12: {
-				addToken(Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 			}
 			case 19:
 				break;
 			case 15: {
-				addToken(Token.VARIABLE);
+				addToken(TokenTypes.VARIABLE);
 			}
 			case 20:
 				break;
 			case 7: {
-				addToken(Token.WHITESPACE);
+				addToken(TokenTypes.WHITESPACE);
 			}
 			case 21:
 				break;
 			case 11: {
-				addToken(Token.PREPROCESSOR);
+				addToken(TokenTypes.PREPROCESSOR);
 			}
 			case 22:
 				break;
 			case 16: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
-				addHyperlinkToken(temp, zzMarkedPos - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
+				addHyperlinkToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_EOL);
 				start = zzMarkedPos;
 			}
 			case 23:
 				break;
 			case 4: {
-				addToken(Token.ERROR_CHAR); /* addNullToken(); return firstToken; */
+				addToken(TokenTypes.ERROR_CHAR); /* addNullToken(); return firstToken; */
 			}
 			case 24:
 				break;
@@ -851,22 +854,22 @@ public class Assembler6502TokenMaker extends AbstractJFlexTokenMaker {
 			case 25:
 				break;
 			case 8: {
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 			}
 			case 26:
 				break;
 			case 2: {
-				addToken(Token.LITERAL_NUMBER_DECIMAL_INT);
+				addToken(TokenTypes.LITERAL_NUMBER_DECIMAL_INT);
 			}
 			case 27:
 				break;
 			case 13: {
-				addToken(Token.LITERAL_CHAR);
+				addToken(TokenTypes.LITERAL_CHAR);
 			}
 			case 28:
 				break;
 			case 3: {
-				addToken(Token.ERROR_STRING_DOUBLE);
+				addToken(TokenTypes.ERROR_STRING_DOUBLE);
 				addNullToken();
 				return firstToken;
 			}
@@ -879,7 +882,7 @@ public class Assembler6502TokenMaker extends AbstractJFlexTokenMaker {
 			case 30:
 				break;
 			case 10: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 				addNullToken();
 				return firstToken;
 			}
@@ -894,7 +897,7 @@ public class Assembler6502TokenMaker extends AbstractJFlexTokenMaker {
 					zzAtEOF = true;
 					switch (zzLexicalState) {
 					case EOL_COMMENT: {
-						addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+						addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 						addNullToken();
 						return firstToken;
 					}

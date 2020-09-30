@@ -21,6 +21,7 @@ import org.fife.ui.rsyntaxtextarea.OccurrenceMarker;
 import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * Scanner for PHP files.
@@ -13378,7 +13379,7 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 	 */
 	@Override
 	public boolean getMarkOccurrencesOfTokenType(int type) {
-		return type == Token.FUNCTION || type == Token.VARIABLE || type == Token.MARKUP_TAG_NAME;
+		return type == TokenTypes.FUNCTION || type == TokenTypes.VARIABLE || type == TokenTypes.MARKUP_TAG_NAME;
 	}
 
 	/**
@@ -13418,12 +13419,12 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 		int languageIndex = LANG_INDEX_DEFAULT;
 
 		// Start off in the proper state.
-		int state = Token.NULL;
+		int state = TokenTypes.NULL;
 		switch (initialTokenType) {
-		case Token.MARKUP_COMMENT:
+		case TokenTypes.MARKUP_COMMENT:
 			state = COMMENT;
 			break;
-		case Token.VARIABLE:
+		case TokenTypes.VARIABLE:
 			state = DTD;
 			break;
 		case INTERNAL_INTAG:
@@ -13844,25 +13845,25 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
 			case 109: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
-				addToken(temp, zzMarkedPos - 1, Token.VARIABLE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(temp, zzMarkedPos - 1, TokenTypes.VARIABLE);
 				start = zzMarkedPos;
 			}
 			case 137:
 				break;
 			case 67: {
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 				yybegin(CSS_VALUE);
 			}
 			case 138:
 				break;
 			case 92: {
-				addToken(Token.ERROR_NUMBER_FORMAT);
+				addToken(TokenTypes.ERROR_NUMBER_FORMAT);
 			}
 			case 139:
 				break;
 			case 75: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_CHAR);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_CHAR);
 				addEndToken(INTERNAL_CSS_CHAR - cssPrevState);
 				return firstToken;
 			}
@@ -13876,29 +13877,29 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 9: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead, Token.MARKUP_DTD);
+				addToken(start, zzStartRead, TokenTypes.MARKUP_DTD);
 			}
 			case 142:
 				break;
 			case 61: {
-				addToken(Token.SEPARATOR);
+				addToken(TokenTypes.SEPARATOR);
 				yybegin(CSS_PROPERTY);
 			}
 			case 143:
 				break;
 			case 4: {
-				addToken(Token.MARKUP_TAG_DELIMITER);
+				addToken(TokenTypes.MARKUP_TAG_DELIMITER);
 				yybegin(INTAG);
 			}
 			case 144:
 				break;
 			case 129: {
-				addToken(Token.RESERVED_WORD_2);
+				addToken(TokenTypes.RESERVED_WORD_2);
 			}
 			case 145:
 				break;
 			case 112: {
-				addToken(start, zzStartRead + 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead + 1, TokenTypes.COMMENT_MULTILINE);
 				yybegin(cssPrevState);
 			}
 			case 146:
@@ -13912,10 +13913,10 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 37: { /* Line ending in '\' => continue to next line. */
 				if (validJSString) {
-					addToken(start, zzStartRead, Token.LITERAL_CHAR);
+					addToken(start, zzStartRead, TokenTypes.LITERAL_CHAR);
 					addEndToken(INTERNAL_IN_JS_CHAR_VALID);
 				} else {
-					addToken(start, zzStartRead, Token.ERROR_CHAR);
+					addToken(start, zzStartRead, TokenTypes.ERROR_CHAR);
 					addEndToken(INTERNAL_IN_JS_CHAR_INVALID);
 				}
 				return firstToken;
@@ -13923,25 +13924,25 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 148:
 				break;
 			case 5: {
-				addToken(Token.WHITESPACE);
+				addToken(TokenTypes.WHITESPACE);
 			}
 			case 149:
 				break;
 			case 131: {
-				addToken(zzStartRead, zzStartRead, Token.MARKUP_TAG_DELIMITER);
-				addToken(zzMarkedPos - 6, zzMarkedPos - 1, Token.MARKUP_TAG_NAME);
+				addToken(zzStartRead, zzStartRead, TokenTypes.MARKUP_TAG_DELIMITER);
+				addToken(zzMarkedPos - 6, zzMarkedPos - 1, TokenTypes.MARKUP_TAG_NAME);
 				start = zzMarkedPos;
 				yybegin(INTAG_SCRIPT);
 			}
 			case 150:
 				break;
 			case 111: {
-				addToken(Token.REGEX);
+				addToken(TokenTypes.REGEX);
 			}
 			case 151:
 				break;
 			case 42: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
 				addEndToken(INTERNAL_IN_JS_MLC);
 				return firstToken;
 			}
@@ -13949,29 +13950,29 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 135: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 				yybegin(YYINITIAL, LANG_INDEX_DEFAULT);
-				addToken(temp, temp + 1, Token.MARKUP_TAG_DELIMITER);
-				addToken(zzMarkedPos - 7, zzMarkedPos - 2, Token.MARKUP_TAG_NAME);
-				addToken(zzMarkedPos - 1, zzMarkedPos - 1, Token.MARKUP_TAG_DELIMITER);
+				addToken(temp, temp + 1, TokenTypes.MARKUP_TAG_DELIMITER);
+				addToken(zzMarkedPos - 7, zzMarkedPos - 2, TokenTypes.MARKUP_TAG_NAME);
+				addToken(zzMarkedPos - 1, zzMarkedPos - 1, TokenTypes.MARKUP_TAG_DELIMITER);
 			}
 			case 153:
 				break;
 			case 106: {
-				addToken(Token.FUNCTION);
+				addToken(TokenTypes.FUNCTION);
 			}
 			case 154:
 				break;
 			case 101: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_DOCUMENTATION);
-				addToken(temp, zzMarkedPos - 1, Token.COMMENT_MARKUP);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_DOCUMENTATION);
+				addToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_MARKUP);
 				start = zzMarkedPos;
 			}
 			case 155:
 				break;
 			case 39: {
-				addToken(start, zzStartRead - 1, Token.ERROR_STRING_DOUBLE);
+				addToken(start, zzStartRead - 1, TokenTypes.ERROR_STRING_DOUBLE);
 				addEndToken(INTERNAL_IN_JS);
 				return firstToken;
 			}
@@ -13985,7 +13986,7 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 157:
 				break;
 			case 113: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_BACKQUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_BACKQUOTE);
 				start = zzMarkedPos - 2;
 				if (varDepths == null) {
 					varDepths = new Stack<>();
@@ -14001,7 +14002,7 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				if (!varDepths.empty()) {
 					varDepths.pop();
 					if (varDepths.empty()) {
-						addToken(start, zzStartRead, Token.VARIABLE);
+						addToken(start, zzStartRead, TokenTypes.VARIABLE);
 						start = zzMarkedPos;
 						yybegin(JS_TEMPLATE_LITERAL);
 					}
@@ -14011,10 +14012,10 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 78: {
 				if (validJSString) {
-					addToken(start, zzStartRead - 1, Token.LITERAL_BACKQUOTE);
+					addToken(start, zzStartRead - 1, TokenTypes.LITERAL_BACKQUOTE);
 					addEndToken(INTERNAL_IN_JS_TEMPLATE_LITERAL_VALID);
 				} else {
-					addToken(start, zzStartRead - 1, Token.ERROR_STRING_DOUBLE);
+					addToken(start, zzStartRead - 1, TokenTypes.ERROR_STRING_DOUBLE);
 					addEndToken(INTERNAL_IN_JS_TEMPLATE_LITERAL_INVALID);
 				}
 				return firstToken;
@@ -14043,31 +14044,31 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 164:
 				break;
 			case 89: {
-				addToken(Token.MARKUP_TAG_DELIMITER);
+				addToken(TokenTypes.MARKUP_TAG_DELIMITER);
 				yybegin(YYINITIAL);
 			}
 			case 165:
 				break;
 			case 28: {
 				yybegin(INTAG_STYLE);
-				addToken(start, zzStartRead, Token.MARKUP_TAG_ATTRIBUTE_VALUE);
+				addToken(start, zzStartRead, TokenTypes.MARKUP_TAG_ATTRIBUTE_VALUE);
 			}
 			case 166:
 				break;
 			case 124: {
 				if (JavaScriptTokenMaker.isJavaScriptCompatible("1.6")) {
-					addToken(Token.RESERVED_WORD);
+					addToken(TokenTypes.RESERVED_WORD);
 				} else {
-					addToken(Token.IDENTIFIER);
+					addToken(TokenTypes.IDENTIFIER);
 				}
 			}
 			case 167:
 				break;
 			case 119: {
 				if (JavaScriptTokenMaker.isJavaScriptCompatible("1.7")) {
-					addToken(Token.RESERVED_WORD);
+					addToken(TokenTypes.RESERVED_WORD);
 				} else {
-					addToken(Token.IDENTIFIER);
+					addToken(TokenTypes.IDENTIFIER);
 				}
 			}
 			case 168:
@@ -14079,7 +14080,7 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 169:
 				break;
 			case 68: {
-				/* System.out.println("css_value: " + yytext()); */ addToken(Token.IDENTIFIER);
+				/* System.out.println("css_value: " + yytext()); */ addToken(TokenTypes.IDENTIFIER);
 			}
 			case 170:
 				break;
@@ -14087,9 +14088,9 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				int temp = zzStartRead;
 				if (zzStartRead > start)
 					addToken(start, zzStartRead - 1,
-							validJSString ? Token.LITERAL_STRING_DOUBLE_QUOTE : Token.ERROR_STRING_DOUBLE);
+							validJSString ? TokenTypes.LITERAL_STRING_DOUBLE_QUOTE : TokenTypes.ERROR_STRING_DOUBLE);
 				validJSString = true;
-				addToken(temp, zzMarkedPos - 1, Token.SEPARATOR);
+				addToken(temp, zzMarkedPos - 1, TokenTypes.SEPARATOR);
 				phpInState = zzLexicalState;
 				yybegin(PHP, LANG_INDEX_PHP);
 			}
@@ -14102,13 +14103,13 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 172:
 				break;
 			case 26: {
-				addToken(Token.MARKUP_TAG_DELIMITER);
+				addToken(TokenTypes.MARKUP_TAG_DELIMITER);
 				yybegin(CSS, LANG_INDEX_CSS);
 			}
 			case 173:
 				break;
 			case 76: {
-				addToken(start, zzStartRead, Token.LITERAL_CHAR);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_CHAR);
 				yybegin(cssPrevState);
 			}
 			case 174:
@@ -14116,16 +14117,16 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 95: {
 				int temp = zzStartRead;
 				if (zzStartRead > start)
-					addToken(start, zzStartRead - 1, validJSString ? Token.LITERAL_CHAR : Token.ERROR_CHAR);
+					addToken(start, zzStartRead - 1, validJSString ? TokenTypes.LITERAL_CHAR : TokenTypes.ERROR_CHAR);
 				validJSString = true;
-				addToken(temp, zzMarkedPos - 1, Token.SEPARATOR);
+				addToken(temp, zzMarkedPos - 1, TokenTypes.SEPARATOR);
 				phpInState = zzLexicalState;
 				yybegin(PHP, LANG_INDEX_PHP);
 			}
 			case 175:
 				break;
 			case 87: {
-				addToken(Token.SEPARATOR);
+				addToken(TokenTypes.SEPARATOR);
 				phpInState = zzLexicalState;
 				yybegin(PHP, LANG_INDEX_PHP);
 			}
@@ -14147,7 +14148,7 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 179:
 				break;
 			case 7: {
-				addToken(start, zzStartRead - 1, Token.MARKUP_COMMENT);
+				addToken(start, zzStartRead - 1, TokenTypes.MARKUP_COMMENT);
 				return firstToken;
 			}
 			case 180:
@@ -14158,39 +14159,39 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 181:
 				break;
 			case 40: {
-				int type = validJSString ? Token.LITERAL_STRING_DOUBLE_QUOTE : Token.ERROR_STRING_DOUBLE;
+				int type = validJSString ? TokenTypes.LITERAL_STRING_DOUBLE_QUOTE : TokenTypes.ERROR_STRING_DOUBLE;
 				addToken(start, zzStartRead, type);
 				yybegin(JAVASCRIPT);
 			}
 			case 182:
 				break;
 			case 122: {
-				addToken(Token.COMMENT_MULTILINE);
+				addToken(TokenTypes.COMMENT_MULTILINE);
 			}
 			case 183:
 				break;
 			case 132: {
 				yybegin(YYINITIAL, LANG_INDEX_DEFAULT);
-				addToken(zzStartRead, zzStartRead + 1, Token.MARKUP_TAG_DELIMITER);
-				addToken(zzMarkedPos - 6, zzMarkedPos - 2, Token.MARKUP_TAG_NAME);
-				addToken(zzMarkedPos - 1, zzMarkedPos - 1, Token.MARKUP_TAG_DELIMITER);
+				addToken(zzStartRead, zzStartRead + 1, TokenTypes.MARKUP_TAG_DELIMITER);
+				addToken(zzMarkedPos - 6, zzMarkedPos - 2, TokenTypes.MARKUP_TAG_NAME);
+				addToken(zzMarkedPos - 1, zzMarkedPos - 1, TokenTypes.MARKUP_TAG_DELIMITER);
 			}
 			case 184:
 				break;
 			case 63: {
-				/* System.out.println("css_property: " + yytext()); */ addToken(Token.IDENTIFIER);
+				/* System.out.println("css_property: " + yytext()); */ addToken(TokenTypes.IDENTIFIER);
 			}
 			case 185:
 				break;
 			case 8: {
-				addToken(start, zzStartRead - 1, Token.MARKUP_DTD);
+				addToken(start, zzStartRead - 1, TokenTypes.MARKUP_DTD);
 				return firstToken;
 			}
 			case 186:
 				break;
 			case 84: {
 				int count = yylength();
-				addToken(zzStartRead, zzStartRead, Token.MARKUP_TAG_DELIMITER);
+				addToken(zzStartRead, zzStartRead, TokenTypes.MARKUP_TAG_DELIMITER);
 				zzMarkedPos -= (count - 1); // yypushback(count-1);
 				yybegin(INTAG_CHECK_TAG_NAME);
 			}
@@ -14206,8 +14207,8 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 189:
 				break;
 			case 130: {
-				addToken(zzStartRead, zzStartRead, Token.MARKUP_TAG_DELIMITER);
-				addToken(zzMarkedPos - 5, zzMarkedPos - 1, Token.MARKUP_TAG_NAME);
+				addToken(zzStartRead, zzStartRead, TokenTypes.MARKUP_TAG_DELIMITER);
+				addToken(zzMarkedPos - 5, zzMarkedPos - 1, TokenTypes.MARKUP_TAG_NAME);
 				start = zzMarkedPos;
 				cssPrevState = zzLexicalState;
 				yybegin(INTAG_STYLE);
@@ -14216,7 +14217,7 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 100: {
 				yybegin(JAVASCRIPT);
-				addToken(start, zzStartRead + 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead + 1, TokenTypes.COMMENT_MULTILINE);
 			}
 			case 191:
 				break;
@@ -14227,19 +14228,19 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 192:
 				break;
 			case 36: {
-				addToken(start, zzStartRead - 1, Token.ERROR_CHAR);
+				addToken(start, zzStartRead - 1, TokenTypes.ERROR_CHAR);
 				addEndToken(INTERNAL_IN_JS);
 				return firstToken;
 			}
 			case 193:
 				break;
 			case 14: {
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 			}
 			case 194:
 				break;
 			case 70: {
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 				yybegin(CSS_PROPERTY);
 			}
 			case 195:
@@ -14252,55 +14253,55 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 116: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead + 2, Token.MARKUP_COMMENT);
+				addToken(start, zzStartRead + 2, TokenTypes.MARKUP_COMMENT);
 			}
 			case 197:
 				break;
 			case 102: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead + 1, Token.COMMENT_DOCUMENTATION);
+				addToken(start, zzStartRead + 1, TokenTypes.COMMENT_DOCUMENTATION);
 			}
 			case 198:
 				break;
 			case 104: {
-				addToken(Token.VARIABLE);
+				addToken(TokenTypes.VARIABLE);
 			}
 			case 199:
 				break;
 			case 56: {
-				/* System.out.println("CSS: " + yytext()); */ addToken(Token.IDENTIFIER);
+				/* System.out.println("CSS: " + yytext()); */ addToken(TokenTypes.IDENTIFIER);
 			}
 			case 200:
 				break;
 			case 43: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_DOCUMENTATION);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_DOCUMENTATION);
 				addEndToken(INTERNAL_IN_JS_COMMENT_DOCUMENTATION);
 				return firstToken;
 			}
 			case 201:
 				break;
 			case 81: {
-				int type = validJSString ? Token.LITERAL_BACKQUOTE : Token.ERROR_STRING_DOUBLE;
+				int type = validJSString ? TokenTypes.LITERAL_BACKQUOTE : TokenTypes.ERROR_STRING_DOUBLE;
 				addToken(start, zzStartRead, type);
 				yybegin(JAVASCRIPT);
 			}
 			case 202:
 				break;
 			case 2: {
-				addToken(Token.IDENTIFIER);
+				addToken(TokenTypes.IDENTIFIER);
 			}
 			case 203:
 				break;
 			case 125: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
-				addHyperlinkToken(temp, zzMarkedPos - 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
+				addHyperlinkToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_MULTILINE);
 				start = zzMarkedPos;
 			}
 			case 204:
 				break;
 			case 22: {
-				addToken(Token.MARKUP_TAG_DELIMITER);
+				addToken(TokenTypes.MARKUP_TAG_DELIMITER);
 				yybegin(JAVASCRIPT, LANG_INDEX_JS);
 			}
 			case 205:
@@ -14308,8 +14309,8 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 88: {
 				int temp = zzStartRead;
 				if (zzStartRead > start)
-					addToken(start, zzStartRead - 1, Token.MARKUP_TAG_ATTRIBUTE_VALUE);
-				addToken(temp, zzMarkedPos - 1, Token.SEPARATOR);
+					addToken(start, zzStartRead - 1, TokenTypes.MARKUP_TAG_ATTRIBUTE_VALUE);
+				addToken(temp, zzMarkedPos - 1, TokenTypes.SEPARATOR);
 				phpInState = zzLexicalState;
 				yybegin(PHP, LANG_INDEX_PHP);
 			}
@@ -14317,8 +14318,8 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 128: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
-				addHyperlinkToken(temp, zzMarkedPos - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
+				addHyperlinkToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_EOL);
 				start = zzMarkedPos;
 			}
 			case 207:
@@ -14334,7 +14335,7 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 209:
 				break;
 			case 66: {
-				addToken(Token.SEPARATOR);
+				addToken(TokenTypes.SEPARATOR);
 				yybegin(CSS);
 			}
 			case 210:
@@ -14348,10 +14349,10 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 134: {
 				yybegin(YYINITIAL);
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
-				addToken(temp, temp + 1, Token.MARKUP_TAG_DELIMITER);
-				addToken(zzMarkedPos - 7, zzMarkedPos - 2, Token.MARKUP_TAG_NAME);
-				addToken(zzMarkedPos - 1, zzMarkedPos - 1, Token.MARKUP_TAG_DELIMITER);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
+				addToken(temp, temp + 1, TokenTypes.MARKUP_TAG_DELIMITER);
+				addToken(zzMarkedPos - 7, zzMarkedPos - 2, TokenTypes.MARKUP_TAG_NAME);
+				addToken(zzMarkedPos - 1, zzMarkedPos - 1, TokenTypes.MARKUP_TAG_DELIMITER);
 			}
 			case 212:
 				break;
@@ -14363,17 +14364,17 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 213:
 				break;
 			case 74: {
-				addToken(start, zzStartRead, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				yybegin(cssPrevState);
 			}
 			case 214:
 				break;
 			case 79: {
 				if (validJSString) {
-					addToken(start, zzStartRead, Token.LITERAL_BACKQUOTE);
+					addToken(start, zzStartRead, TokenTypes.LITERAL_BACKQUOTE);
 					addEndToken(INTERNAL_IN_JS_TEMPLATE_LITERAL_VALID);
 				} else {
-					addToken(start, zzStartRead, Token.ERROR_STRING_DOUBLE);
+					addToken(start, zzStartRead, TokenTypes.ERROR_STRING_DOUBLE);
 					addEndToken(INTERNAL_IN_JS_TEMPLATE_LITERAL_INVALID);
 				}
 				return firstToken;
@@ -14393,7 +14394,7 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 217:
 				break;
 			case 38: {
-				int type = validJSString ? Token.LITERAL_CHAR : Token.ERROR_CHAR;
+				int type = validJSString ? TokenTypes.LITERAL_CHAR : TokenTypes.ERROR_CHAR;
 				addToken(start, zzStartRead, type);
 				yybegin(JAVASCRIPT);
 			}
@@ -14401,7 +14402,7 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 107: {
 				int count = yylength();
-				addToken(zzStartRead, zzStartRead, Token.FUNCTION);
+				addToken(zzStartRead, zzStartRead, TokenTypes.FUNCTION);
 				zzMarkedPos -= (count - 1); // yypushback(count-1);
 			}
 			case 219:
@@ -14414,15 +14415,15 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 220:
 				break;
 			case 24: {
-				addToken(start, zzStartRead, Token.MARKUP_TAG_ATTRIBUTE_VALUE);
+				addToken(start, zzStartRead, TokenTypes.MARKUP_TAG_ATTRIBUTE_VALUE);
 				yybegin(INTAG_SCRIPT);
 			}
 			case 221:
 				break;
 			case 126: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_DOCUMENTATION);
-				addHyperlinkToken(temp, zzMarkedPos - 1, Token.COMMENT_DOCUMENTATION);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_DOCUMENTATION);
+				addHyperlinkToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_DOCUMENTATION);
 				start = zzMarkedPos;
 			}
 			case 222:
@@ -14434,44 +14435,44 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 223:
 				break;
 			case 94: {
-				addToken(Token.LITERAL_NUMBER_HEXADECIMAL);
+				addToken(TokenTypes.LITERAL_NUMBER_HEXADECIMAL);
 			}
 			case 224:
 				break;
 			case 72: {
 				int temp = zzMarkedPos - 2;
-				addToken(zzStartRead, temp, Token.FUNCTION);
-				addToken(zzMarkedPos - 1, zzMarkedPos - 1, Token.SEPARATOR);
+				addToken(zzStartRead, temp, TokenTypes.FUNCTION);
+				addToken(zzMarkedPos - 1, zzMarkedPos - 1, TokenTypes.SEPARATOR);
 				zzStartRead = zzCurrentPos = zzMarkedPos;
 			}
 			case 225:
 				break;
 			case 50: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				addPhpEndToken(INTERNAL_IN_PHP_STRING);
 				return firstToken;
 			}
 			case 226:
 				break;
 			case 136: {
-				addToken(Token.ANNOTATION);
+				addToken(TokenTypes.ANNOTATION);
 			}
 			case 227:
 				break;
 			case 108: {
 				yybegin(PHP);
-				addToken(start, zzStartRead + 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead + 1, TokenTypes.COMMENT_MULTILINE);
 			}
 			case 228:
 				break;
 			case 51: {
 				yybegin(PHP);
-				addToken(start, zzStartRead, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 			}
 			case 229:
 				break;
 			case 29: {
-				addToken(Token.ERROR_IDENTIFIER);
+				addToken(TokenTypes.ERROR_IDENTIFIER);
 			}
 			case 230:
 				break;
@@ -14483,19 +14484,19 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 121: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.MARKUP_COMMENT);
-				addHyperlinkToken(temp, zzMarkedPos - 1, Token.MARKUP_COMMENT);
+				addToken(start, zzStartRead - 1, TokenTypes.MARKUP_COMMENT);
+				addHyperlinkToken(temp, zzMarkedPos - 1, TokenTypes.MARKUP_COMMENT);
 				start = zzMarkedPos;
 			}
 			case 232:
 				break;
 			case 6: {
-				addToken(Token.MARKUP_ENTITY_REFERENCE);
+				addToken(TokenTypes.MARKUP_ENTITY_REFERENCE);
 			}
 			case 233:
 				break;
 			case 123: {
-				addToken(Token.LITERAL_BOOLEAN);
+				addToken(TokenTypes.LITERAL_BOOLEAN);
 			}
 			case 234:
 				break;
@@ -14519,9 +14520,9 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 133: {
 				yybegin(YYINITIAL, LANG_INDEX_DEFAULT);
-				addToken(zzStartRead, zzStartRead + 1, Token.MARKUP_TAG_DELIMITER);
-				addToken(zzMarkedPos - 7, zzMarkedPos - 2, Token.MARKUP_TAG_NAME);
-				addToken(zzMarkedPos - 1, zzMarkedPos - 1, Token.MARKUP_TAG_DELIMITER);
+				addToken(zzStartRead, zzStartRead + 1, TokenTypes.MARKUP_TAG_DELIMITER);
+				addToken(zzMarkedPos - 7, zzMarkedPos - 2, TokenTypes.MARKUP_TAG_NAME);
+				addToken(zzMarkedPos - 1, zzMarkedPos - 1, TokenTypes.MARKUP_TAG_DELIMITER);
 			}
 			case 238:
 				break;
@@ -14533,14 +14534,14 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 239:
 				break;
 			case 86: {
-				addToken(Token.MARKUP_TAG_DELIMITER);
+				addToken(TokenTypes.MARKUP_TAG_DELIMITER);
 				phpInState = zzLexicalState;
 				yybegin(PHP, LANG_INDEX_PHP);
 			}
 			case 240:
 				break;
 			case 65: {
-				addToken(Token.RESERVED_WORD);
+				addToken(TokenTypes.RESERVED_WORD);
 			}
 			case 241:
 				break;
@@ -14551,7 +14552,7 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 242:
 				break;
 			case 47: {
-				addToken(Token.COMMENT_EOL);
+				addToken(TokenTypes.COMMENT_EOL);
 				addPhpEndToken(INTERNAL_IN_PHP);
 				return firstToken;
 			}
@@ -14559,17 +14560,17 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 13: {
 				yybegin(YYINITIAL);
-				addToken(Token.MARKUP_TAG_DELIMITER);
+				addToken(TokenTypes.MARKUP_TAG_DELIMITER);
 			}
 			case 244:
 				break;
 			case 59: {
-				addToken(Token.DATA_TYPE);
+				addToken(TokenTypes.DATA_TYPE);
 			}
 			case 245:
 				break;
 			case 53: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_CHAR);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_CHAR);
 				addPhpEndToken(INTERNAL_IN_PHP_CHAR);
 				return firstToken;
 			}
@@ -14577,49 +14578,49 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 55: {
 				yybegin(PHP);
-				addToken(start, zzStartRead, Token.LITERAL_CHAR);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_CHAR);
 			}
 			case 247:
 				break;
 			case 33: {
-				addToken(Token.SEPARATOR);
+				addToken(TokenTypes.SEPARATOR);
 			}
 			case 248:
 				break;
 			case 115: {
 				int count = yylength();
-				addToken(zzStartRead, zzStartRead + 1, Token.MARKUP_TAG_DELIMITER);
+				addToken(zzStartRead, zzStartRead + 1, TokenTypes.MARKUP_TAG_DELIMITER);
 				zzMarkedPos -= (count - 2); // yypushback(count-2);
 				yybegin(INTAG_CHECK_TAG_NAME);
 			}
 			case 249:
 				break;
 			case 73: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				addEndToken(INTERNAL_CSS_STRING - cssPrevState);
 				return firstToken;
 			}
 			case 250:
 				break;
 			case 71: {
-				/* End of a function */ addToken(Token.SEPARATOR);
+				/* End of a function */ addToken(TokenTypes.SEPARATOR);
 			}
 			case 251:
 				break;
 			case 18: {
-				addToken(Token.MARKUP_TAG_NAME);
+				addToken(TokenTypes.MARKUP_TAG_NAME);
 			}
 			case 252:
 				break;
 			case 10: {
-				addToken(Token.MARKUP_TAG_ATTRIBUTE);
+				addToken(TokenTypes.MARKUP_TAG_ATTRIBUTE);
 			}
 			case 253:
 				break;
 			case 127: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_DOCUMENTATION);
-				addToken(temp, zzMarkedPos - 1, Token.COMMENT_KEYWORD);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_DOCUMENTATION);
+				addToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_KEYWORD);
 				start = zzMarkedPos;
 			}
 			case 254:
@@ -14632,7 +14633,7 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 105: {
 				yybegin(phpInState, phpInLangIndex);
-				addToken(Token.MARKUP_TAG_DELIMITER);
+				addToken(TokenTypes.MARKUP_TAG_DELIMITER);
 				start = zzMarkedPos;
 			}
 			case 256:
@@ -14645,10 +14646,10 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 41: { /* Line ending in '\' => continue to next line. */
 				if (validJSString) {
-					addToken(start, zzStartRead, Token.LITERAL_STRING_DOUBLE_QUOTE);
+					addToken(start, zzStartRead, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 					addEndToken(INTERNAL_IN_JS_STRING_VALID);
 				} else {
-					addToken(start, zzStartRead, Token.ERROR_STRING_DOUBLE);
+					addToken(start, zzStartRead, TokenTypes.ERROR_STRING_DOUBLE);
 					addEndToken(INTERNAL_IN_JS_STRING_INVALID);
 				}
 				return firstToken;
@@ -14656,7 +14657,7 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 258:
 				break;
 			case 93: {
-				addToken(Token.LITERAL_NUMBER_FLOAT);
+				addToken(TokenTypes.LITERAL_NUMBER_FLOAT);
 			}
 			case 259:
 				break;
@@ -14669,14 +14670,14 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 117: {
 				boolean highlightedAsRegex = false;
 				if (firstToken == null) {
-					addToken(Token.REGEX);
+					addToken(TokenTypes.REGEX);
 					highlightedAsRegex = true;
 				} else {
 					// If this is *likely* to be a regex, based on
 					// the previous token, highlight it as such.
 					Token t = firstToken.getLastNonCommentNonWhitespaceToken();
 					if (RSyntaxUtilities.regexCanFollowInJavaScript(t)) {
-						addToken(Token.REGEX);
+						addToken(TokenTypes.REGEX);
 						highlightedAsRegex = true;
 					}
 				}
@@ -14684,26 +14685,26 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				// individual tokens.
 				if (!highlightedAsRegex) {
 					int temp = zzStartRead + 1;
-					addToken(zzStartRead, zzStartRead, Token.OPERATOR);
+					addToken(zzStartRead, zzStartRead, TokenTypes.OPERATOR);
 					zzStartRead = zzCurrentPos = zzMarkedPos = temp;
 				}
 			}
 			case 261:
 				break;
 			case 77: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
 				addEndToken(INTERNAL_CSS_MLC - cssPrevState);
 				return firstToken;
 			}
 			case 262:
 				break;
 			case 12: {
-				addToken(Token.MARKUP_TAG_DELIMITER);
+				addToken(TokenTypes.MARKUP_TAG_DELIMITER);
 			}
 			case 263:
 				break;
 			case 32: {
-				addToken(Token.LITERAL_NUMBER_DECIMAL_INT);
+				addToken(TokenTypes.LITERAL_NUMBER_DECIMAL_INT);
 			}
 			case 264:
 				break;
@@ -14714,13 +14715,13 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 265:
 				break;
 			case 20: {
-				addToken(start, zzStartRead, Token.MARKUP_TAG_ATTRIBUTE_VALUE);
+				addToken(start, zzStartRead, TokenTypes.MARKUP_TAG_ATTRIBUTE_VALUE);
 				yybegin(INTAG);
 			}
 			case 266:
 				break;
 			case 49: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
 				addPhpEndToken(INTERNAL_IN_PHP_MLC);
 				return firstToken;
 			}
@@ -14733,7 +14734,7 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 			case 268:
 				break;
 			case 44: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 				addEndToken(INTERNAL_IN_JS);
 				return firstToken;
 			}
@@ -14741,14 +14742,14 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 82: { // TODO: This isn't right. The expression and its depth should continue to the
 						// next line.
-				addToken(start, zzStartRead - 1, Token.VARIABLE);
+				addToken(start, zzStartRead - 1, TokenTypes.VARIABLE);
 				addEndToken(INTERNAL_IN_JS_TEMPLATE_LITERAL_INVALID);
 				return firstToken;
 			}
 			case 270:
 				break;
 			case 60: {
-				/* Unknown pseudo class */ addToken(Token.DATA_TYPE);
+				/* Unknown pseudo class */ addToken(TokenTypes.DATA_TYPE);
 			}
 			case 271:
 				break;
@@ -14767,21 +14768,21 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 					case 8199:
 						break;
 					case INATTR_SINGLE_SCRIPT: {
-						addToken(start, zzStartRead - 1, Token.MARKUP_TAG_ATTRIBUTE_VALUE);
+						addToken(start, zzStartRead - 1, TokenTypes.MARKUP_TAG_ATTRIBUTE_VALUE);
 						addEndToken(INTERNAL_ATTR_SINGLE_QUOTE_SCRIPT);
 						return firstToken;
 					}
 					case 8200:
 						break;
 					case JS_CHAR: {
-						addToken(start, zzStartRead - 1, Token.ERROR_CHAR);
+						addToken(start, zzStartRead - 1, TokenTypes.ERROR_CHAR);
 						addEndToken(INTERNAL_IN_JS);
 						return firstToken;
 					}
 					case 8201:
 						break;
 					case CSS_STRING: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 						addEndToken(INTERNAL_CSS_STRING - cssPrevState);
 						return firstToken;
 					}
@@ -14789,21 +14790,21 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 						break;
 					case JS_DOCCOMMENT: {
 						yybegin(YYINITIAL);
-						addToken(start, zzEndRead, Token.COMMENT_DOCUMENTATION);
+						addToken(start, zzEndRead, TokenTypes.COMMENT_DOCUMENTATION);
 						addEndToken(INTERNAL_IN_JS_COMMENT_DOCUMENTATION);
 						return firstToken;
 					}
 					case 8203:
 						break;
 					case JS_MLC: {
-						addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
+						addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
 						addEndToken(INTERNAL_IN_JS_MLC);
 						return firstToken;
 					}
 					case 8204:
 						break;
 					case CSS_CHAR_LITERAL: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_CHAR);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_CHAR);
 						addEndToken(INTERNAL_CSS_CHAR - cssPrevState);
 						return firstToken;
 					}
@@ -14818,7 +14819,7 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 					case JS_TEMPLATE_LITERAL_EXPR: {
 						// TODO: This isn't right. The expression and its depth should continue to the
 						// next line.
-						addToken(start, zzStartRead - 1, Token.VARIABLE);
+						addToken(start, zzStartRead - 1, TokenTypes.VARIABLE);
 						addEndToken(INTERNAL_IN_JS_TEMPLATE_LITERAL_INVALID);
 						return firstToken;
 					}
@@ -14831,14 +14832,14 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 					case 8208:
 						break;
 					case CSS_C_STYLE_COMMENT: {
-						addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
+						addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
 						addEndToken(INTERNAL_CSS_MLC - cssPrevState);
 						return firstToken;
 					}
 					case 8209:
 						break;
 					case PHP_MLC: {
-						addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
+						addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
 						addPhpEndToken(INTERNAL_IN_PHP_MLC);
 						return firstToken;
 					}
@@ -14857,20 +14858,20 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 					case 8212:
 						break;
 					case COMMENT: {
-						addToken(start, zzStartRead - 1, Token.MARKUP_COMMENT);
+						addToken(start, zzStartRead - 1, TokenTypes.MARKUP_COMMENT);
 						return firstToken;
 					}
 					case 8213:
 						break;
 					case INATTR_DOUBLE_SCRIPT: {
-						addToken(start, zzStartRead - 1, Token.MARKUP_TAG_ATTRIBUTE_VALUE);
+						addToken(start, zzStartRead - 1, TokenTypes.MARKUP_TAG_ATTRIBUTE_VALUE);
 						addEndToken(INTERNAL_ATTR_DOUBLE_QUOTE_SCRIPT);
 						return firstToken;
 					}
 					case 8214:
 						break;
 					case PHP_STRING: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 						addPhpEndToken(INTERNAL_IN_PHP_STRING);
 						return firstToken;
 					}
@@ -14895,41 +14896,41 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 					case 8218:
 						break;
 					case INATTR_SINGLE_STYLE: {
-						addToken(start, zzStartRead - 1, Token.MARKUP_TAG_ATTRIBUTE_VALUE);
+						addToken(start, zzStartRead - 1, TokenTypes.MARKUP_TAG_ATTRIBUTE_VALUE);
 						addEndToken(INTERNAL_ATTR_SINGLE_QUOTE_STYLE);
 						return firstToken;
 					}
 					case 8219:
 						break;
 					case DTD: {
-						addToken(start, zzStartRead - 1, Token.MARKUP_DTD);
+						addToken(start, zzStartRead - 1, TokenTypes.MARKUP_DTD);
 						return firstToken;
 					}
 					case 8220:
 						break;
 					case PHP_CHAR: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_CHAR);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_CHAR);
 						addPhpEndToken(INTERNAL_IN_PHP_CHAR);
 						return firstToken;
 					}
 					case 8221:
 						break;
 					case JS_EOL_COMMENT: {
-						addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+						addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 						addEndToken(INTERNAL_IN_JS);
 						return firstToken;
 					}
 					case 8222:
 						break;
 					case INATTR_DOUBLE_STYLE: {
-						addToken(start, zzStartRead - 1, Token.MARKUP_TAG_ATTRIBUTE_VALUE);
+						addToken(start, zzStartRead - 1, TokenTypes.MARKUP_TAG_ATTRIBUTE_VALUE);
 						addEndToken(INTERNAL_ATTR_DOUBLE_QUOTE_STYLE);
 						return firstToken;
 					}
 					case 8223:
 						break;
 					case INATTR_SINGLE: {
-						addToken(start, zzStartRead - 1, Token.MARKUP_TAG_ATTRIBUTE_VALUE);
+						addToken(start, zzStartRead - 1, TokenTypes.MARKUP_TAG_ATTRIBUTE_VALUE);
 						addEndToken(INTERNAL_ATTR_SINGLE);
 						return firstToken;
 					}
@@ -14937,10 +14938,10 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 						break;
 					case JS_TEMPLATE_LITERAL: {
 						if (validJSString) {
-							addToken(start, zzStartRead - 1, Token.LITERAL_BACKQUOTE);
+							addToken(start, zzStartRead - 1, TokenTypes.LITERAL_BACKQUOTE);
 							addEndToken(INTERNAL_IN_JS_TEMPLATE_LITERAL_VALID);
 						} else {
-							addToken(start, zzStartRead - 1, Token.ERROR_STRING_DOUBLE);
+							addToken(start, zzStartRead - 1, TokenTypes.ERROR_STRING_DOUBLE);
 							addEndToken(INTERNAL_IN_JS_TEMPLATE_LITERAL_INVALID);
 						}
 						return firstToken;
@@ -14954,14 +14955,14 @@ public class PHPTokenMaker extends AbstractMarkupTokenMaker {
 					case 8226:
 						break;
 					case INATTR_DOUBLE: {
-						addToken(start, zzStartRead - 1, Token.MARKUP_TAG_ATTRIBUTE_VALUE);
+						addToken(start, zzStartRead - 1, TokenTypes.MARKUP_TAG_ATTRIBUTE_VALUE);
 						addEndToken(INTERNAL_ATTR_DOUBLE);
 						return firstToken;
 					}
 					case 8227:
 						break;
 					case JS_STRING: {
-						addToken(start, zzStartRead - 1, Token.ERROR_STRING_DOUBLE);
+						addToken(start, zzStartRead - 1, TokenTypes.ERROR_STRING_DOUBLE);
 						addEndToken(INTERNAL_IN_JS);
 						return firstToken;
 					}

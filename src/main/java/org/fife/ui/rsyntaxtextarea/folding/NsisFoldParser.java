@@ -16,6 +16,7 @@ import javax.swing.text.BadLocationException;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Token;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * A fold parser NSIS.
@@ -38,7 +39,7 @@ public class NsisFoldParser implements FoldParser {
 	protected static final char[] C_MLC_END = "*/".toCharArray();
 
 	private static boolean foundEndKeyword(char[] keyword, Token t, Stack<char[]> endWordStack) {
-		return t.is(Token.RESERVED_WORD, keyword) && !endWordStack.isEmpty() && keyword == endWordStack.peek();
+		return t.is(TokenTypes.RESERVED_WORD, keyword) && !endWordStack.isEmpty() && keyword == endWordStack.peek();
 	}
 
 	/**
@@ -87,7 +88,7 @@ public class NsisFoldParser implements FoldParser {
 							// another line.
 						} else {
 							// If we're an MLC that ends on a later line...
-							if (t.getType() != Token.COMMENT_EOL && !t.endsWith(C_MLC_END)) {
+							if (t.getType() != TokenTypes.COMMENT_EOL && !t.endsWith(C_MLC_END)) {
 								// System.out.println("Starting MLC at: " + t.offset);
 								inMLC = true;
 								mlcStart = t.getOffset();
@@ -96,7 +97,7 @@ public class NsisFoldParser implements FoldParser {
 
 					}
 
-					else if (t.is(Token.RESERVED_WORD, KEYWORD_SECTION)) {
+					else if (t.is(TokenTypes.RESERVED_WORD, KEYWORD_SECTION)) {
 						if (currentFold == null) {
 							currentFold = new Fold(FoldType.CODE, textArea, t.getOffset());
 							folds.add(currentFold);
@@ -106,7 +107,7 @@ public class NsisFoldParser implements FoldParser {
 						endWordStack.push(KEYWORD_SECTION_END);
 					}
 
-					else if (t.is(Token.RESERVED_WORD, KEYWORD_FUNCTION)) {
+					else if (t.is(TokenTypes.RESERVED_WORD, KEYWORD_FUNCTION)) {
 						if (currentFold == null) {
 							currentFold = new Fold(FoldType.CODE, textArea, t.getOffset());
 							folds.add(currentFold);

@@ -18,6 +18,7 @@ import javax.swing.text.Segment;
 import org.fife.ui.rsyntaxtextarea.AbstractJFlexTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * Scanner for Ruby.
@@ -731,7 +732,7 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 	 */
 	@Override
 	public boolean getMarkOccurrencesOfTokenType(int type) {
-		return type == Token.IDENTIFIER || type == Token.VARIABLE;
+		return type == TokenTypes.IDENTIFIER || type == TokenTypes.VARIABLE;
 	}
 
 	/**
@@ -753,21 +754,21 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 		this.offsetShift = -text.offset + startOffset;
 
 		// Start off in the proper state.
-		int state = Token.NULL;
+		int state = TokenTypes.NULL;
 		switch (initialTokenType) {
-		case Token.COMMENT_DOCUMENTATION:
+		case TokenTypes.COMMENT_DOCUMENTATION:
 			state = DOCCOMMENT;
 			start = text.offset;
 			break;
-		case Token.LITERAL_STRING_DOUBLE_QUOTE:
+		case TokenTypes.LITERAL_STRING_DOUBLE_QUOTE:
 			state = STRING;
 			start = text.offset;
 			break;
-		case Token.LITERAL_CHAR:
+		case TokenTypes.LITERAL_CHAR:
 			state = CHAR_LITERAL;
 			start = text.offset;
 			break;
-		case Token.LITERAL_BACKQUOTE:
+		case TokenTypes.LITERAL_BACKQUOTE:
 			state = BACKTICKS;
 			start = text.offset;
 			break;
@@ -820,7 +821,7 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 			start = text.offset;
 			break;
 		default:
-			state = Token.NULL;
+			state = TokenTypes.NULL;
 		}
 
 		s = text;
@@ -1090,37 +1091,37 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 			case 52:
 				break;
 			case 2: {
-				addToken(Token.IDENTIFIER);
+				addToken(TokenTypes.IDENTIFIER);
 			}
 			case 53:
 				break;
 			case 45: {
-				addToken(Token.LITERAL_BOOLEAN);
+				addToken(TokenTypes.LITERAL_BOOLEAN);
 			}
 			case 54:
 				break;
 			case 32: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_DOCUMENTATION);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_DOCUMENTATION);
 				return firstToken;
 			}
 			case 55:
 				break;
 			case 19: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				addEndToken(INTERNAL_STRING_Q_PAREN);
 				return firstToken;
 			}
 			case 56:
 				break;
 			case 18: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				addEndToken(INTERNAL_STRING_Q_CURLY_BRACE);
 				return firstToken;
 			}
 			case 57:
 				break;
 			case 20: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				addEndToken(INTERNAL_STRING_Q_SLASH);
 				return firstToken;
 			}
@@ -1128,7 +1129,7 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 				break;
 			case 46: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead + 3, Token.COMMENT_DOCUMENTATION);
+				addToken(start, zzStartRead + 3, TokenTypes.COMMENT_DOCUMENTATION);
 			}
 			case 59:
 				break;
@@ -1140,7 +1141,7 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 				break;
 			case 44: {
 				if (start == zzStartRead) {
-					addToken(Token.PREPROCESSOR);
+					addToken(TokenTypes.PREPROCESSOR);
 					addNullToken();
 					return firstToken;
 				}
@@ -1148,36 +1149,36 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 			case 61:
 				break;
 			case 9: {
-				addToken(Token.FUNCTION);
+				addToken(TokenTypes.FUNCTION);
 			}
 			case 62:
 				break;
 			case 22: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				addEndToken(INTERNAL_STRING_Q_LT);
 				return firstToken;
 			}
 			case 63:
 				break;
 			case 42: {
-				addToken(Token.VARIABLE);
+				addToken(TokenTypes.VARIABLE);
 			}
 			case 64:
 				break;
 			case 1: {
-				addToken(Token.ERROR_IDENTIFIER);
+				addToken(TokenTypes.ERROR_IDENTIFIER);
 			}
 			case 65:
 				break;
 			case 31: {
-				addToken(start, zzStartRead - 1, Token.PREPROCESSOR);
+				addToken(start, zzStartRead - 1, TokenTypes.PREPROCESSOR);
 				addEndToken(INTERNAL_HEREDOC_EOT_SINGLE_QUOTED);
 				return firstToken;
 			}
 			case 66:
 				break;
 			case 4: {
-				addToken(Token.COMMENT_EOL);
+				addToken(TokenTypes.COMMENT_EOL);
 				addNullToken();
 				return firstToken;
 			}
@@ -1213,36 +1214,36 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 				break;
 			case 25: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead, Token.LITERAL_CHAR);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_CHAR);
 			}
 			case 73:
 				break;
 			case 43: {
-				addToken(Token.LITERAL_NUMBER_HEXADECIMAL);
+				addToken(TokenTypes.LITERAL_NUMBER_HEXADECIMAL);
 			}
 			case 74:
 				break;
 			case 28: {
-				addToken(start, zzStartRead - 1, Token.PREPROCESSOR);
+				addToken(start, zzStartRead - 1, TokenTypes.PREPROCESSOR);
 				addEndToken(INTERNAL_HEREDOC_EOF_UNQUOTED);
 				return firstToken;
 			}
 			case 75:
 				break;
 			case 6: {
-				addToken(Token.WHITESPACE);
+				addToken(TokenTypes.WHITESPACE);
 			}
 			case 76:
 				break;
 			case 17: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				addEndToken(INTERNAL_STRING_Q_BANG);
 				return firstToken;
 			}
 			case 77:
 				break;
 			case 35: {
-				addToken(Token.PREPROCESSOR);
+				addToken(TokenTypes.PREPROCESSOR);
 			}
 			case 78:
 				break;
@@ -1253,7 +1254,7 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 			case 79:
 				break;
 			case 3: {
-				addToken(Token.LITERAL_NUMBER_DECIMAL_INT);
+				addToken(TokenTypes.LITERAL_NUMBER_DECIMAL_INT);
 			}
 			case 80:
 				break;
@@ -1265,13 +1266,13 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 				break;
 			case 27: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead, Token.LITERAL_BACKQUOTE);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_BACKQUOTE);
 			}
 			case 82:
 				break;
 			case 16: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 			}
 			case 83:
 				break;
@@ -1286,7 +1287,7 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 			case 85:
 				break;
 			case 30: {
-				addToken(start, zzStartRead - 1, Token.PREPROCESSOR);
+				addToken(start, zzStartRead - 1, TokenTypes.PREPROCESSOR);
 				addEndToken(INTERNAL_HEREDOC_EOT_UNQUOTED);
 				return firstToken;
 			}
@@ -1299,12 +1300,12 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 			case 87:
 				break;
 			case 34: {
-				addToken(Token.RESERVED_WORD);
+				addToken(TokenTypes.RESERVED_WORD);
 			}
 			case 88:
 				break;
 			case 26: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_BACKQUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_BACKQUOTE);
 				return firstToken;
 			}
 			case 89:
@@ -1316,7 +1317,7 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 			case 90:
 				break;
 			case 8: {
-				addToken(Token.SEPARATOR);
+				addToken(TokenTypes.SEPARATOR);
 			}
 			case 91:
 				break;
@@ -1327,7 +1328,7 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 			case 92:
 				break;
 			case 21: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				addEndToken(INTERNAL_STRING_Q_SQUARE_BRACKET);
 				return firstToken;
 			}
@@ -1340,18 +1341,18 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 			case 94:
 				break;
 			case 7: {
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 			}
 			case 95:
 				break;
 			case 24: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_CHAR);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_CHAR);
 				return firstToken;
 			}
 			case 96:
 				break;
 			case 33: {
-				addToken(Token.LITERAL_NUMBER_FLOAT);
+				addToken(TokenTypes.LITERAL_NUMBER_FLOAT);
 			}
 			case 97:
 				break;
@@ -1372,13 +1373,13 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 			case 100:
 				break;
 			case 15: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				return firstToken;
 			}
 			case 101:
 				break;
 			case 29: {
-				addToken(start, zzStartRead - 1, Token.PREPROCESSOR);
+				addToken(start, zzStartRead - 1, TokenTypes.PREPROCESSOR);
 				addEndToken(INTERNAL_HEREDOC_EOF_SINGLE_QUOTED);
 				return firstToken;
 			}
@@ -1389,7 +1390,7 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 					zzAtEOF = true;
 					switch (zzLexicalState) {
 					case HEREDOC_EOF_SINGLE_QUOTED: {
-						addToken(start, zzStartRead - 1, Token.PREPROCESSOR);
+						addToken(start, zzStartRead - 1, TokenTypes.PREPROCESSOR);
 						addEndToken(INTERNAL_HEREDOC_EOF_SINGLE_QUOTED);
 						return firstToken;
 					}
@@ -1397,54 +1398,54 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 						break;
 					case DOCCOMMENT: {
 						yybegin(YYINITIAL);
-						addToken(start, zzEndRead, Token.COMMENT_DOCUMENTATION);
+						addToken(start, zzEndRead, TokenTypes.COMMENT_DOCUMENTATION);
 						return firstToken;
 					}
 					case 349:
 						break;
 					case HEREDOC_EOT_SINGLE_QUOTED: {
-						addToken(start, zzStartRead - 1, Token.PREPROCESSOR);
+						addToken(start, zzStartRead - 1, TokenTypes.PREPROCESSOR);
 						addEndToken(INTERNAL_HEREDOC_EOT_SINGLE_QUOTED);
 						return firstToken;
 					}
 					case 350:
 						break;
 					case HEREDOC_EOT_UNQUOTED: {
-						addToken(start, zzStartRead - 1, Token.PREPROCESSOR);
+						addToken(start, zzStartRead - 1, TokenTypes.PREPROCESSOR);
 						addEndToken(INTERNAL_HEREDOC_EOT_UNQUOTED);
 						return firstToken;
 					}
 					case 351:
 						break;
 					case STRING_Q_SLASH: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 						addEndToken(INTERNAL_STRING_Q_SLASH);
 						return firstToken;
 					}
 					case 352:
 						break;
 					case STRING_Q_BANG: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 						addEndToken(INTERNAL_STRING_Q_BANG);
 						return firstToken;
 					}
 					case 353:
 						break;
 					case STRING_Q_LT: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 						addEndToken(INTERNAL_STRING_Q_LT);
 						return firstToken;
 					}
 					case 354:
 						break;
 					case STRING: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 						return firstToken;
 					}
 					case 355:
 						break;
 					case BACKTICKS: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_BACKQUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_BACKQUOTE);
 						return firstToken;
 					}
 					case 356:
@@ -1456,34 +1457,34 @@ public class RubyTokenMaker extends AbstractJFlexTokenMaker {
 					case 357:
 						break;
 					case HEREDOC_EOF_UNQUOTED: {
-						addToken(start, zzStartRead - 1, Token.PREPROCESSOR);
+						addToken(start, zzStartRead - 1, TokenTypes.PREPROCESSOR);
 						addEndToken(INTERNAL_HEREDOC_EOF_UNQUOTED);
 						return firstToken;
 					}
 					case 358:
 						break;
 					case STRING_Q_CURLY_BRACE: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 						addEndToken(INTERNAL_STRING_Q_CURLY_BRACE);
 						return firstToken;
 					}
 					case 359:
 						break;
 					case STRING_Q_PAREN: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 						addEndToken(INTERNAL_STRING_Q_PAREN);
 						return firstToken;
 					}
 					case 360:
 						break;
 					case CHAR_LITERAL: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_CHAR);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_CHAR);
 						return firstToken;
 					}
 					case 361:
 						break;
 					case STRING_Q_SQUARE_BRACKET: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 						addEndToken(INTERNAL_STRING_Q_SQUARE_BRACKET);
 						return firstToken;
 					}

@@ -19,6 +19,7 @@ import java.nio.charset.UnsupportedCharsetException;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Document;
 
 import org.fife.io.UnicodeReader;
@@ -287,7 +288,7 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 	 * @see #setLineSeparator(String, boolean)
 	 */
 	public Object getLineSeparator() {
-		return getDocument().getProperty(RTextAreaEditorKit.EndOfLineStringProperty);
+		return getDocument().getProperty(DefaultEditorKit.EndOfLineStringProperty);
 	}
 
 	/**
@@ -694,9 +695,9 @@ public class TextEditorPane extends RSyntaxTextArea implements DocumentListener 
 			throw new IllegalArgumentException("Invalid line terminator");
 		}
 		Document doc = getDocument();
-		Object old = doc.getProperty(RTextAreaEditorKit.EndOfLineStringProperty);
+		Object old = doc.getProperty(DefaultEditorKit.EndOfLineStringProperty);
 		if (!separator.equals(old)) {
-			doc.putProperty(RTextAreaEditorKit.EndOfLineStringProperty, separator);
+			doc.putProperty(DefaultEditorKit.EndOfLineStringProperty, separator);
 			if (setDirty) {
 				setDirty(true);
 			}

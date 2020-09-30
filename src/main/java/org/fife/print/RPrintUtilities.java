@@ -15,6 +15,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
+import java.text.CharacterIterator;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -522,7 +523,7 @@ public abstract class RPrintUtilities {
 	private static Segment removeEndingWhitespace(Segment segment) {
 		int toTrim = 0;
 		char currentChar = segment.setIndex(segment.getEndIndex() - 1);
-		while ((currentChar == ' ' || currentChar == '\t') && currentChar != Segment.DONE) {
+		while ((currentChar == ' ' || currentChar == '\t') && currentChar != CharacterIterator.DONE) {
 			toTrim++;
 			currentChar = segment.previous();
 		}

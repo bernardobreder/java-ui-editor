@@ -18,6 +18,7 @@ import javax.swing.text.Segment;
 import org.fife.ui.rsyntaxtextarea.AbstractJFlexTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * Scanner for the Clojure programming language.
@@ -1134,18 +1135,18 @@ public class ClojureTokenMaker extends AbstractJFlexTokenMaker {
 		this.offsetShift = -text.offset + startOffset;
 
 		// Start off in the proper state.
-		int state = Token.NULL;
+		int state = TokenTypes.NULL;
 		switch (initialTokenType) {
 		/*
 		 * case Token.COMMENT_MULTILINE: state = MLC; start = text.offset; break; case
 		 * Token.COMMENT_DOCUMENTATION: state = DOCCOMMENT; start = text.offset; break;
 		 */
-		case Token.LITERAL_STRING_DOUBLE_QUOTE:
+		case TokenTypes.LITERAL_STRING_DOUBLE_QUOTE:
 			state = STRING;
 			start = text.offset;
 			break;
 		default:
-			state = Token.NULL;
+			state = TokenTypes.NULL;
 		}
 
 		s = text;
@@ -1409,7 +1410,7 @@ public class ClojureTokenMaker extends AbstractJFlexTokenMaker {
 
 			switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
 			case 15: {
-				addToken(Token.PREPROCESSOR);
+				addToken(TokenTypes.PREPROCESSOR);
 			}
 			case 26:
 				break;
@@ -1420,59 +1421,59 @@ public class ClojureTokenMaker extends AbstractJFlexTokenMaker {
 			case 27:
 				break;
 			case 19: {
-				addToken(Token.LITERAL_CHAR);
+				addToken(TokenTypes.LITERAL_CHAR);
 			}
 			case 28:
 				break;
 			case 9: {
-				addToken(Token.WHITESPACE);
+				addToken(TokenTypes.WHITESPACE);
 			}
 			case 29:
 				break;
 			case 17: {
-				addToken(Token.LITERAL_NUMBER_HEXADECIMAL);
+				addToken(TokenTypes.LITERAL_NUMBER_HEXADECIMAL);
 			}
 			case 30:
 				break;
 			case 18: {
-				addToken(Token.LITERAL_NUMBER_FLOAT);
+				addToken(TokenTypes.LITERAL_NUMBER_FLOAT);
 			}
 			case 31:
 				break;
 			case 20: {
-				addToken(Token.RESERVED_WORD);
+				addToken(TokenTypes.RESERVED_WORD);
 			}
 			case 32:
 				break;
 			case 22: {
-				addToken(Token.VARIABLE);
+				addToken(TokenTypes.VARIABLE);
 			}
 			case 33:
 				break;
 			case 8: {
-				addToken(Token.SEPARATOR);
+				addToken(TokenTypes.SEPARATOR);
 			}
 			case 34:
 				break;
 			case 1: {
-				addToken(Token.IDENTIFIER);
+				addToken(TokenTypes.IDENTIFIER);
 			}
 			case 35:
 				break;
 			case 14: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 				addNullToken();
 				return firstToken;
 			}
 			case 36:
 				break;
 			case 21: {
-				addToken(Token.FUNCTION);
+				addToken(TokenTypes.FUNCTION);
 			}
 			case 37:
 				break;
 			case 23: {
-				addToken(Token.DATA_TYPE);
+				addToken(TokenTypes.DATA_TYPE);
 			}
 			case 38:
 				break;
@@ -1481,31 +1482,31 @@ public class ClojureTokenMaker extends AbstractJFlexTokenMaker {
 			case 39:
 				break;
 			case 2: {
-				addToken(Token.ERROR_IDENTIFIER);
+				addToken(TokenTypes.ERROR_IDENTIFIER);
 			}
 			case 40:
 				break;
 			case 24: {
-				addToken(Token.LITERAL_BOOLEAN);
+				addToken(TokenTypes.LITERAL_BOOLEAN);
 			}
 			case 41:
 				break;
 			case 12: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				return firstToken;
 			}
 			case 42:
 				break;
 			case 25: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
-				addHyperlinkToken(temp, zzMarkedPos - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
+				addHyperlinkToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_EOL);
 				start = zzMarkedPos;
 			}
 			case 43:
 				break;
 			case 16: {
-				addToken(Token.ERROR_NUMBER_FORMAT);
+				addToken(TokenTypes.ERROR_NUMBER_FORMAT);
 			}
 			case 44:
 				break;
@@ -1522,18 +1523,18 @@ public class ClojureTokenMaker extends AbstractJFlexTokenMaker {
 			case 46:
 				break;
 			case 5: {
-				addToken(Token.LITERAL_NUMBER_DECIMAL_INT);
+				addToken(TokenTypes.LITERAL_NUMBER_DECIMAL_INT);
 			}
 			case 47:
 				break;
 			case 4: {
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 			}
 			case 48:
 				break;
 			case 13: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 			}
 			case 49:
 				break;
@@ -1546,14 +1547,14 @@ public class ClojureTokenMaker extends AbstractJFlexTokenMaker {
 					zzAtEOF = true;
 					switch (zzLexicalState) {
 					case EOL_COMMENT: {
-						addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+						addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 						addNullToken();
 						return firstToken;
 					}
 					case 628:
 						break;
 					case STRING: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 						return firstToken;
 					}
 					case 629:

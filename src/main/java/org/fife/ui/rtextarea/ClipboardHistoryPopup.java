@@ -37,6 +37,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JWindow;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.text.Caret;
@@ -89,7 +90,7 @@ class ClipboardHistoryPopup extends JWindow {
 
 		list = new ChoiceList();
 		JScrollPane sp = new JScrollPane(list);
-		sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		cp.add(sp);
 
 		installKeyBindings();

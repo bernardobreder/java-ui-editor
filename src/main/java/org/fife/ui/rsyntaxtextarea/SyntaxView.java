@@ -188,8 +188,8 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 		// NOTE: We should re-use code from Token (paintBackground()) here,
 		// but don't because I'm just too lazy.
 		if (host.getEOLMarkersVisible()) {
-			g.setColor(host.getForegroundForTokenType(Token.WHITESPACE));
-			g.setFont(host.getFontForTokenType(Token.WHITESPACE));
+			g.setColor(host.getForegroundForTokenType(TokenTypes.WHITESPACE));
+			g.setFont(host.getFontForTokenType(TokenTypes.WHITESPACE));
 			g.drawString("\u00B6", nextX, y);
 		}
 
@@ -278,8 +278,8 @@ public class SyntaxView extends View implements TabExpander, TokenOrientedView, 
 		// NOTE: We should re-use code from Token (paintBackground()) here,
 		// but don't because I'm just too lazy.
 		if (host.getEOLMarkersVisible()) {
-			g.setColor(host.getForegroundForTokenType(Token.WHITESPACE));
-			g.setFont(host.getFontForTokenType(Token.WHITESPACE));
+			g.setColor(host.getForegroundForTokenType(TokenTypes.WHITESPACE));
+			g.setFont(host.getFontForTokenType(TokenTypes.WHITESPACE));
 			g.drawString("\u00B6", nextX, y);
 		}
 

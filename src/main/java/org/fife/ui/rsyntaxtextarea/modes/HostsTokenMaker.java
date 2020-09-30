@@ -15,6 +15,7 @@ import javax.swing.text.Segment;
 import org.fife.ui.rsyntaxtextarea.AbstractJFlexTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * Scanner for hosts files.
@@ -307,7 +308,7 @@ public class HostsTokenMaker extends AbstractJFlexTokenMaker {
 	 */
 	@Override
 	public boolean getMarkOccurrencesOfTokenType(int type) {
-		return type == Token.RESERVED_WORD;
+		return type == TokenTypes.RESERVED_WORD;
 	}
 
 	/**
@@ -600,8 +601,8 @@ public class HostsTokenMaker extends AbstractJFlexTokenMaker {
 				break;
 			case 7: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
-				addHyperlinkToken(temp, zzMarkedPos - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
+				addHyperlinkToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_EOL);
 				start = zzMarkedPos;
 			}
 			case 9:
@@ -613,19 +614,19 @@ public class HostsTokenMaker extends AbstractJFlexTokenMaker {
 			case 10:
 				break;
 			case 3: {
-				addToken(Token.WHITESPACE);
+				addToken(TokenTypes.WHITESPACE);
 			}
 			case 11:
 				break;
 			case 6: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 				addNullToken();
 				return firstToken;
 			}
 			case 12:
 				break;
 			case 1: {
-				addToken(first ? Token.RESERVED_WORD : Token.IDENTIFIER);
+				addToken(first ? TokenTypes.RESERVED_WORD : TokenTypes.IDENTIFIER);
 				first = false;
 			}
 			case 13:
@@ -639,7 +640,7 @@ public class HostsTokenMaker extends AbstractJFlexTokenMaker {
 					zzAtEOF = true;
 					switch (zzLexicalState) {
 					case EOL_COMMENT: {
-						addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+						addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 						addNullToken();
 						return firstToken;
 					}

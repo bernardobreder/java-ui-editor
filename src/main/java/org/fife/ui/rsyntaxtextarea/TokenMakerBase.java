@@ -230,7 +230,7 @@ public abstract class TokenMakerBase implements TokenMaker {
 	 */
 	@Override
 	public boolean getMarkOccurrencesOfTokenType(int type) {
-		return type == Token.IDENTIFIER;
+		return type == TokenTypes.IDENTIFIER;
 	}
 
 	/**

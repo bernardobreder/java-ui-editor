@@ -225,7 +225,7 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		// If this line is an empty line, then the token list is simply a
 		// null token. In this case, the line highlight will be skipped in
 		// the loop below, so unfortunately we must manually do it here.
-		if (token != null && token.getType() == Token.NULL) {
+		if (token != null && token.getType() == TokenTypes.NULL) {
 			h.paintLayeredHighlights(g, p0, p1, r, host, this);
 			return;
 		}
@@ -267,8 +267,8 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		// NOTE: We should re-use code from Token (paintBackground()) here,
 		// but don't because I'm just too lazy.
 		if (host.getEOLMarkersVisible()) {
-			g.setColor(host.getForegroundForTokenType(Token.WHITESPACE));
-			g.setFont(host.getFontForTokenType(Token.WHITESPACE));
+			g.setColor(host.getForegroundForTokenType(TokenTypes.WHITESPACE));
+			g.setFont(host.getFontForTokenType(TokenTypes.WHITESPACE));
 			g.drawString("\u00B6", x, (float) y - fontHeight);
 		}
 
@@ -312,7 +312,7 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		// If this line is an empty line, then the token list is simply a
 		// null token. In this case, the line highlight will be skipped in
 		// the loop below, so unfortunately we must manually do it here.
-		if (token != null && token.getType() == Token.NULL) {
+		if (token != null && token.getType() == TokenTypes.NULL) {
 			h.paintLayeredHighlights(g, p0, p1, r, host, this);
 			return;
 		}
@@ -457,8 +457,8 @@ public class WrappedSyntaxView extends BoxView implements TabExpander, RSTAView 
 		// NOTE: We should re-use code from Token (paintBackground()) here,
 		// but don't because I'm just too lazy.
 		if (host.getEOLMarkersVisible()) {
-			g.setColor(host.getForegroundForTokenType(Token.WHITESPACE));
-			g.setFont(host.getFontForTokenType(Token.WHITESPACE));
+			g.setColor(host.getForegroundForTokenType(TokenTypes.WHITESPACE));
+			g.setFont(host.getFontForTokenType(TokenTypes.WHITESPACE));
 			g.drawString("\u00B6", x, (float) y - fontHeight);
 		}
 

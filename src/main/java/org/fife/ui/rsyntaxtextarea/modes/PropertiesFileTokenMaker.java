@@ -17,6 +17,7 @@ import javax.swing.text.Segment;
 import org.fife.ui.rsyntaxtextarea.AbstractJFlexTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * This class splits up text into tokens representing a Java properties file.
@@ -307,14 +308,14 @@ public class PropertiesFileTokenMaker extends AbstractJFlexTokenMaker {
 		this.offsetShift = -text.offset + startOffset;
 
 		// Start off in the proper state.
-		int state = Token.NULL;
+		int state = TokenTypes.NULL;
 		switch (initialTokenType) {
-		case Token.LITERAL_STRING_DOUBLE_QUOTE:
+		case TokenTypes.LITERAL_STRING_DOUBLE_QUOTE:
 			state = VALUE;
 			start = text.offset;
 			break;
 		default:
-			state = Token.NULL;
+			state = TokenTypes.NULL;
 		}
 
 		s = text;
@@ -579,39 +580,39 @@ public class PropertiesFileTokenMaker extends AbstractJFlexTokenMaker {
 
 			switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
 			case 7: {
-				addToken(start, zzEndRead, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzEndRead, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				return firstToken;
 			}
 			case 9:
 				break;
 			case 2: {
 				start = zzMarkedPos;
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 				yybegin(VALUE);
 			}
 			case 10:
 				break;
 			case 8: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
-				addToken(temp, zzMarkedPos - 1, Token.VARIABLE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(temp, zzMarkedPos - 1, TokenTypes.VARIABLE);
 				start = zzMarkedPos;
 			}
 			case 11:
 				break;
 			case 3: {
-				addToken(Token.WHITESPACE);
+				addToken(TokenTypes.WHITESPACE);
 			}
 			case 12:
 				break;
 			case 6: {
-				addToken(start, zzMarkedPos - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzMarkedPos - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				start = zzMarkedPos;
 			}
 			case 13:
 				break;
 			case 1: {
-				addToken(Token.RESERVED_WORD);
+				addToken(TokenTypes.RESERVED_WORD);
 			}
 			case 14:
 				break;
@@ -620,7 +621,7 @@ public class PropertiesFileTokenMaker extends AbstractJFlexTokenMaker {
 			case 15:
 				break;
 			case 4: {
-				addToken(Token.COMMENT_EOL);
+				addToken(TokenTypes.COMMENT_EOL);
 			}
 			case 16:
 				break;
@@ -635,7 +636,7 @@ public class PropertiesFileTokenMaker extends AbstractJFlexTokenMaker {
 					case 14:
 						break;
 					case VALUE: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 						addNullToken();
 						return firstToken;
 					}

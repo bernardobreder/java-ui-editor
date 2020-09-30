@@ -17,6 +17,7 @@ import javax.swing.text.Segment;
 import org.fife.ui.rsyntaxtextarea.AbstractJFlexTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * Scanner for Visual Basic.
@@ -1064,84 +1065,84 @@ public class VisualBasicTokenMaker extends AbstractJFlexTokenMaker {
 			case 21:
 				break;
 			case 6: {
-				addToken(Token.WHITESPACE);
+				addToken(TokenTypes.WHITESPACE);
 			}
 			case 22:
 				break;
 			case 16: {
-				addToken(Token.LITERAL_NUMBER_HEXADECIMAL);
+				addToken(TokenTypes.LITERAL_NUMBER_HEXADECIMAL);
 			}
 			case 23:
 				break;
 			case 13: {
-				addToken(Token.LITERAL_NUMBER_FLOAT);
+				addToken(TokenTypes.LITERAL_NUMBER_FLOAT);
 			}
 			case 24:
 				break;
 			case 15: {
-				addToken(Token.RESERVED_WORD);
+				addToken(TokenTypes.RESERVED_WORD);
 			}
 			case 25:
 				break;
 			case 9: {
-				addToken(Token.SEPARATOR);
+				addToken(TokenTypes.SEPARATOR);
 			}
 			case 26:
 				break;
 			case 2: {
-				addToken(Token.IDENTIFIER);
+				addToken(TokenTypes.IDENTIFIER);
 			}
 			case 27:
 				break;
 			case 11: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 				addNullToken();
 				return firstToken;
 			}
 			case 28:
 				break;
 			case 7: {
-				addToken(Token.ERROR_STRING_DOUBLE);
+				addToken(TokenTypes.ERROR_STRING_DOUBLE);
 				addNullToken();
 				return firstToken;
 			}
 			case 29:
 				break;
 			case 1: {
-				addToken(Token.ERROR_IDENTIFIER);
+				addToken(TokenTypes.ERROR_IDENTIFIER);
 			}
 			case 30:
 				break;
 			case 17: {
-				addToken(Token.DATA_TYPE);
+				addToken(TokenTypes.DATA_TYPE);
 			}
 			case 31:
 				break;
 			case 18: {
-				addToken(Token.LITERAL_BOOLEAN);
+				addToken(TokenTypes.LITERAL_BOOLEAN);
 			}
 			case 32:
 				break;
 			case 14: {
-				addToken(Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 			}
 			case 33:
 				break;
 			case 19: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
-				addHyperlinkToken(temp, zzMarkedPos - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
+				addHyperlinkToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_EOL);
 				start = zzMarkedPos;
 			}
 			case 34:
 				break;
 			case 20: {
-				addToken(Token.RESERVED_WORD_2);
+				addToken(TokenTypes.RESERVED_WORD_2);
 			}
 			case 35:
 				break;
 			case 12: {
-				addToken(Token.ERROR_NUMBER_FORMAT);
+				addToken(TokenTypes.ERROR_NUMBER_FORMAT);
 			}
 			case 36:
 				break;
@@ -1152,12 +1153,12 @@ public class VisualBasicTokenMaker extends AbstractJFlexTokenMaker {
 			case 37:
 				break;
 			case 3: {
-				addToken(Token.LITERAL_NUMBER_DECIMAL_INT);
+				addToken(TokenTypes.LITERAL_NUMBER_DECIMAL_INT);
 			}
 			case 38:
 				break;
 			case 4: {
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 			}
 			case 39:
 				break;
@@ -1170,7 +1171,7 @@ public class VisualBasicTokenMaker extends AbstractJFlexTokenMaker {
 					zzAtEOF = true;
 					switch (zzLexicalState) {
 					case EOL_COMMENT: {
-						addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+						addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 						addNullToken();
 						return firstToken;
 					}

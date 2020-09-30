@@ -18,6 +18,7 @@ import java.lang.reflect.Field;
 
 import javax.swing.text.StyleContext;
 
+import org.fife.ui.rtextarea.RTextAreaBase;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -249,7 +250,7 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 	 */
 	public static SyntaxScheme load(Font baseFont, InputStream in) throws IOException {
 		if (baseFont == null) {
-			baseFont = RSyntaxTextArea.getDefaultFont();
+			baseFont = RTextAreaBase.getDefaultFont();
 		}
 		return SyntaxSchemeLoader.load(baseFont, in);
 	}
@@ -412,7 +413,7 @@ public class SyntaxScheme implements Cloneable, TokenTypes {
 
 		// (Possible) special font styles for keywords and comments.
 		if (baseFont == null) {
-			baseFont = RSyntaxTextArea.getDefaultFont();
+			baseFont = RTextAreaBase.getDefaultFont();
 		}
 		Font commentFont = baseFont;
 		Font keywordFont = baseFont;

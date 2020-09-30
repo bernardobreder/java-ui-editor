@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.fife.ui.rtextarea.RTextArea;
+import org.fife.ui.rtextarea.RTextAreaBase;
 
 /**
  * Generates RTF text via a simple Java API.
@@ -405,7 +406,7 @@ public class RtfGenerator {
 	 * @return The monospaced font family to use.
 	 */
 	private static String getMonospacedFontFamily() {
-		String family = RTextArea.getDefaultFont().getFamily();
+		String family = RTextAreaBase.getDefaultFont().getFamily();
 		if ("Monospaced".equals(family)) {
 			family = "Courier";
 		}

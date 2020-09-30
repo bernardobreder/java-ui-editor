@@ -466,7 +466,7 @@ public final class RSyntaxUtilities implements SwingConstants {
 			Token token = doc.getTokenListForLine(curLine);
 			token = RSyntaxUtilities.getTokenAtOffset(token, caretPosition);
 			// All brackets are always returned as "separators."
-			if (token.getType() != Token.SEPARATOR) {
+			if (token.getType() != TokenTypes.SEPARATOR) {
 				return input;
 			}
 			int languageIndex = token.getLanguageIndex();
@@ -504,7 +504,7 @@ public final class RSyntaxUtilities implements SwingConstants {
 							}
 							int offset = start + (i - segOffset);
 							token = RSyntaxUtilities.getTokenAtOffset(token, offset);
-							if (token.getType() == Token.SEPARATOR && token.getLanguageIndex() == languageIndex) {
+							if (token.getType() == TokenTypes.SEPARATOR && token.getLanguageIndex() == languageIndex) {
 								numEmbedded++;
 							}
 						}
@@ -516,7 +516,7 @@ public final class RSyntaxUtilities implements SwingConstants {
 							}
 							int offset = start + (i - segOffset);
 							token = RSyntaxUtilities.getTokenAtOffset(token, offset);
-							if (token.getType() == Token.SEPARATOR && token.getLanguageIndex() == languageIndex) {
+							if (token.getType() == TokenTypes.SEPARATOR && token.getLanguageIndex() == languageIndex) {
 								if (numEmbedded == 0) {
 									if (textArea.isCodeFoldingEnabled()
 											&& textArea.getFoldManager().isLineHidden(curLine)) {
@@ -575,7 +575,7 @@ public final class RSyntaxUtilities implements SwingConstants {
 							}
 							int offset = start + (i - segOffset);
 							t2 = RSyntaxUtilities.getTokenAtOffset(token, offset);
-							if (t2.getType() == Token.SEPARATOR && token.getLanguageIndex() == languageIndex) {
+							if (t2.getType() == TokenTypes.SEPARATOR && token.getLanguageIndex() == languageIndex) {
 								numEmbedded++;
 							}
 						}
@@ -587,7 +587,7 @@ public final class RSyntaxUtilities implements SwingConstants {
 							}
 							int offset = start + (i - segOffset);
 							t2 = RSyntaxUtilities.getTokenAtOffset(token, offset);
-							if (t2.getType() == Token.SEPARATOR && token.getLanguageIndex() == languageIndex) {
+							if (t2.getType() == TokenTypes.SEPARATOR && token.getLanguageIndex() == languageIndex) {
 								if (numEmbedded == 0) {
 									input.setLocation(caretPosition, offset);
 									return input;
@@ -836,7 +836,7 @@ public final class RSyntaxUtilities implements SwingConstants {
 		Token token = tov.getTokenListForPhysicalLineAbove(offs);
 		if (token == null) {
 			return -1;
-		} else if (token.getType() == Token.NULL) {
+		} else if (token.getType() == TokenTypes.NULL) {
 			int line = c.getLineOfOffset(offs); // Sure to be >0 ??
 			return c.getLineStartOffset(line - 1);
 		}
@@ -867,7 +867,7 @@ public final class RSyntaxUtilities implements SwingConstants {
 		Token token = tov.getTokenListForPhysicalLineBelow(offs);
 		if (token == null) {
 			return -1;
-		} else if (token.getType() == Token.NULL) {
+		} else if (token.getType() == TokenTypes.NULL) {
 			int line = c.getLineOfOffset(offs); // Sure to be > c.getLineCount()-1 ??
 //			return c.getLineStartOffset(line+1);
 			FoldManager fm = c.getFoldManager();
@@ -1295,8 +1295,8 @@ public final class RSyntaxUtilities implements SwingConstants {
 						|| ch == '[' || ch == '!' || ch == '&'))
 				||
 				/* Operators "==", "===", "!=", "!==", "&&", "||" */
-				(t.getType() == Token.OPERATOR && (t.charAt(t.length() - 1) == '=' || t.is(JS_AND) || t.is(JS_OR)))
-				|| t.is(Token.RESERVED_WORD_2, JS_KEYWORD_RETURN);
+				(t.getType() == TokenTypes.OPERATOR && (t.charAt(t.length() - 1) == '=' || t.is(JS_AND) || t.is(JS_OR)))
+				|| t.is(TokenTypes.RESERVED_WORD_2, JS_KEYWORD_RETURN);
 	}
 
 	/**

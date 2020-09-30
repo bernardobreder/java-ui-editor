@@ -17,6 +17,7 @@ import javax.swing.text.Segment;
 import org.fife.ui.rsyntaxtextarea.AbstractJFlexTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * Scanner for the LaTeX.
@@ -336,7 +337,7 @@ public class LatexTokenMaker extends AbstractJFlexTokenMaker {
 		this.offsetShift = -text.offset + startOffset;
 
 		// Start off in the proper state.
-		int state = Token.NULL;
+		int state = TokenTypes.NULL;
 
 		s = text;
 		try {
@@ -600,33 +601,33 @@ public class LatexTokenMaker extends AbstractJFlexTokenMaker {
 
 			switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
 			case 1: {
-				addToken(Token.IDENTIFIER);
+				addToken(TokenTypes.IDENTIFIER);
 			}
 			case 13:
 				break;
 			case 8: {
-				addToken(Token.FUNCTION);
+				addToken(TokenTypes.FUNCTION);
 			}
 			case 14:
 				break;
 			case 2: {
-				addToken(Token.WHITESPACE);
+				addToken(TokenTypes.WHITESPACE);
 			}
 			case 15:
 				break;
 			case 12: {
 				int temp = zzStartRead;
-				addToken(temp, temp + 5, Token.RESERVED_WORD);
-				addToken(temp + 6, temp + 6, Token.SEPARATOR);
-				addToken(temp + 7, zzMarkedPos - 2, Token.RESERVED_WORD);
-				addToken(zzMarkedPos - 1, zzMarkedPos - 1, Token.SEPARATOR);
+				addToken(temp, temp + 5, TokenTypes.RESERVED_WORD);
+				addToken(temp + 6, temp + 6, TokenTypes.SEPARATOR);
+				addToken(temp + 7, zzMarkedPos - 2, TokenTypes.RESERVED_WORD);
+				addToken(zzMarkedPos - 1, zzMarkedPos - 1, TokenTypes.SEPARATOR);
 			}
 			case 16:
 				break;
 			case 10: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
-				addHyperlinkToken(temp, zzMarkedPos - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
+				addHyperlinkToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_EOL);
 				start = zzMarkedPos;
 			}
 			case 17:
@@ -639,10 +640,10 @@ public class LatexTokenMaker extends AbstractJFlexTokenMaker {
 				break;
 			case 11: {
 				int temp = zzStartRead;
-				addToken(temp, temp + 3, Token.RESERVED_WORD);
-				addToken(temp + 4, temp + 4, Token.SEPARATOR);
-				addToken(temp + 5, zzMarkedPos - 2, Token.RESERVED_WORD);
-				addToken(zzMarkedPos - 1, zzMarkedPos - 1, Token.SEPARATOR);
+				addToken(temp, temp + 3, TokenTypes.RESERVED_WORD);
+				addToken(temp + 4, temp + 4, TokenTypes.SEPARATOR);
+				addToken(temp + 5, zzMarkedPos - 2, TokenTypes.RESERVED_WORD);
+				addToken(zzMarkedPos - 1, zzMarkedPos - 1, TokenTypes.SEPARATOR);
 			}
 			case 19:
 				break;
@@ -653,7 +654,7 @@ public class LatexTokenMaker extends AbstractJFlexTokenMaker {
 			case 20:
 				break;
 			case 7: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 				addNullToken();
 				return firstToken;
 			}
@@ -661,8 +662,8 @@ public class LatexTokenMaker extends AbstractJFlexTokenMaker {
 				break;
 			case 9: {
 				int temp = zzStartRead;
-				addToken(temp, temp, Token.SEPARATOR);
-				addToken(temp + 1, temp + 1, Token.IDENTIFIER);
+				addToken(temp, temp, TokenTypes.SEPARATOR);
+				addToken(temp + 1, temp + 1, TokenTypes.IDENTIFIER);
 			}
 			case 22:
 				break;
@@ -671,7 +672,7 @@ public class LatexTokenMaker extends AbstractJFlexTokenMaker {
 			case 23:
 				break;
 			case 4: {
-				addToken(Token.SEPARATOR);
+				addToken(TokenTypes.SEPARATOR);
 			}
 			case 24:
 				break;
@@ -680,7 +681,7 @@ public class LatexTokenMaker extends AbstractJFlexTokenMaker {
 					zzAtEOF = true;
 					switch (zzLexicalState) {
 					case EOL_COMMENT: {
-						addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+						addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 						addNullToken();
 						return firstToken;
 					}

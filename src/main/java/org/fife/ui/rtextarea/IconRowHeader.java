@@ -541,7 +541,7 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 		// y<0. The computed y-value is the y-value of the top of the first
 		// (possibly) partially-visible view.
 		Rectangle visibleEditorRect = ui.getVisibleEditorRect();
-		Rectangle r = IconRowHeader.getChildViewBounds(v, topLine, visibleEditorRect);
+		Rectangle r = AbstractGutterComponent.getChildViewBounds(v, topLine, visibleEditorRect);
 		int y = r.y;
 
 		int visibleBottom = visibleRect.y + visibleRect.height;

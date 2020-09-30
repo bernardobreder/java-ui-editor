@@ -15,6 +15,7 @@ import javax.swing.text.BadLocationException;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Token;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * A basic fold parser that can be used for languages such as C, that use curly
@@ -171,7 +172,7 @@ public class CurlyFoldParser implements FoldParser {
 							// another line.
 						} else {
 							// If we're an MLC that ends on a later line...
-							if (t.getType() != Token.COMMENT_EOL && !t.endsWith(C_MLC_END)) {
+							if (t.getType() != TokenTypes.COMMENT_EOL && !t.endsWith(C_MLC_END)) {
 								// System.out.println("Starting MLC at: " + t.offset);
 								inMLC = true;
 								mlcStart = t.getOffset();
@@ -251,7 +252,7 @@ public class CurlyFoldParser implements FoldParser {
 					// Java-specific folding rules
 					else if (java) {
 
-						if (t.is(Token.RESERVED_WORD, KEYWORD_IMPORT)) {
+						if (t.is(TokenTypes.RESERVED_WORD, KEYWORD_IMPORT)) {
 							if (importStartLine == -1) {
 								importStartLine = line;
 								importGroupStartOffs = t.getOffset();

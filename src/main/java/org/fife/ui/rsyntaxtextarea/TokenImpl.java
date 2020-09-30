@@ -595,7 +595,7 @@ public class TokenImpl implements Token {
 
 	@Override
 	public boolean isComment() {
-		return getType() >= Token.COMMENT_EOL && getType() <= Token.COMMENT_MARKUP;
+		return getType() >= TokenTypes.COMMENT_EOL && getType() <= TokenTypes.COMMENT_MARKUP;
 	}
 
 	@Override
@@ -625,7 +625,7 @@ public class TokenImpl implements Token {
 
 	@Override
 	public boolean isPaintable() {
-		return getType() > Token.NULL;
+		return getType() > TokenTypes.NULL;
 	}
 
 	@Override
@@ -863,7 +863,7 @@ public class TokenImpl implements Token {
 	@Override
 	public String toString() {
 		return "[Token: "
-				+ (getType() == Token.NULL ? "<null token>"
+				+ (getType() == TokenTypes.NULL ? "<null token>"
 						: "text: '" + (text == null ? "<null>"
 								: getLexeme() + "'; " + "offset: " + getOffset() + "; type: " + getType() + "; "
 										+ "isPaintable: " + isPaintable() + "; nextToken==null: "

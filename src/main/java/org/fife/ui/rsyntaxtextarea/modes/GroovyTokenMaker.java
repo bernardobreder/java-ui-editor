@@ -17,6 +17,7 @@ import javax.swing.text.Segment;
 import org.fife.ui.rsyntaxtextarea.AbstractJFlexCTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * Scanner for the Groovy programming language.
@@ -2837,26 +2838,26 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 		this.offsetShift = -text.offset + startOffset;
 
 		// Start off in the proper state.
-		int state = Token.NULL;
+		int state = TokenTypes.NULL;
 		switch (initialTokenType) {
-		case Token.LITERAL_STRING_DOUBLE_QUOTE:
+		case TokenTypes.LITERAL_STRING_DOUBLE_QUOTE:
 			state = MULTILINE_STRING_DOUBLE;
 			start = text.offset;
 			break;
-		case Token.LITERAL_CHAR:
+		case TokenTypes.LITERAL_CHAR:
 			state = MULTILINE_STRING_SINGLE;
 			start = text.offset;
 			break;
-		case Token.COMMENT_MULTILINE:
+		case TokenTypes.COMMENT_MULTILINE:
 			state = MLC;
 			start = text.offset;
 			break;
-		case Token.COMMENT_DOCUMENTATION:
+		case TokenTypes.COMMENT_DOCUMENTATION:
 			state = DOCCOMMENT;
 			start = text.offset;
 			break;
 		default:
-			state = Token.NULL;
+			state = TokenTypes.NULL;
 		}
 
 		s = text;
@@ -2885,7 +2886,7 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 						&& ((ch = t.charAt(0)) == '=' || ch == '(' || ch == ',' || ch == '?' || ch == ':' || ch == '['))
 				||
 				/* Operators "==", "===", "!=", "!==", etc. */
-				(t.getType() == Token.OPERATOR && ((ch = t.charAt(t.length() - 1)) == '=' || ch == '~'));
+				(t.getType() == TokenTypes.OPERATOR && ((ch = t.charAt(t.length() - 1)) == '=' || ch == '~'));
 	}
 
 	/**
@@ -3137,19 +3138,19 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 
 			switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
 			case 21: {
-				addToken(start, zzStartRead - 1, Token.ERROR_STRING_DOUBLE);
+				addToken(start, zzStartRead - 1, TokenTypes.ERROR_STRING_DOUBLE);
 				addNullToken();
 				return firstToken;
 			}
 			case 49:
 				break;
 			case 3: {
-				addToken(Token.IDENTIFIER);
+				addToken(TokenTypes.IDENTIFIER);
 			}
 			case 50:
 				break;
 			case 43: {
-				addToken(Token.LITERAL_BOOLEAN);
+				addToken(TokenTypes.LITERAL_BOOLEAN);
 			}
 			case 51:
 				break;
@@ -3166,35 +3167,35 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 			case 53:
 				break;
 			case 13: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_DOCUMENTATION);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_DOCUMENTATION);
 				return firstToken;
 			}
 			case 54:
 				break;
 			case 35: {
-				addToken(Token.ERROR_CHAR);
+				addToken(TokenTypes.ERROR_CHAR);
 			}
 			case 55:
 				break;
 			case 22: {
-				addToken(Token.ERROR_NUMBER_FORMAT);
+				addToken(TokenTypes.ERROR_NUMBER_FORMAT);
 			}
 			case 56:
 				break;
 			case 5: {
-				addToken(Token.ERROR_CHAR);
+				addToken(TokenTypes.ERROR_CHAR);
 				addNullToken();
 				return firstToken;
 			}
 			case 57:
 				break;
 			case 11: {
-				addToken(Token.ANNOTATION);
+				addToken(TokenTypes.ANNOTATION);
 			}
 			case 58:
 				break;
 			case 29: {
-				addToken(Token.FUNCTION);
+				addToken(TokenTypes.FUNCTION);
 			}
 			case 59:
 				break;
@@ -3205,21 +3206,21 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 			case 60:
 				break;
 			case 2: {
-				addToken(Token.ERROR_IDENTIFIER);
+				addToken(TokenTypes.ERROR_IDENTIFIER);
 			}
 			case 61:
 				break;
 			case 37: {
 				boolean highlightedAsRegex = false;
 				if (zzBuffer[zzStartRead] == '~' || firstToken == null) {
-					addToken(Token.REGEX);
+					addToken(TokenTypes.REGEX);
 					highlightedAsRegex = true;
 				} else {
 					// If this is *likely* to be a regex, based on
 					// the previous token, highlight it as such.
 					Token t = firstToken.getLastNonCommentNonWhitespaceToken();
 					if (regexCanFollow(t)) {
-						addToken(Token.REGEX);
+						addToken(TokenTypes.REGEX);
 						highlightedAsRegex = true;
 					}
 				}
@@ -3227,7 +3228,7 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 				// individual tokens.
 				if (!highlightedAsRegex) {
 					int temp = zzStartRead + 1;
-					addToken(zzStartRead, zzStartRead, Token.OPERATOR);
+					addToken(zzStartRead, zzStartRead, TokenTypes.OPERATOR);
 					zzStartRead = zzCurrentPos = zzMarkedPos = temp;
 				}
 			}
@@ -3235,30 +3236,30 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 				break;
 			case 41: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead + 2, Token.LITERAL_CHAR);
+				addToken(start, zzStartRead + 2, TokenTypes.LITERAL_CHAR);
 			}
 			case 63:
 				break;
 			case 46: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_DOCUMENTATION);
-				addToken(temp, zzMarkedPos - 1, Token.VARIABLE);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_DOCUMENTATION);
+				addToken(temp, zzMarkedPos - 1, TokenTypes.VARIABLE);
 				start = zzMarkedPos;
 			}
 			case 64:
 				break;
 			case 32: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_DOCUMENTATION);
-				addToken(temp, zzMarkedPos - 1, Token.PREPROCESSOR);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_DOCUMENTATION);
+				addToken(temp, zzMarkedPos - 1, TokenTypes.PREPROCESSOR);
 				start = zzMarkedPos;
 			}
 			case 65:
 				break;
 			case 45: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_DOCUMENTATION);
-				addHyperlinkToken(temp, zzMarkedPos - 1, Token.COMMENT_DOCUMENTATION);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_DOCUMENTATION);
+				addHyperlinkToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_DOCUMENTATION);
 				start = zzMarkedPos;
 			}
 			case 66:
@@ -3268,7 +3269,7 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 			case 67:
 				break;
 			case 25: {
-				addToken(Token.LITERAL_CHAR);
+				addToken(TokenTypes.LITERAL_CHAR);
 			}
 			case 68:
 				break;
@@ -3278,12 +3279,12 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 				break;
 			case 40: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead + 2, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead + 2, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 			}
 			case 70:
 				break;
 			case 24: {
-				addToken(Token.LITERAL_NUMBER_HEXADECIMAL);
+				addToken(TokenTypes.LITERAL_NUMBER_HEXADECIMAL);
 			}
 			case 71:
 				break;
@@ -3294,43 +3295,43 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 			case 72:
 				break;
 			case 8: {
-				addToken(Token.WHITESPACE);
+				addToken(TokenTypes.WHITESPACE);
 			}
 			case 73:
 				break;
 			case 31: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead + 1, Token.COMMENT_DOCUMENTATION);
+				addToken(start, zzStartRead + 1, TokenTypes.COMMENT_DOCUMENTATION);
 			}
 			case 74:
 				break;
 			case 39: {
-				addToken(Token.DATA_TYPE);
+				addToken(TokenTypes.DATA_TYPE);
 			}
 			case 75:
 				break;
 			case 30: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead + 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead + 1, TokenTypes.COMMENT_MULTILINE);
 			}
 			case 76:
 				break;
 			case 4: {
-				addToken(Token.LITERAL_NUMBER_DECIMAL_INT);
+				addToken(TokenTypes.LITERAL_NUMBER_DECIMAL_INT);
 			}
 			case 77:
 				break;
 			case 33: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
-				addToken(temp, zzMarkedPos - 1, Token.VARIABLE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(temp, zzMarkedPos - 1, TokenTypes.VARIABLE);
 				start = zzMarkedPos;
 			}
 			case 78:
 				break;
 			case 20: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 			}
 			case 79:
 				break;
@@ -3345,32 +3346,32 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 			case 81:
 				break;
 			case 28: {
-				addToken(Token.RESERVED_WORD);
+				addToken(TokenTypes.RESERVED_WORD);
 			}
 			case 82:
 				break;
 			case 44: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
-				addHyperlinkToken(temp, zzMarkedPos - 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
+				addHyperlinkToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_MULTILINE);
 				start = zzMarkedPos;
 			}
 			case 83:
 				break;
 			case 48: {
-				addToken(Token.RESERVED_WORD_2);
+				addToken(TokenTypes.RESERVED_WORD_2);
 			}
 			case 84:
 				break;
 			case 14: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 				addNullToken();
 				return firstToken;
 			}
 			case 85:
 				break;
 			case 10: {
-				addToken(Token.SEPARATOR);
+				addToken(TokenTypes.SEPARATOR);
 			}
 			case 86:
 				break;
@@ -3381,37 +3382,37 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 			case 87:
 				break;
 			case 12: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
 				return firstToken;
 			}
 			case 88:
 				break;
 			case 9: {
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 			}
 			case 89:
 				break;
 			case 18: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_CHAR);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_CHAR);
 				return firstToken;
 			}
 			case 90:
 				break;
 			case 23: {
-				addToken(Token.LITERAL_NUMBER_FLOAT);
+				addToken(TokenTypes.LITERAL_NUMBER_FLOAT);
 			}
 			case 91:
 				break;
 			case 47: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
-				addHyperlinkToken(temp, zzMarkedPos - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
+				addHyperlinkToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_EOL);
 				start = zzMarkedPos;
 			}
 			case 92:
 				break;
 			case 42: {
-				addToken(Token.COMMENT_MULTILINE);
+				addToken(TokenTypes.COMMENT_MULTILINE);
 			}
 			case 93:
 				break;
@@ -3426,7 +3427,7 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 			case 95:
 				break;
 			case 16: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				return firstToken;
 			}
 			case 96:
@@ -3436,21 +3437,21 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 					zzAtEOF = true;
 					switch (zzLexicalState) {
 					case EOL_COMMENT: {
-						addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+						addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 						addNullToken();
 						return firstToken;
 					}
 					case 2059:
 						break;
 					case MULTILINE_STRING_DOUBLE: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 						return firstToken;
 					}
 					case 2060:
 						break;
 					case DOCCOMMENT: {
 						yybegin(YYINITIAL);
-						addToken(start, zzEndRead, Token.COMMENT_DOCUMENTATION);
+						addToken(start, zzEndRead, TokenTypes.COMMENT_DOCUMENTATION);
 						return firstToken;
 					}
 					case 2061:
@@ -3462,19 +3463,19 @@ public class GroovyTokenMaker extends AbstractJFlexCTokenMaker {
 					case 2062:
 						break;
 					case MLC: {
-						addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
+						addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
 						return firstToken;
 					}
 					case 2063:
 						break;
 					case STRING_DOUBLE: {
-						addToken(start, zzStartRead - 1, Token.ERROR_STRING_DOUBLE);
+						addToken(start, zzStartRead - 1, TokenTypes.ERROR_STRING_DOUBLE);
 						return firstToken;
 					}
 					case 2064:
 						break;
 					case MULTILINE_STRING_SINGLE: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_CHAR);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_CHAR);
 						return firstToken;
 					}
 					case 2065:

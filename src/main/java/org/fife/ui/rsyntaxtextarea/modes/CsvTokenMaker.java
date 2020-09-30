@@ -273,7 +273,7 @@ public class CsvTokenMaker extends AbstractJFlexCTokenMaker {
 	 * Adds a token for either an even column or an odd column.
 	 */
 	private void addEvenOrOddColumnToken(int start, int end) {
-		addToken(start, end, evenOdd == 0 ? Token.IDENTIFIER : Token.DATA_TYPE);
+		addToken(start, end, evenOdd == 0 ? TokenTypes.IDENTIFIER : TokenTypes.DATA_TYPE);
 	}
 
 	/**
@@ -321,7 +321,7 @@ public class CsvTokenMaker extends AbstractJFlexCTokenMaker {
 
 	@Override
 	public boolean getMarkOccurrencesOfTokenType(int type) {
-		return type == Token.IDENTIFIER || type == Token.DATA_TYPE;
+		return type == TokenTypes.IDENTIFIER || type == TokenTypes.DATA_TYPE;
 	}
 
 	/**
@@ -336,6 +336,7 @@ public class CsvTokenMaker extends AbstractJFlexCTokenMaker {
 	 * @return The first <code>Token</code> in a linked list representing the syntax
 	 *         highlighted text.
 	 */
+	@Override
 	public Token getTokenList(Segment text, int initialTokenType, int startOffset) {
 
 		resetTokenList();
@@ -470,6 +471,7 @@ public class CsvTokenMaker extends AbstractJFlexCTokenMaker {
 	 *
 	 * @param newState the new lexical state
 	 */
+	@Override
 	public final void yybegin(int newState) {
 		zzLexicalState = newState;
 	}
@@ -637,7 +639,7 @@ public class CsvTokenMaker extends AbstractJFlexCTokenMaker {
 			case 10:
 				break;
 			case 3: {
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 				evenOdd = (evenOdd + 1) & 1;
 			}
 			case 11:

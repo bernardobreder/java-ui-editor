@@ -16,6 +16,7 @@ import javax.swing.text.Segment;
 
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * Scanner for BBCode.
@@ -343,14 +344,14 @@ public class BBCodeTokenMaker extends AbstractMarkupTokenMaker {
 		this.offsetShift = -text.offset + startOffset;
 
 		// Start off in the proper state.
-		int state = Token.NULL;
+		int state = TokenTypes.NULL;
 		switch (initialTokenType) {
 		case INTERNAL_INTAG:
 			state = INTAG;
 			start = text.offset;
 			break;
 		default:
-			state = Token.NULL;
+			state = TokenTypes.NULL;
 		}
 
 		s = text;
@@ -624,43 +625,43 @@ public class BBCodeTokenMaker extends AbstractMarkupTokenMaker {
 
 			switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
 			case 1: {
-				addToken(Token.IDENTIFIER);
+				addToken(TokenTypes.IDENTIFIER);
 			}
 			case 11:
 				break;
 			case 9: {
-				addToken(Token.MARKUP_TAG_DELIMITER);
+				addToken(TokenTypes.MARKUP_TAG_DELIMITER);
 			}
 			case 12:
 				break;
 			case 2: {
-				addToken(Token.WHITESPACE);
+				addToken(TokenTypes.WHITESPACE);
 			}
 			case 13:
 				break;
 			case 10: {
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 			}
 			case 14:
 				break;
 			case 8: {
-				addToken(Token.MARKUP_TAG_NAME);
+				addToken(TokenTypes.MARKUP_TAG_NAME);
 			}
 			case 15:
 				break;
 			case 4: {
-				addToken(Token.MARKUP_TAG_DELIMITER);
+				addToken(TokenTypes.MARKUP_TAG_DELIMITER);
 				yybegin(INTAG);
 			}
 			case 16:
 				break;
 			case 6: {
-				addToken(Token.IDENTIFIER); /* Unhandled chars, not likely */
+				addToken(TokenTypes.IDENTIFIER); /* Unhandled chars, not likely */
 			}
 			case 17:
 				break;
 			case 5: {
-				addToken(Token.MARKUP_TAG_ATTRIBUTE);
+				addToken(TokenTypes.MARKUP_TAG_ATTRIBUTE);
 			}
 			case 18:
 				break;
@@ -672,7 +673,7 @@ public class BBCodeTokenMaker extends AbstractMarkupTokenMaker {
 				break;
 			case 7: {
 				yybegin(YYINITIAL);
-				addToken(Token.MARKUP_TAG_DELIMITER);
+				addToken(TokenTypes.MARKUP_TAG_DELIMITER);
 			}
 			case 20:
 				break;

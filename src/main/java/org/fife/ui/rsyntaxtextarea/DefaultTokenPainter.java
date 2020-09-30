@@ -198,7 +198,7 @@ class DefaultTokenPainter implements TokenPainter {
 		// whitespace as identifiers for performance). But we only paint tab
 		// lines for the leading whitespace in the token. So, if this isn't a
 		// WHITESPACE token, figure out the leading whitespace's length.
-		if (token.getType() != Token.WHITESPACE) {
+		if (token.getType() != TokenTypes.WHITESPACE) {
 			int offs = 0;
 			for (; offs < token.length(); offs++) {
 				if (!RSyntaxUtilities.isWhitespace(token.charAt(offs))) {

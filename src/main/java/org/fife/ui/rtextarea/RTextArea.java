@@ -16,6 +16,7 @@ import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
@@ -1638,7 +1639,7 @@ public class RTextArea extends RTextAreaBase implements Printable {
 			// WORKAROUND: Since JTextComponent only updates the caret
 			// location on mouse clicked and released, we'll do it on dragged
 			// events when the left mouse button is clicked.
-			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0) {
+			if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0) {
 				Caret caret = getCaret();
 				dot = caret.getDot();
 				mark = caret.getMark();
@@ -1650,7 +1651,7 @@ public class RTextArea extends RTextAreaBase implements Printable {
 		public void mousePressed(MouseEvent e) {
 			if (e.isPopupTrigger()) { // OS X popup triggers are on pressed
 				showPopup(e);
-			} else if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0) {
+			} else if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0) {
 				Caret caret = getCaret();
 				dot = caret.getDot();
 				mark = caret.getMark();

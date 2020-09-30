@@ -18,6 +18,7 @@ import javax.swing.text.Segment;
 import org.fife.ui.rsyntaxtextarea.AbstractJFlexCTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * Scanner for NSIS installer scripts.
@@ -1506,16 +1507,16 @@ public class NSISTokenMaker extends AbstractJFlexCTokenMaker {
 		// Start off in the proper state.
 		int state = YYINITIAL;
 		switch (initialTokenType) {
-		case Token.LITERAL_STRING_DOUBLE_QUOTE:
+		case TokenTypes.LITERAL_STRING_DOUBLE_QUOTE:
 			state = STRING;
 			break;
-		case Token.LITERAL_CHAR:
+		case TokenTypes.LITERAL_CHAR:
 			state = CHAR_LITERAL;
 			break;
-		case Token.LITERAL_BACKQUOTE:
+		case TokenTypes.LITERAL_BACKQUOTE:
 			state = BACKTICKS;
 			break;
-		case Token.COMMENT_MULTILINE:
+		case TokenTypes.COMMENT_MULTILINE:
 			state = MLC;
 			break;
 		}
@@ -1782,25 +1783,25 @@ public class NSISTokenMaker extends AbstractJFlexCTokenMaker {
 
 			switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
 			case 1: {
-				addToken(Token.IDENTIFIER);
+				addToken(TokenTypes.IDENTIFIER);
 			}
 			case 37:
 				break;
 			case 34: {
-				addToken(Token.LITERAL_BOOLEAN);
+				addToken(TokenTypes.LITERAL_BOOLEAN);
 			}
 			case 38:
 				break;
 			case 29: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.LITERAL_BACKQUOTE);
-				addToken(temp, zzMarkedPos - 1, Token.VARIABLE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_BACKQUOTE);
+				addToken(temp, zzMarkedPos - 1, TokenTypes.VARIABLE);
 				start = zzMarkedPos;
 			}
 			case 39:
 				break;
 			case 19: { /* Line ending in '\' => continue to next line. */
-				addToken(start, zzStartRead, Token.LITERAL_BACKQUOTE);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_BACKQUOTE);
 				return firstToken;
 			}
 			case 40:
@@ -1810,7 +1811,7 @@ public class NSISTokenMaker extends AbstractJFlexCTokenMaker {
 			case 41:
 				break;
 			case 24: {
-				addToken(Token.ERROR_NUMBER_FORMAT);
+				addToken(TokenTypes.ERROR_NUMBER_FORMAT);
 			}
 			case 42:
 				break;
@@ -1821,41 +1822,41 @@ public class NSISTokenMaker extends AbstractJFlexCTokenMaker {
 			case 43:
 				break;
 			case 32: {
-				addToken(Token.FUNCTION);
+				addToken(TokenTypes.FUNCTION);
 			}
 			case 44:
 				break;
 			case 8: {
-				addToken(Token.VARIABLE);
+				addToken(TokenTypes.VARIABLE);
 			}
 			case 45:
 				break;
 			case 16: { /* Line ending in '\' => continue to next line. */
-				addToken(start, zzStartRead, Token.LITERAL_CHAR);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_CHAR);
 				return firstToken;
 			}
 			case 46:
 				break;
 			case 14: { /* Line ending in '\' => continue to next line. */
-				addToken(start, zzStartRead, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 				return firstToken;
 			}
 			case 47:
 				break;
 			case 17: {
-				addToken(start, zzStartRead - 1, Token.ERROR_CHAR);
+				addToken(start, zzStartRead - 1, TokenTypes.ERROR_CHAR);
 				return firstToken;
 			}
 			case 48:
 				break;
 			case 18: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead, Token.LITERAL_CHAR);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_CHAR);
 			}
 			case 49:
 				break;
 			case 25: {
-				addToken(Token.LITERAL_NUMBER_HEXADECIMAL);
+				addToken(TokenTypes.LITERAL_NUMBER_HEXADECIMAL);
 			}
 			case 50:
 				break;
@@ -1866,13 +1867,13 @@ public class NSISTokenMaker extends AbstractJFlexCTokenMaker {
 			case 51:
 				break;
 			case 7: {
-				addToken(Token.WHITESPACE);
+				addToken(TokenTypes.WHITESPACE);
 			}
 			case 52:
 				break;
 			case 30: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead + 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead + 1, TokenTypes.COMMENT_MULTILINE);
 			}
 			case 53:
 				break;
@@ -1883,14 +1884,14 @@ public class NSISTokenMaker extends AbstractJFlexCTokenMaker {
 			case 54:
 				break;
 			case 2: {
-				addToken(Token.LITERAL_NUMBER_DECIMAL_INT);
+				addToken(TokenTypes.LITERAL_NUMBER_DECIMAL_INT);
 			}
 			case 55:
 				break;
 			case 28: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.LITERAL_STRING_DOUBLE_QUOTE);
-				addToken(temp, zzMarkedPos - 1, Token.VARIABLE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(temp, zzMarkedPos - 1, TokenTypes.VARIABLE);
 				start = zzMarkedPos;
 			}
 			case 56:
@@ -1903,50 +1904,50 @@ public class NSISTokenMaker extends AbstractJFlexCTokenMaker {
 				break;
 			case 21: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead, Token.LITERAL_BACKQUOTE);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_BACKQUOTE);
 			}
 			case 58:
 				break;
 			case 13: {
 				yybegin(YYINITIAL);
-				addToken(start, zzStartRead, Token.LITERAL_STRING_DOUBLE_QUOTE);
+				addToken(start, zzStartRead, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE);
 			}
 			case 59:
 				break;
 			case 15: {
-				addToken(start, zzStartRead - 1, Token.ERROR_STRING_DOUBLE);
+				addToken(start, zzStartRead - 1, TokenTypes.ERROR_STRING_DOUBLE);
 				return firstToken;
 			}
 			case 60:
 				break;
 			case 31: {
-				addToken(Token.RESERVED_WORD);
+				addToken(TokenTypes.RESERVED_WORD);
 			}
 			case 61:
 				break;
 			case 35: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
-				addHyperlinkToken(temp, zzMarkedPos - 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
+				addHyperlinkToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_MULTILINE);
 				start = zzMarkedPos;
 			}
 			case 62:
 				break;
 			case 20: {
-				addToken(start, zzStartRead - 1, Token.LITERAL_BACKQUOTE);
+				addToken(start, zzStartRead - 1, TokenTypes.LITERAL_BACKQUOTE);
 				return firstToken;
 			}
 			case 63:
 				break;
 			case 23: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 				addNullToken();
 				return firstToken;
 			}
 			case 64:
 				break;
 			case 9: {
-				addToken(Token.SEPARATOR);
+				addToken(TokenTypes.SEPARATOR);
 			}
 			case 65:
 				break;
@@ -1957,26 +1958,26 @@ public class NSISTokenMaker extends AbstractJFlexCTokenMaker {
 			case 66:
 				break;
 			case 22: {
-				addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
 				return firstToken;
 			}
 			case 67:
 				break;
 			case 5: {
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 			}
 			case 68:
 				break;
 			case 36: {
 				int temp = zzStartRead;
-				addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
-				addHyperlinkToken(temp, zzMarkedPos - 1, Token.COMMENT_EOL);
+				addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
+				addHyperlinkToken(temp, zzMarkedPos - 1, TokenTypes.COMMENT_EOL);
 				start = zzMarkedPos;
 			}
 			case 69:
 				break;
 			case 33: {
-				addToken(Token.COMMENT_MULTILINE);
+				addToken(TokenTypes.COMMENT_MULTILINE);
 			}
 			case 70:
 				break;
@@ -1995,20 +1996,20 @@ public class NSISTokenMaker extends AbstractJFlexCTokenMaker {
 					zzAtEOF = true;
 					switch (zzLexicalState) {
 					case EOL_COMMENT: {
-						addToken(start, zzStartRead - 1, Token.COMMENT_EOL);
+						addToken(start, zzStartRead - 1, TokenTypes.COMMENT_EOL);
 						addNullToken();
 						return firstToken;
 					}
 					case 1322:
 						break;
 					case STRING: {
-						addToken(start, zzStartRead - 1, Token.ERROR_STRING_DOUBLE);
+						addToken(start, zzStartRead - 1, TokenTypes.ERROR_STRING_DOUBLE);
 						return firstToken;
 					}
 					case 1323:
 						break;
 					case CHAR_LITERAL: {
-						addToken(start, zzStartRead - 1, Token.ERROR_CHAR);
+						addToken(start, zzStartRead - 1, TokenTypes.ERROR_CHAR);
 						return firstToken;
 					}
 					case 1324:
@@ -2020,13 +2021,13 @@ public class NSISTokenMaker extends AbstractJFlexCTokenMaker {
 					case 1325:
 						break;
 					case MLC: {
-						addToken(start, zzStartRead - 1, Token.COMMENT_MULTILINE);
+						addToken(start, zzStartRead - 1, TokenTypes.COMMENT_MULTILINE);
 						return firstToken;
 					}
 					case 1326:
 						break;
 					case BACKTICKS: {
-						addToken(start, zzStartRead - 1, Token.LITERAL_BACKQUOTE);
+						addToken(start, zzStartRead - 1, TokenTypes.LITERAL_BACKQUOTE);
 						return firstToken;
 					}
 					case 1327:

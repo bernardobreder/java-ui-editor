@@ -439,7 +439,7 @@ public class LineNumberList extends AbstractGutterComponent implements MouseInpu
 		// y<0. The computed y-value is the y-value of the top of the first
 		// (possibly) partially-visible view.
 		Rectangle visibleEditorRect = ui.getVisibleEditorRect();
-		Rectangle r = LineNumberList.getChildViewBounds(v, topLine, visibleEditorRect);
+		Rectangle r = AbstractGutterComponent.getChildViewBounds(v, topLine, visibleEditorRect);
 		int y = r.y;
 		final int rhsBorderWidth = getRhsBorderWidth();
 		int rhs;
@@ -458,7 +458,7 @@ public class LineNumberList extends AbstractGutterComponent implements MouseInpu
 
 		while (y < visibleBottom) {
 
-			r = LineNumberList.getChildViewBounds(v, topLine, visibleEditorRect);
+			r = AbstractGutterComponent.getChildViewBounds(v, topLine, visibleEditorRect);
 
 			/*
 			 * // Highlight the current line's line number, if desired. if
@@ -681,8 +681,8 @@ public class LineNumberList extends AbstractGutterComponent implements MouseInpu
 			String name = e.getPropertyName();
 
 			// If they change the current line highlight in any way...
-			if (RTextArea.HIGHLIGHT_CURRENT_LINE_PROPERTY.equals(name)
-					|| RTextArea.CURRENT_LINE_HIGHLIGHT_COLOR_PROPERTY.equals(name)) {
+			if (RTextAreaBase.HIGHLIGHT_CURRENT_LINE_PROPERTY.equals(name)
+					|| RTextAreaBase.CURRENT_LINE_HIGHLIGHT_COLOR_PROPERTY.equals(name)) {
 				repaintLine(currentLine);
 			}
 

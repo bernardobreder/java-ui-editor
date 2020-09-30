@@ -111,7 +111,7 @@ public class RTextAreaUI extends BasicTextAreaUI {
 
 		Color c = editor.getCaretColor();
 		if (c == null) {
-			editor.setCaretColor(RTextArea.getDefaultCaretColor());
+			editor.setCaretColor(RTextAreaBase.getDefaultCaretColor());
 		}
 
 		c = editor.getSelectionColor();

@@ -1682,7 +1682,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 				// Document offset MUST be correct to prevent exceptions
 				// in getTokenListFor()
 				int docOffs = map.getElement(line).getEndOffset() - 1;
-				t = new TokenImpl(new char[] { '\n' }, 0, 0, docOffs, Token.WHITESPACE, 0);
+				t = new TokenImpl(new char[] { '\n' }, 0, 0, docOffs, TokenTypes.WHITESPACE, 0);
 				lastToken.setNextToken(t);
 				lastToken = t;
 			}

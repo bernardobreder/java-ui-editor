@@ -28,6 +28,7 @@ import javax.swing.UIManager;
 import javax.swing.plaf.TextUI;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
+import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.NavigationFilter;
@@ -284,7 +285,7 @@ public class ConfigurableCaret extends DefaultCaret {
 						Action a = null;
 						ActionMap map = textArea.getActionMap();
 						if (map != null) {
-							a = map.get(RTextAreaEditorKit.selectLineAction);
+							a = map.get(DefaultEditorKit.selectLineAction);
 						}
 						if (a == null) {
 							if (selectLine == null) {
@@ -470,7 +471,7 @@ public class ConfigurableCaret extends DefaultCaret {
 		RTextArea textArea = getTextArea();
 		ActionMap map = textArea.getActionMap();
 		if (map != null) {
-			a = map.get(RTextAreaEditorKit.selectWordAction);
+			a = map.get(DefaultEditorKit.selectWordAction);
 		}
 		if (a == null) {
 			if (selectWord == null) {

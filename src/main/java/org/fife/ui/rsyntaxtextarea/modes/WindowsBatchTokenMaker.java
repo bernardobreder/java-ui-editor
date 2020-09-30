@@ -14,6 +14,7 @@ import org.fife.ui.rsyntaxtextarea.AbstractTokenMaker;
 import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenMap;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * A token maker that turns text into a linked list of <code>Token</code>s for
@@ -55,7 +56,7 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 		// Since reserved words, functions, and data types are all passed
 		// into here as "identifiers," we have to see what the token
 		// really is...
-		case Token.IDENTIFIER:
+		case TokenTypes.IDENTIFIER:
 			int value = wordsToHighlight.get(segment, start, end);
 			if (value != -1)
 				tokenType = value;
@@ -83,7 +84,7 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 	 */
 	@Override
 	public boolean getMarkOccurrencesOfTokenType(int type) {
-		return type == Token.IDENTIFIER || type == Token.VARIABLE;
+		return type == TokenTypes.IDENTIFIER || type == TokenTypes.VARIABLE;
 	}
 
 	/**
@@ -97,7 +98,7 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 	public TokenMap getWordsToHighlight() {
 
 		TokenMap tokenMap = new TokenMap(true); // Ignore case.
-		int reservedWord = Token.RESERVED_WORD;
+		int reservedWord = TokenTypes.RESERVED_WORD;
 
 		// Batch-file specific stuff (?)
 		tokenMap.put("goto", reservedWord);
@@ -265,7 +266,7 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 
 			switch (currentTokenType) {
 
-			case Token.NULL:
+			case TokenTypes.NULL:
 
 				currentTokenStart = i; // Starting a new token here.
 
@@ -273,29 +274,29 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 
 				case ' ':
 				case '\t':
-					currentTokenType = Token.WHITESPACE;
+					currentTokenType = TokenTypes.WHITESPACE;
 					break;
 
 				case '"':
-					currentTokenType = Token.ERROR_STRING_DOUBLE;
+					currentTokenType = TokenTypes.ERROR_STRING_DOUBLE;
 					break;
 
 				case '%':
-					currentTokenType = Token.VARIABLE;
+					currentTokenType = TokenTypes.VARIABLE;
 					break;
 
 				// The "separators".
 				case '(':
 				case ')':
-					addToken(text, currentTokenStart, i, Token.SEPARATOR, newStartOffset + currentTokenStart);
-					currentTokenType = Token.NULL;
+					addToken(text, currentTokenStart, i, TokenTypes.SEPARATOR, newStartOffset + currentTokenStart);
+					currentTokenType = TokenTypes.NULL;
 					break;
 
 				// The "separators2".
 				case ',':
 				case ';':
-					addToken(text, currentTokenStart, i, Token.IDENTIFIER, newStartOffset + currentTokenStart);
-					currentTokenType = Token.NULL;
+					addToken(text, currentTokenStart, i, TokenTypes.IDENTIFIER, newStartOffset + currentTokenStart);
+					currentTokenType = TokenTypes.NULL;
 					break;
 
 				// Newer version of EOL comments, or a label
@@ -304,12 +305,12 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 					// a new-style comment or a label
 					if (firstToken == null) {
 						if (i < end - 1 && array[i + 1] == ':') { // new-style comment
-							currentTokenType = Token.COMMENT_EOL;
+							currentTokenType = TokenTypes.COMMENT_EOL;
 						} else { // Label
-							currentTokenType = Token.PREPROCESSOR;
+							currentTokenType = TokenTypes.PREPROCESSOR;
 						}
 					} else { // Just a colon
-						currentTokenType = Token.IDENTIFIER;
+						currentTokenType = TokenTypes.IDENTIFIER;
 					}
 					break;
 
@@ -318,17 +319,17 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 					// Just to speed things up a tad, as this will usually be the case (if spaces
 					// above failed).
 					if (RSyntaxUtilities.isLetterOrDigit(c) || c == '\\') {
-						currentTokenType = Token.IDENTIFIER;
+						currentTokenType = TokenTypes.IDENTIFIER;
 						break;
 					}
 
 					int indexOf = OPERATORS.indexOf(c, 0);
 					if (indexOf > -1) {
-						addToken(text, currentTokenStart, i, Token.OPERATOR, newStartOffset + currentTokenStart);
-						currentTokenType = Token.NULL;
+						addToken(text, currentTokenStart, i, TokenTypes.OPERATOR, newStartOffset + currentTokenStart);
+						currentTokenType = TokenTypes.NULL;
 						break;
 					} else {
-						currentTokenType = Token.IDENTIFIER;
+						currentTokenType = TokenTypes.IDENTIFIER;
 						break;
 					}
 
@@ -336,7 +337,7 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 
 				break;
 
-			case Token.WHITESPACE:
+			case TokenTypes.WHITESPACE:
 
 				switch (c) {
 
@@ -345,69 +346,69 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 					break; // Still whitespace.
 
 				case '"':
-					addToken(text, currentTokenStart, i - 1, Token.WHITESPACE, newStartOffset + currentTokenStart);
+					addToken(text, currentTokenStart, i - 1, TokenTypes.WHITESPACE, newStartOffset + currentTokenStart);
 					currentTokenStart = i;
-					currentTokenType = Token.ERROR_STRING_DOUBLE;
+					currentTokenType = TokenTypes.ERROR_STRING_DOUBLE;
 					break;
 
 				case '%':
-					addToken(text, currentTokenStart, i - 1, Token.WHITESPACE, newStartOffset + currentTokenStart);
+					addToken(text, currentTokenStart, i - 1, TokenTypes.WHITESPACE, newStartOffset + currentTokenStart);
 					currentTokenStart = i;
-					currentTokenType = Token.VARIABLE;
+					currentTokenType = TokenTypes.VARIABLE;
 					break;
 
 				// The "separators".
 				case '(':
 				case ')':
-					addToken(text, currentTokenStart, i - 1, Token.WHITESPACE, newStartOffset + currentTokenStart);
-					addToken(text, i, i, Token.SEPARATOR, newStartOffset + i);
-					currentTokenType = Token.NULL;
+					addToken(text, currentTokenStart, i - 1, TokenTypes.WHITESPACE, newStartOffset + currentTokenStart);
+					addToken(text, i, i, TokenTypes.SEPARATOR, newStartOffset + i);
+					currentTokenType = TokenTypes.NULL;
 					break;
 
 				// The "separators2".
 				case ',':
 				case ';':
-					addToken(text, currentTokenStart, i - 1, Token.WHITESPACE, newStartOffset + currentTokenStart);
-					addToken(text, i, i, Token.IDENTIFIER, newStartOffset + i);
-					currentTokenType = Token.NULL;
+					addToken(text, currentTokenStart, i - 1, TokenTypes.WHITESPACE, newStartOffset + currentTokenStart);
+					addToken(text, i, i, TokenTypes.IDENTIFIER, newStartOffset + i);
+					currentTokenType = TokenTypes.NULL;
 					break;
 
 				// Newer version of EOL comments, or a label
 				case ':':
-					addToken(text, currentTokenStart, i - 1, Token.WHITESPACE, newStartOffset + currentTokenStart);
+					addToken(text, currentTokenStart, i - 1, TokenTypes.WHITESPACE, newStartOffset + currentTokenStart);
 					currentTokenStart = i;
 					// If the previous (whitespace) token was the first token
 					// added, this is a new-style comment or a label
 					if (firstToken.getNextToken() == null) {
 						if (i < end - 1 && array[i + 1] == ':') { // new-style comment
-							currentTokenType = Token.COMMENT_EOL;
+							currentTokenType = TokenTypes.COMMENT_EOL;
 						} else { // Label
-							currentTokenType = Token.PREPROCESSOR;
+							currentTokenType = TokenTypes.PREPROCESSOR;
 						}
 					} else { // Just a colon
-						currentTokenType = Token.IDENTIFIER;
+						currentTokenType = TokenTypes.IDENTIFIER;
 					}
 					break;
 
 				default: // Add the whitespace token and start anew.
 
-					addToken(text, currentTokenStart, i - 1, Token.WHITESPACE, newStartOffset + currentTokenStart);
+					addToken(text, currentTokenStart, i - 1, TokenTypes.WHITESPACE, newStartOffset + currentTokenStart);
 					currentTokenStart = i;
 
 					// Just to speed things up a tad, as this will usually be the case (if spaces
 					// above failed).
 					if (RSyntaxUtilities.isLetterOrDigit(c) || c == '\\') {
-						currentTokenType = Token.IDENTIFIER;
+						currentTokenType = TokenTypes.IDENTIFIER;
 						break;
 					}
 
 					int indexOf = OPERATORS.indexOf(c, 0);
 					if (indexOf > -1) {
-						addToken(text, currentTokenStart, i, Token.OPERATOR, newStartOffset + currentTokenStart);
-						currentTokenType = Token.NULL;
+						addToken(text, currentTokenStart, i, TokenTypes.OPERATOR, newStartOffset + currentTokenStart);
+						currentTokenType = TokenTypes.NULL;
 						break;
 					} else {
-						currentTokenType = Token.IDENTIFIER;
+						currentTokenType = TokenTypes.IDENTIFIER;
 					}
 
 				} // End of switch (c).
@@ -415,7 +416,7 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 				break;
 
 			default: // Should never happen
-			case Token.IDENTIFIER:
+			case TokenTypes.IDENTIFIER:
 
 				switch (c) {
 
@@ -425,24 +426,24 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 					if (i - currentTokenStart == 3 && (array[i - 3] == 'r' || array[i - 3] == 'R')
 							&& (array[i - 2] == 'e' || array[i - 2] == 'E')
 							&& (array[i - 1] == 'm' || array[i - 1] == 'M')) {
-						currentTokenType = Token.COMMENT_EOL;
+						currentTokenType = TokenTypes.COMMENT_EOL;
 						break;
 					}
-					addToken(text, currentTokenStart, i - 1, Token.IDENTIFIER, newStartOffset + currentTokenStart);
+					addToken(text, currentTokenStart, i - 1, TokenTypes.IDENTIFIER, newStartOffset + currentTokenStart);
 					currentTokenStart = i;
-					currentTokenType = Token.WHITESPACE;
+					currentTokenType = TokenTypes.WHITESPACE;
 					break;
 
 				case '"':
-					addToken(text, currentTokenStart, i - 1, Token.IDENTIFIER, newStartOffset + currentTokenStart);
+					addToken(text, currentTokenStart, i - 1, TokenTypes.IDENTIFIER, newStartOffset + currentTokenStart);
 					currentTokenStart = i;
-					currentTokenType = Token.ERROR_STRING_DOUBLE;
+					currentTokenType = TokenTypes.ERROR_STRING_DOUBLE;
 					break;
 
 				case '%':
-					addToken(text, currentTokenStart, i - 1, Token.IDENTIFIER, newStartOffset + currentTokenStart);
+					addToken(text, currentTokenStart, i - 1, TokenTypes.IDENTIFIER, newStartOffset + currentTokenStart);
 					currentTokenStart = i;
-					currentTokenType = Token.VARIABLE;
+					currentTokenType = TokenTypes.VARIABLE;
 					break;
 
 				// Should be part of identifiers, but not at end of "REM".
@@ -451,7 +452,7 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 					if (i - currentTokenStart == 3 && (array[i - 3] == 'r' || array[i - 3] == 'R')
 							&& (array[i - 2] == 'e' || array[i - 2] == 'E')
 							&& (array[i - 1] == 'm' || array[i - 1] == 'M')) {
-						currentTokenType = Token.COMMENT_EOL;
+						currentTokenType = TokenTypes.COMMENT_EOL;
 					}
 					break;
 
@@ -462,17 +463,17 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 				// The "separators".
 				case '(':
 				case ')':
-					addToken(text, currentTokenStart, i - 1, Token.IDENTIFIER, newStartOffset + currentTokenStart);
-					addToken(text, i, i, Token.SEPARATOR, newStartOffset + i);
-					currentTokenType = Token.NULL;
+					addToken(text, currentTokenStart, i - 1, TokenTypes.IDENTIFIER, newStartOffset + currentTokenStart);
+					addToken(text, i, i, TokenTypes.SEPARATOR, newStartOffset + i);
+					currentTokenType = TokenTypes.NULL;
 					break;
 
 				// The "separators2".
 				case ',':
 				case ';':
-					addToken(text, currentTokenStart, i - 1, Token.IDENTIFIER, newStartOffset + currentTokenStart);
-					addToken(text, i, i, Token.IDENTIFIER, newStartOffset + i);
-					currentTokenType = Token.NULL;
+					addToken(text, currentTokenStart, i - 1, TokenTypes.IDENTIFIER, newStartOffset + currentTokenStart);
+					addToken(text, i, i, TokenTypes.IDENTIFIER, newStartOffset + i);
+					currentTokenType = TokenTypes.NULL;
 					break;
 
 				default:
@@ -484,9 +485,9 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 
 					int indexOf = OPERATORS.indexOf(c);
 					if (indexOf > -1) {
-						addToken(text, currentTokenStart, i - 1, Token.IDENTIFIER, newStartOffset + currentTokenStart);
-						addToken(text, i, i, Token.OPERATOR, newStartOffset + i);
-						currentTokenType = Token.NULL;
+						addToken(text, currentTokenStart, i - 1, TokenTypes.IDENTIFIER, newStartOffset + currentTokenStart);
+						addToken(text, i, i, TokenTypes.OPERATOR, newStartOffset + i);
+						currentTokenType = TokenTypes.NULL;
 						break;
 					}
 
@@ -496,35 +497,35 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 
 				break;
 
-			case Token.COMMENT_EOL:
+			case TokenTypes.COMMENT_EOL:
 				i = end - 1;
-				addToken(text, currentTokenStart, i, Token.COMMENT_EOL, newStartOffset + currentTokenStart);
+				addToken(text, currentTokenStart, i, TokenTypes.COMMENT_EOL, newStartOffset + currentTokenStart);
 				// We need to set token type to null so at the bottom we don't add one more
 				// token.
-				currentTokenType = Token.NULL;
+				currentTokenType = TokenTypes.NULL;
 				break;
 
-			case Token.PREPROCESSOR: // Used for labels
+			case TokenTypes.PREPROCESSOR: // Used for labels
 				i = end - 1;
-				addToken(text, currentTokenStart, i, Token.PREPROCESSOR, newStartOffset + currentTokenStart);
+				addToken(text, currentTokenStart, i, TokenTypes.PREPROCESSOR, newStartOffset + currentTokenStart);
 				// We need to set token type to null so at the bottom we don't add one more
 				// token.
-				currentTokenType = Token.NULL;
+				currentTokenType = TokenTypes.NULL;
 				break;
 
-			case Token.ERROR_STRING_DOUBLE:
+			case TokenTypes.ERROR_STRING_DOUBLE:
 
 				if (c == '"') {
-					addToken(text, currentTokenStart, i, Token.LITERAL_STRING_DOUBLE_QUOTE,
+					addToken(text, currentTokenStart, i, TokenTypes.LITERAL_STRING_DOUBLE_QUOTE,
 							newStartOffset + currentTokenStart);
 					currentTokenStart = i + 1;
-					currentTokenType = Token.NULL;
+					currentTokenType = TokenTypes.NULL;
 				}
 				// Otherwise, we're still an unclosed string...
 
 				break;
 
-			case Token.VARIABLE:
+			case TokenTypes.VARIABLE:
 
 				if (i == currentTokenStart + 1) { // first character after '%'.
 					varType = VariableType.NORMAL_VAR;
@@ -543,14 +544,14 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 																					// okay in variable names.
 							break;
 						} else if (RSyntaxUtilities.isDigit(c)) { // Single-digit command-line argument ("%1").
-							addToken(text, currentTokenStart, i, Token.VARIABLE, newStartOffset + currentTokenStart);
-							currentTokenType = Token.NULL;
+							addToken(text, currentTokenStart, i, TokenTypes.VARIABLE, newStartOffset + currentTokenStart);
+							currentTokenType = TokenTypes.NULL;
 							break;
 						} else { // Anything else, ???.
-							addToken(text, currentTokenStart, i - 1, Token.VARIABLE,
+							addToken(text, currentTokenStart, i - 1, TokenTypes.VARIABLE,
 									newStartOffset + currentTokenStart); // ???
 							i--;
-							currentTokenType = Token.NULL;
+							currentTokenType = TokenTypes.NULL;
 							break;
 						}
 					} // End of switch (c).
@@ -558,16 +559,16 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 					switch (varType) {
 					case BRACKET_VAR:
 						if (c == '}') {
-							addToken(text, currentTokenStart, i, Token.VARIABLE, newStartOffset + currentTokenStart);
-							currentTokenType = Token.NULL;
+							addToken(text, currentTokenStart, i, TokenTypes.VARIABLE, newStartOffset + currentTokenStart);
+							currentTokenType = TokenTypes.NULL;
 						}
 						break;
 					case TILDE_VAR:
 						if (!RSyntaxUtilities.isLetterOrDigit(c)) {
-							addToken(text, currentTokenStart, i - 1, Token.VARIABLE,
+							addToken(text, currentTokenStart, i - 1, TokenTypes.VARIABLE,
 									newStartOffset + currentTokenStart);
 							i--;
-							currentTokenType = Token.NULL;
+							currentTokenType = TokenTypes.NULL;
 						}
 						break;
 					case DOUBLE_PERCENT_VAR:
@@ -576,22 +577,22 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 						if (c == '%') {
 							if (i < end - 1 && array[i + 1] == '%') {
 								i++;
-								addToken(text, currentTokenStart, i, Token.VARIABLE,
+								addToken(text, currentTokenStart, i, TokenTypes.VARIABLE,
 										newStartOffset + currentTokenStart);
-								currentTokenType = Token.NULL;
+								currentTokenType = TokenTypes.NULL;
 							}
 						} else if (!RSyntaxUtilities.isLetterOrDigit(c) && c != ':' && c != '~' && c != ','
 								&& c != '-') {
-							addToken(text, currentTokenStart, i - 1, Token.VARIABLE,
+							addToken(text, currentTokenStart, i - 1, TokenTypes.VARIABLE,
 									newStartOffset + currentTokenStart);
-							currentTokenType = Token.NULL;
+							currentTokenType = TokenTypes.NULL;
 							i--;
 						}
 						break;
 					default:
 						if (c == '%') {
-							addToken(text, currentTokenStart, i, Token.VARIABLE, newStartOffset + currentTokenStart);
-							currentTokenType = Token.NULL;
+							addToken(text, currentTokenStart, i, TokenTypes.VARIABLE, newStartOffset + currentTokenStart);
+							currentTokenType = TokenTypes.NULL;
 						}
 						break;
 					}
@@ -603,13 +604,13 @@ public class WindowsBatchTokenMaker extends AbstractTokenMaker {
 		} // End of for (int i=offset; i<end; i++).
 
 		// Deal with the (possibly there) last token.
-		if (currentTokenType != Token.NULL) {
+		if (currentTokenType != TokenTypes.NULL) {
 
 			// Check for REM comments.
 			if (end - currentTokenStart == 3 && (array[end - 3] == 'r' || array[end - 3] == 'R')
 					&& (array[end - 2] == 'e' || array[end - 2] == 'E')
 					&& (array[end - 1] == 'm' || array[end - 1] == 'M')) {
-				currentTokenType = Token.COMMENT_EOL;
+				currentTokenType = TokenTypes.COMMENT_EOL;
 			}
 
 			addToken(text, currentTokenStart, end - 1, currentTokenType, newStartOffset + currentTokenStart);

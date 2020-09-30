@@ -50,7 +50,7 @@ public class RTADefaultInputMap extends InputMap {
 		// int ctrl = InputEvent.CTRL_DOWN_MASK;
 		int alt = InputEvent.ALT_DOWN_MASK;
 		int shift = InputEvent.SHIFT_DOWN_MASK;
-		boolean isOSX = RTextArea.isOSX();
+		boolean isOSX = RTextAreaBase.isOSX();
 		int moveByWordMod = isOSX ? alt : defaultModifier;
 
 		put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),

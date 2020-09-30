@@ -18,6 +18,7 @@ import javax.swing.text.Segment;
 import org.fife.ui.rsyntaxtextarea.AbstractJFlexTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * This class splits up text into tokens representing a .ini file.
@@ -566,39 +567,39 @@ public class IniTokenMaker extends AbstractJFlexTokenMaker {
 			switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
 			case 3: {
 				start = zzMarkedPos;
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 				yybegin(VALUE);
 			}
 			case 8:
 				break;
 			case 2: {
-				addToken(Token.IDENTIFIER);
+				addToken(TokenTypes.IDENTIFIER);
 			}
 			case 9:
 				break;
 			case 5: {
-				addToken(Token.WHITESPACE);
+				addToken(TokenTypes.WHITESPACE);
 			}
 			case 10:
 				break;
 			case 7: {
 				start = zzMarkedPos;
-				addToken(Token.OPERATOR);
+				addToken(TokenTypes.OPERATOR);
 			}
 			case 11:
 				break;
 			case 6: {
-				addToken(Token.COMMENT_EOL);
+				addToken(TokenTypes.COMMENT_EOL);
 			}
 			case 12:
 				break;
 			case 4: {
-				addToken(Token.PREPROCESSOR);
+				addToken(TokenTypes.PREPROCESSOR);
 			}
 			case 13:
 				break;
 			case 1: {
-				addToken(Token.DATA_TYPE);
+				addToken(TokenTypes.DATA_TYPE);
 			}
 			case 14:
 				break;

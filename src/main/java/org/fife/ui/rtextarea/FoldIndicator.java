@@ -504,7 +504,7 @@ public class FoldIndicator extends AbstractGutterComponent {
 		// y<0. The computed y-value is the y-value of the top of the first
 		// (possibly) partially-visible view.
 		Rectangle visibleEditorRect = ui.getVisibleEditorRect();
-		Rectangle r = LineNumberList.getChildViewBounds(v, topLine, visibleEditorRect);
+		Rectangle r = AbstractGutterComponent.getChildViewBounds(v, topLine, visibleEditorRect);
 		int y = r.y;
 		y += (cellHeight - collapsedFoldIcon.getIconHeight()) / 2;
 
@@ -516,7 +516,7 @@ public class FoldIndicator extends AbstractGutterComponent {
 
 		while (y < visibleBottom && line < lineCount) {
 
-			int curLineH = LineNumberList.getChildViewBounds(v, line, visibleEditorRect).height;
+			int curLineH = AbstractGutterComponent.getChildViewBounds(v, line, visibleEditorRect).height;
 
 			if (paintingOutlineLine) {
 				g.setColor(getForeground());
@@ -545,7 +545,7 @@ public class FoldIndicator extends AbstractGutterComponent {
 				}
 				if (fold.isCollapsed()) {
 					collapsedFoldIcon.paintIcon(this, g, x, y);
-					y += LineNumberList.getChildViewBounds(v, line, visibleEditorRect).height;
+					y += AbstractGutterComponent.getChildViewBounds(v, line, visibleEditorRect).height;
 					line += fold.getLineCount() + 1;
 				} else {
 					expandedFoldIcon.paintIcon(this, g, x, y);

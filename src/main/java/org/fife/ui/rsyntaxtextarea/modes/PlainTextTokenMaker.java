@@ -17,6 +17,7 @@ import javax.swing.text.Segment;
 import org.fife.ui.rsyntaxtextarea.AbstractJFlexTokenMaker;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.TokenImpl;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
  * Scanner for plain text files.
@@ -270,7 +271,7 @@ public class PlainTextTokenMaker extends AbstractJFlexTokenMaker {
 	 */
 	@Override
 	public int getLastTokenTypeOnLine(Segment text, int initialTokenType) {
-		return Token.NULL;
+		return TokenTypes.NULL;
 	}
 
 	/**
@@ -577,7 +578,7 @@ public class PlainTextTokenMaker extends AbstractJFlexTokenMaker {
 
 			switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
 			case 3: {
-				addToken(Token.WHITESPACE, false);
+				addToken(TokenTypes.WHITESPACE, false);
 			}
 			case 5:
 				break;
@@ -588,12 +589,12 @@ public class PlainTextTokenMaker extends AbstractJFlexTokenMaker {
 			case 6:
 				break;
 			case 4: {
-				addToken(Token.IDENTIFIER, true);
+				addToken(TokenTypes.IDENTIFIER, true);
 			}
 			case 7:
 				break;
 			case 1: {
-				addToken(Token.IDENTIFIER, false);
+				addToken(TokenTypes.IDENTIFIER, false);
 			}
 			case 8:
 				break;

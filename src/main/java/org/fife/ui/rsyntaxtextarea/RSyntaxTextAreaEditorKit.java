@@ -223,7 +223,7 @@ public class RSyntaxTextAreaEditorKit extends RTextAreaEditorKit {
 			// etc.).
 
 			offs -= firstIndex - seg.getIndex() + 1;// seg.getEndIndex() - seg.getIndex();
-			if (ch != Segment.DONE && nextCh != '\n') {
+			if (ch != CharacterIterator.DONE && nextCh != '\n') {
 				offs++;
 			}
 
@@ -404,7 +404,7 @@ public class RSyntaxTextAreaEditorKit extends RTextAreaEditorKit {
 
 						Token t = doc.getTokenListForLine(rsta.getCaretLineNumber());
 						t = RSyntaxUtilities.getTokenAtOffset(t, dot - 1);
-						if (t != null && t.getType() == Token.MARKUP_TAG_DELIMITER) {
+						if (t != null && t.getType() == TokenTypes.MARKUP_TAG_DELIMITER) {
 							// System.out.println("Huzzah - closing tag!");
 							String tagName = discoverTagName(doc, dot);
 							if (tagName != null) {
@@ -446,16 +446,16 @@ public class RSyntaxTextAreaEditorKit extends RTextAreaEditorKit {
 				Token t = doc.getTokenListForLine(i);
 				while (t != null && t.isPaintable()) {
 
-					if (t.getType() == Token.MARKUP_TAG_DELIMITER) {
+					if (t.getType() == TokenTypes.MARKUP_TAG_DELIMITER) {
 						if (t.isSingleChar('<') || t.isSingleChar('[')) {
 							t = t.getNextToken();
 							while (t != null && t.isPaintable()) {
-								if (t.getType() == Token.MARKUP_TAG_NAME ||
+								if (t.getType() == TokenTypes.MARKUP_TAG_NAME ||
 								// Being lenient here and also checking
 								// for attributes, in case they
 								// (incorrectly) have whitespace between
 								// the '<' char and the element name.
-										t.getType() == Token.MARKUP_TAG_ATTRIBUTE) {
+										t.getType() == TokenTypes.MARKUP_TAG_ATTRIBUTE) {
 									stack.push(t.getLexeme());
 									break;
 								}
@@ -879,12 +879,12 @@ public class RSyntaxTextAreaEditorKit extends RTextAreaEditorKit {
 
 			// The "word" is a series of symbols.
 			else {
-				while (!Character.isWhitespace(ch) && !doc.isIdentifierChar(languageIndex, ch) && ch != Segment.DONE) {
+				while (!Character.isWhitespace(ch) && !doc.isIdentifierChar(languageIndex, ch) && ch != CharacterIterator.DONE) {
 					ch = seg.previous();
 				}
 			}
 
-			if (ch == Segment.DONE) {
+			if (ch == CharacterIterator.DONE) {
 				return start; // Removed last "token" of the line
 			}
 			offs -= firstIndex - seg.getIndex();
@@ -1368,7 +1368,7 @@ public class RSyntaxTextAreaEditorKit extends RTextAreaEditorKit {
 		private static int getOpenBraceCount(RSyntaxDocument doc, int languageIndex) {
 			int openCount = 0;
 			for (Token t : doc) {
-				if (t.getType() == Token.SEPARATOR && t.length() == 1 && t.getLanguageIndex() == languageIndex) {
+				if (t.getType() == TokenTypes.SEPARATOR && t.length() == 1 && t.getLanguageIndex() == languageIndex) {
 					char ch = t.charAt(0);
 					if (ch == '{') {
 						openCount++;
@@ -1650,7 +1650,7 @@ public class RSyntaxTextAreaEditorKit extends RTextAreaEditorKit {
 			else if (!Character.isWhitespace(ch)) {
 				do {
 					ch = seg.next();
-				} while (ch != Segment.DONE
+				} while (ch != CharacterIterator.DONE
 						&& !(doc.isIdentifierChar(languageIndex, ch) || Character.isWhitespace(ch)));
 			}
 
@@ -1815,12 +1815,12 @@ public class RSyntaxTextAreaEditorKit extends RTextAreaEditorKit {
 			else if (!Character.isWhitespace(ch)) {
 				do {
 					ch = seg.previous();
-				} while (ch != Segment.DONE
+				} while (ch != CharacterIterator.DONE
 						&& !(doc.isIdentifierChar(languageIndex, ch) || Character.isWhitespace(ch)));
 			}
 
 			offs -= seg.getEndIndex() - seg.getIndex();
-			if (ch != Segment.DONE) {
+			if (ch != CharacterIterator.DONE) {
 				offs++;
 			}
 

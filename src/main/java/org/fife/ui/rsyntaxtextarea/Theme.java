@@ -35,6 +35,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.fife.io.UnicodeWriter;
 import org.fife.ui.rtextarea.Gutter;
 import org.fife.ui.rtextarea.RTextArea;
+import org.fife.ui.rtextarea.RTextAreaBase;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -118,7 +119,7 @@ public class Theme {
 	 */
 	private Theme(Font baseFont) {
 		// Optional fields that require a default value.
-		this.baseFont = baseFont != null ? baseFont : RTextArea.getDefaultFont();
+		this.baseFont = baseFont != null ? baseFont : RTextAreaBase.getDefaultFont();
 		secondaryLanguages = new Color[3];
 		activeLineRangeColor = Gutter.DEFAULT_ACTIVE_LINE_RANGE_COLOR;
 	}
@@ -369,7 +370,7 @@ public class Theme {
 			root.setAttribute("version", "1.0");
 
 			Element elem = doc.createElement("baseFont");
-			if (!baseFont.getFamily().equals(RSyntaxTextArea.getDefaultFont().getFamily())) {
+			if (!baseFont.getFamily().equals(RTextAreaBase.getDefaultFont().getFamily())) {
 				elem.setAttribute("family", baseFont.getFamily());
 			}
 			elem.setAttribute("size", Integer.toString(baseFont.getSize()));

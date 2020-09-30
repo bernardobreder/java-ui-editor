@@ -175,7 +175,7 @@ public class ErrorStrip extends JPanel {
 		textArea.addPropertyChangeListener(RSyntaxTextArea.PARSER_NOTICES_PROPERTY, listener);
 		textArea.addPropertyChangeListener(RSyntaxTextArea.MARK_OCCURRENCES_PROPERTY, listener);
 		textArea.addPropertyChangeListener(RSyntaxTextArea.MARKED_OCCURRENCES_CHANGED_PROPERTY, listener);
-		textArea.addPropertyChangeListener(RSyntaxTextArea.MARK_ALL_OCCURRENCES_CHANGED_PROPERTY, listener);
+		textArea.addPropertyChangeListener(RTextArea.MARK_ALL_OCCURRENCES_CHANGED_PROPERTY, listener);
 		refreshMarkers();
 	}
 
@@ -421,7 +421,7 @@ public class ErrorStrip extends JPanel {
 		textArea.removePropertyChangeListener(RSyntaxTextArea.PARSER_NOTICES_PROPERTY, listener);
 		textArea.removePropertyChangeListener(RSyntaxTextArea.MARK_OCCURRENCES_PROPERTY, listener);
 		textArea.removePropertyChangeListener(RSyntaxTextArea.MARKED_OCCURRENCES_CHANGED_PROPERTY, listener);
-		textArea.removePropertyChangeListener(RSyntaxTextArea.MARK_ALL_OCCURRENCES_CHANGED_PROPERTY, listener);
+		textArea.removePropertyChangeListener(RTextArea.MARK_ALL_OCCURRENCES_CHANGED_PROPERTY, listener);
 	}
 
 	/**
@@ -514,6 +514,7 @@ public class ErrorStrip extends JPanel {
 		}
 	}
 
+	@Override
 	public void updateUI() {
 
 		super.updateUI();
