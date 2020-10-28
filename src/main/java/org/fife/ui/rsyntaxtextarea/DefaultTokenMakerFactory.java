@@ -16,7 +16,7 @@ package org.fife.ui.rsyntaxtextarea;
  * @author Robert Futrell
  * @version 1.0
  */
-class DefaultTokenMakerFactory extends AbstractTokenMakerFactory implements SyntaxConstants {
+public class DefaultTokenMakerFactory extends AbstractTokenMakerFactory implements SyntaxConstants {
 
 	/**
 	 * {@inheritDoc}
