@@ -34,7 +34,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.fife.io.UnicodeWriter;
 import org.fife.ui.rtextarea.Gutter;
-import org.fife.ui.rtextarea.RTextArea;
 import org.fife.ui.rtextarea.RTextAreaBase;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;

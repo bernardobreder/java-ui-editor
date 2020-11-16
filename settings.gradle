@@ -8,3 +8,6 @@
  */
 
 rootProject.name = 'java-ui-editor'
+
+include ':displace-fs'
+project(':displace-fs').projectDir = new File(settingsDir, '../displace-fs')

@@ -16,9 +16,9 @@ import java.util.function.Supplier;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
-import editor.filesystem.IFile;
-import editor.filesystem.IResource;
-import editor.filesystem.IWorkspace;
+import displace.fs.data.IFile;
+import displace.fs.data.IResource;
+import displace.fs.data.IWorkspace;
 
 public class GExplorerTree extends JTree {
 

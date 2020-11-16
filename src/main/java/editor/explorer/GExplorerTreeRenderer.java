@@ -15,7 +15,7 @@ import javax.swing.JTree;
 import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.tree.TreeCellRenderer;
 
-import editor.filesystem.IResource;
+import displace.fs.data.IResource;
 
 public class GExplorerTreeRenderer extends JPanel implements TreeCellRenderer {
 

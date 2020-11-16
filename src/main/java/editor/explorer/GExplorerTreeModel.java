@@ -10,9 +10,9 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import editor.filesystem.IFolder;
-import editor.filesystem.IResource;
-import editor.filesystem.IWorkspace;
+import displace.fs.data.IFolder;
+import displace.fs.data.IResource;
+import displace.fs.data.IWorkspace;
 
 public class GExplorerTreeModel implements TreeModel {
 

@@ -24,7 +24,6 @@ import javax.swing.text.Document;
 
 import org.fife.io.UnicodeReader;
 import org.fife.io.UnicodeWriter;
-import org.fife.ui.rtextarea.RTextAreaEditorKit;
 
 /**
  * An extension of {@link org.fife.ui.rsyntaxtextarea.RSyntaxTextArea} that adds

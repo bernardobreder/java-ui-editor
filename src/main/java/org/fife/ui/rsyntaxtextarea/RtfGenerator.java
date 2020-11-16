@@ -14,7 +14,6 @@ import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.fife.ui.rtextarea.RTextArea;
 import org.fife.ui.rtextarea.RTextAreaBase;
 
 /**
