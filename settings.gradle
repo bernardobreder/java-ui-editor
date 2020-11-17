@@ -11,3 +11,9 @@ rootProject.name = 'java-ui-editor'
 
 include ':displace-fs'
 project(':displace-fs').projectDir = new File(settingsDir, '../displace-fs')
+
+include ':literal'
+project(':literal').projectDir = new File(settingsDir, '../jliteral')
+
+include ':httprequest'
+project(':httprequest').projectDir = new File(settingsDir, '../jhttprequest')
