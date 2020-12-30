@@ -65,28 +65,37 @@ public class GExplorerTree extends JTree {
 
 	protected void treeMouseClicked(MouseEvent e) {
 		if (listener != null) {
+			int y = e.getY();
+			int x = e.getX();
+			int px = e.getXOnScreen() - getParent().getParent().getLocationOnScreen().x;
+			int py = e.getYOnScreen() - getParent().getParent().getLocationOnScreen().y;
 			if (e.getButton() == MouseEvent.BUTTON1) {
+				List<IResource> resources = getSelectedResources();
 				if (e.getClickCount() > 1) {
-					List<IResource> resources = getSelectedResources();
 					for (IResource resource : resources) {
 						if (resource.isFile()) {
 							listener.onOpenFile((IFile) resource);
 						}
 					}
 				} else {
-					int rowIndex = getRowForLocation(e.getX(), e.getY());
+					int rowIndex = getRowForLocation(x, y);
 					if (rowIndex < 0) {
 						clearSelection();
 					}
+					listener.onSelect(resources);
 				}
 			} else if (e.getButton() == MouseEvent.BUTTON3) {
-				int rowIndex = getRowForLocation(e.getX(), e.getY());
-				if (rowIndex < 0) {
-					clearSelection();
-				} else if (getSelectionCount() == 0) {
-					setSelectionRow(rowIndex);
+				if (e.isControlDown() || e.isShiftDown()) {
+					listener.onPopupFile(getSelectedResources(), px, py);
+				} else {
+					int rowIndex = getRowForLocation(x, y);
+					if (rowIndex < 0) {
+						clearSelection();
+					} else {
+						setSelectionRow(rowIndex);
+					}
+					listener.onPopupFile(getSelectedResources(), px, py);
 				}
-				listener.onPopupFile(getSelectedResources(), e.getX(), e.getY());
 			}
 		}
 	}
@@ -144,6 +153,8 @@ public class GExplorerTree extends JTree {
 	public static interface ExplorerTreeListener {
 
 		public void onOpenFile(IFile file);
+
+		public void onSelect(List<IResource> resources);
 
 		public void onPopupFile(List<IResource> resources, int x, int y);
 
